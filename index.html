@@ -1149,11 +1149,33 @@
       console.warn("No se pudo recuperar el avance guardado.",e);
     }
   }
+function calcularEdad(){
 
-  function calcularEdad(){
-    const y = Number(document.getElementById("anioConstruccion").value);
-    const actual = new Date().getFullYear();
-    document.getElementById("edadConstruccion").value = y ? Math.max(0, actual-y) : "";
+  // Año en que inició actividades el establecimiento
+  const anioInicio =
+    Number(document.getElementById("anioInicio").value);
+
+  // Año de construcción del inmueble
+  const anioConstruccion =
+    Number(document.getElementById("anioConstruccion").value);
+
+  const campoEdad =
+    document.getElementById("edadConstruccion");
+
+  // Solo calcula cuando ambos años fueron seleccionados
+  if(anioInicio && anioConstruccion){
+
+    // Evitamos edades negativas
+    campoEdad.value =
+      Math.max(0, anioInicio - anioConstruccion);
+
+  } else {
+
+    campoEdad.value = "";
+
+  }
+}
+  
   }
 
   function actualizarOtroGiro(){
