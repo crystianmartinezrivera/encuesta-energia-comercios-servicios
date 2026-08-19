@@ -2211,6 +2211,38 @@ async function guardarEncuestaSupabase(){
   });
 
   // ======================================================
+// PÁGINA 2 - TIPO DE EDIFICACIÓN
+// ======================================================
+
+const tipoEdificacion =
+  document.getElementById("tipoEdificacion");
+
+const tipoEdificacionOtroBox =
+  document.getElementById("tipoEdificacionOtroBox");
+
+const tipoEdificacionOtro =
+  document.getElementById("tipoEdificacionOtro");
+
+if(tipoEdificacion){
+
+  tipoEdificacion.addEventListener("change", function(){
+
+    if(this.value === "otro"){
+
+      tipoEdificacionOtroBox.style.display = "block";
+      tipoEdificacionOtro.focus();
+
+    } else {
+
+      tipoEdificacionOtroBox.style.display = "none";
+      tipoEdificacionOtro.value = "";
+
+    }
+
+  });
+
+}
+  // ======================================================
   // INICIALIZACIÓN
   // ======================================================
   // Carga las listas de años.
