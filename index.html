@@ -1174,7 +1174,8 @@ function calcularEdad(){
     campoEdad.value = "";
   }
 }
-    
+  
+
   function actualizarOtroGiro(){
     const esOtro = document.getElementById("giro").value === "12";
     document.getElementById("campoOtroGiro").classList.toggle("hidden",!esOtro);
@@ -1312,7 +1313,7 @@ function calcularEdad(){
   });
 
   document.getElementById("giro").addEventListener("change",actualizarOtroGiro);
-  document.getElementById("anioInicio").addEventListener("change", calcularEdad)
+  document.getElementById("anioInicio").addEventListener("change", calcularEdad);
   document.getElementById("anioConstruccion").addEventListener("change",calcularEdad);
 
   function mostrarVista(nombre){
