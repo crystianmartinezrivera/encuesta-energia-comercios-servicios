@@ -1315,6 +1315,7 @@ function calcularEdad(){
   });
 
   document.getElementById("giro").addEventListener("change",actualizarOtroGiro);
+  document.getElementById("anioInicio").addEventListener("change", calcularEdad)
   document.getElementById("anioConstruccion").addEventListener("change",calcularEdad);
 
   function mostrarVista(nombre){
