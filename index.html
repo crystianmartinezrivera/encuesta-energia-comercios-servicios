@@ -1024,6 +1024,18 @@
 <script>
   const STORAGE_KEY = "encuestaEnergiaComerciosServicios_v1";
 
+  // ======================================================
+  // CONFIGURACIÓN DE SUPABASE
+  // ======================================================
+  // URL pública de la API del proyecto.
+  const SUPABASE_API_URL =
+    "https://hboxglbiwlhirdktwvwe.supabase.co/rest/v1";
+
+  // Clave pública para uso desde el navegador.
+  // IMPORTANTE: nunca colocar aquí una clave sb_secret_...
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_p8XVnrkDjRqMaeGU4ByQEw_eFt-MSdF";
+
   const state = {
     vista: "datos",
     turnos: {
@@ -1322,17 +1334,158 @@
     document.getElementById("vistaInicio").classList.remove("hidden");
     window.scrollTo({top:0,behavior:"smooth"});
   });
+// ======================================================
+  // GUARDAR LA PÁGINA 1 EN SUPABASE
+  // ======================================================
+  // Toma los datos del formulario y crea una fila nueva
+  // en la tabla public.encuestas.
+  async function guardarEncuestaSupabase(){
 
+  const variaEmpleados =
+    valorRadio("variaEmpleados") === "si";
+
+  const tieneTiempoParcial =
+    valorRadio("tiempoParcial") === "si";
+
+  const datos = {
+
+    estatus: "en_progreso",
+
+    ultima_actualizacion:
+      new Date().toISOString(),
+
+    nombre_establecimiento:
+      document.getElementById("nombreEstablecimiento").value.trim(),
+
+    giro_codigo:
+      document.getElementById("giro").value
+        ? parseInt(document.getElementById("giro").value)
+        : null,
+
+    giro_otro:
+      document.getElementById("giro").value === "12"
+        ? document.getElementById("otroGiro").value.trim()
+        : null,
+
+    anio_inicio:
+      document.getElementById("anioInicio").value
+        ? parseInt(document.getElementById("anioInicio").value)
+        : null,
+
+    anio_construccion:
+      document.getElementById("anioConstruccion").value
+        ? parseInt(document.getElementById("anioConstruccion").value)
+        : null,
+
+    estado:
+      document.getElementById("estado").value,
+
+    municipio:
+      document.getElementById("municipio").value.trim(),
+
+    codigo_postal:
+      document.getElementById("cp").value.trim() || null,
+
+    horas_operacion:
+      document.getElementById("horasOperacion").value
+        ? parseFloat(document.getElementById("horasOperacion").value)
+        : null,
+
+    empleados_total:
+      document.getElementById("empleadosTotal").value
+        ? parseInt(document.getElementById("empleadosTotal").value)
+        : null,
+
+    opera_turnos:
+      valorRadio("turnos") === "si",
+
+    varia_empleados:
+      variaEmpleados,
+
+    empleados_min:
+      variaEmpleados &&
+      document.getElementById("empleadosMin").value
+        ? parseInt(document.getElementById("empleadosMin").value)
+        : null,
+
+    empleados_max:
+      variaEmpleados &&
+      document.getElementById("empleadosMax").value
+        ? parseInt(document.getElementById("empleadosMax").value)
+        : null,
+
+    tiene_tiempo_parcial:
+      tieneTiempoParcial,
+
+    empleados_completo:
+      tieneTiempoParcial &&
+      document.getElementById("empleadosCompleto").value
+        ? parseInt(document.getElementById("empleadosCompleto").value)
+        : null,
+
+    empleados_parcial:
+      tieneTiempoParcial &&
+      document.getElementById("empleadosParcial").value
+        ? parseInt(document.getElementById("empleadosParcial").value)
+        : null
+  };
+
+
+  const respuesta = await fetch(
+    SUPABASE_API_URL + "/encuestas",
+    {
+      method: "POST",
+
+      headers: {
+        "apikey": SUPABASE_PUBLISHABLE_KEY,
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal"
+      },
+
+      body: JSON.stringify(datos)
+    }
+  );
+
+
+  if(!respuesta.ok){
+
+    const mensaje =
+      await respuesta.text();
+
+    console.error(
+      "Error Supabase:",
+      mensaje
+    );
+
+    throw new Error(mensaje);
+  }
+
+
+  console.log(
+    "Encuesta guardada correctamente en Supabase"
+  );
+
+  return true;
+}
+
+  
   document.getElementById("btnGuardarHeader").addEventListener("click",()=>{
     guardarLocal(true);
     alert("El avance quedó guardado en este navegador.");
   });
 
-  document.getElementById("formDatos").addEventListener("submit",(e)=>{
+  // ======================================================
+  // BOTÓN "GUARDAR Y CONTINUAR"
+  // ======================================================
+  // Valida la Página 1, guarda una copia local y después
+  // envía la información a Supabase.
+  document.getElementById("formDatos").addEventListener("submit", async (e)=>{
     e.preventDefault();
 
+    // 1. Validación de campos HTML obligatorios.
     if(!e.currentTarget.reportValidity()) return;
 
+    // 2. Validación de las preguntas Sí / No.
     const turnos = valorRadio("turnos");
     const varia = valorRadio("variaEmpleados");
     const parcial = valorRadio("tiempoParcial");
@@ -1342,19 +1495,47 @@
       return;
     }
 
+    // 3. Guarda una copia en el navegador por seguridad.
     guardarLocal(false);
-    mostrarVista("energia");
+
+    // 4. Intenta enviar la información a Supabase.
+    try {
+      await guardarEncuestaSupabase();
+
+      alert("La información fue guardada correctamente.");
+
+      // 5. Si Supabase respondió correctamente, pasa a Energía.
+      mostrarVista("energia");
+
+    } catch(error) {
+      console.error(error);
+
+      alert(
+        "No fue posible guardar la información en la base de datos. " +
+        "El avance permanece guardado en este navegador."
+      );
+    }
   });
 
-  // Autoguardado en campos
+  // ======================================================
+  // AUTOGUARDADO EN EL NAVEGADOR
+  // ======================================================
+  // Cada vez que cambia un campo se conserva una copia local.
   document.addEventListener("change",(e)=>{
     if(e.target.matches("input,select")){
       guardarLocal(false);
     }
   });
 
+  // ======================================================
+  // INICIALIZACIÓN
+  // ======================================================
+  // Carga las listas de años.
   cargarAnios();
+
+  // Recupera un avance anterior, si existe.
   cargarLocal();
+
 </script>
-</body>
+ </body>
 </html>
