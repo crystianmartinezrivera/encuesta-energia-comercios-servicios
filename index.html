@@ -849,12 +849,593 @@
 
       <!-- RESTO DE VISTAS, POR AHORA COMO BASE -->
       <div id="view-energia" class="survey-view hidden">
-        <h1 class="section-title">2. Energía y características energéticas</h1>
-        <div class="placeholder">
-          Esta será la siguiente sección que programaremos: energéticos utilizados,
-          suministro y características generales del consumo.
+      <h1 class="section-title">
+  2. Energía y características energéticas
+</h1>
+
+<div class="energy-page">
+
+  <!-- =========================================
+       A. CARACTERÍSTICAS FÍSICAS
+  ========================================== -->
+  <div class="energy-card">
+    <h3>A. Características físicas del establecimiento</h3>
+
+    <div class="grid-2">
+
+      <div class="field">
+        <label>
+          ¿En qué tipo de edificación se encuentra el establecimiento?
+          <span class="req">*</span>
+        </label>
+
+        <select id="tipoEdificacion">
+          <option value="">Seleccione una opción</option>
+          <option value="propia">Edificación propia</option>
+          <option value="rentada">Edificación rentada</option>
+          <option value="compartida">
+            Edificación con renta compartida con otros negocios
+          </option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>
+          Superficie utilizada por el establecimiento
+          <span class="req">*</span>
+        </label>
+
+        <div class="input-unit">
+          <input
+            id="superficieTotal"
+            type="number"
+            min="1"
+            step="0.01"
+          >
+          <span class="unit" style="font-size:13px;">m²</span>
         </div>
       </div>
+
+      <div class="field">
+        <label>
+          Número de pisos o niveles
+          <span class="req">*</span>
+        </label>
+
+        <div class="input-unit">
+          <input
+            id="numeroNiveles"
+            type="number"
+            min="1"
+          >
+          <span class="unit" style="font-size:13px;">niveles</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- =========================================
+       B. ÁREAS DEL ESTABLECIMIENTO
+  ========================================== -->
+  <div class="energy-card">
+
+    <div class="card-title-row">
+
+      <div>
+        <h3>B. Áreas del establecimiento</h3>
+
+        <p class="helper-text">
+          Agregue únicamente las áreas que existan en el establecimiento
+          e indique la cantidad y la superficie utilizada.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn-secondary-small"
+        id="btnAgregarArea"
+      >
+        + Agregar área
+      </button>
+
+    </div>
+
+
+    <div
+      id="sinAreas"
+      class="empty-message"
+    >
+      Aún no se han agregado áreas.
+    </div>
+
+
+    <div
+      id="contenedorTablaAreas"
+      class="table-responsive"
+      style="display:none;"
+    >
+
+      <table class="energy-table">
+
+        <thead>
+          <tr>
+            <th>Área</th>
+            <th>Cantidad</th>
+            <th>Superficie utilizada</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody id="tablaAreasBody"></tbody>
+
+        <tfoot>
+          <tr>
+
+            <td colspan="2">
+              <strong>Superficie registrada</strong>
+            </td>
+
+            <td>
+              <strong id="totalSuperficieAreas">
+                0.00 m²
+              </strong>
+            </td>
+
+            <td></td>
+
+          </tr>
+        </tfoot>
+
+      </table>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================================
+       C. ENVOLVENTE
+  ========================================== -->
+  <div class="energy-card">
+
+    <h3>C. Características de la envolvente</h3>
+
+    <div class="grid-2">
+
+      <div class="field">
+        <label>
+          Material predominante de los muros exteriores
+          <span class="req">*</span>
+        </label>
+
+        <select id="materialMuros">
+          <option value="">Seleccione una opción</option>
+          <option value="block_concreto">Block / concreto</option>
+          <option value="ladrillo_piedra">
+            Ladrillo / tabique / piedra
+          </option>
+          <option value="panel_prefabricado">
+            Panel prefabricado
+          </option>
+          <option value="metal">Metal</option>
+          <option value="vidrio">Vidrio predominante</option>
+          <option value="madera">Madera</option>
+          <option value="otro">Otro</option>
+          <option value="ns">No sabe</option>
+        </select>
+      </div>
+
+
+      <div class="field">
+        <label>
+          Tipo predominante de ventanas
+          <span class="req">*</span>
+        </label>
+
+        <select id="tipoVentanas">
+          <option value="">Seleccione una opción</option>
+          <option value="simple">Vidrio sencillo</option>
+          <option value="doble">Doble vidrio</option>
+          <option value="doble_aislado">
+            Doble vidrio con cámara o aislamiento
+          </option>
+          <option value="triple">Triple vidrio</option>
+          <option value="control_solar">
+            Vidrio de control solar / reflejante
+          </option>
+          <option value="otro">Otro</option>
+          <option value="ns">No sabe</option>
+        </select>
+      </div>
+
+
+      <div class="field field-full">
+
+        <label>
+          ¿Los muros exteriores cuentan con aislamiento térmico?
+          <span class="req">*</span>
+        </label>
+
+        <div class="radio-group">
+
+          <label>
+            <input
+              type="radio"
+              name="aislamiento"
+              value="si"
+            >
+            Sí
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="aislamiento"
+              value="no"
+            >
+            No
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="aislamiento"
+              value="ns"
+            >
+            No sabe
+          </label>
+
+        </div>
+
+
+        <div
+          id="resumenAislamiento"
+          class="selection-summary"
+          style="display:none;"
+        ></div>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- =========================================
+       D. ENERGÉTICOS UTILIZADOS
+  ========================================== -->
+  <div class="energy-card">
+
+    <h3>D. Energéticos utilizados</h3>
+
+    <p class="helper-text">
+      Seleccione todos los energéticos que utiliza actualmente
+      el establecimiento.
+    </p>
+
+
+    <div class="energy-check-grid">
+
+      <label>
+        <input type="checkbox" name="energetico" value="electricidad">
+        Electricidad de la red
+      </label>
+
+      <label>
+        <input type="checkbox" name="energetico" value="gas_natural">
+        Gas natural
+      </label>
+
+      <label>
+        <input type="checkbox" name="energetico" value="glp_tanque">
+        GLP – tanque estacionario
+      </label>
+
+      <label>
+        <input type="checkbox" name="energetico" value="glp_cilindro">
+        GLP – cilindro
+      </label>
+
+      <label>
+        <input type="checkbox" name="energetico" value="diesel">
+        Diésel
+      </label>
+
+      <label>
+        <input type="checkbox" name="energetico" value="gasolina">
+        Gasolina
+      </label>
+
+      <label>
+        <input type="checkbox" name="energetico" value="combustoleo">
+        Combustóleo
+      </label>
+
+      <label>
+        <input type="checkbox" name="energetico" value="biomasa">
+        Leña / biomasa
+      </label>
+
+      <label>
+        <input type="checkbox" name="energetico" value="carbon">
+        Carbón
+      </label>
+
+      <label>
+        <input type="checkbox" name="energetico" value="energia_termica">
+        Energía térmica adquirida
+      </label>
+
+      <label>
+        <input
+          id="energeticoOtroCheck"
+          type="checkbox"
+          name="energetico"
+          value="otro"
+        >
+        Otro
+      </label>
+
+    </div>
+
+
+    <div
+      id="energeticoOtroBox"
+      class="field"
+      style="display:none; margin-top:16px;"
+    >
+      <label>Especifique el otro energético</label>
+
+      <input
+        id="energeticoOtro"
+        type="text"
+        placeholder="Especifique"
+      >
+    </div>
+
+  </div>
+
+
+  <!-- =========================================
+       E. GENERACIÓN PROPIA
+  ========================================== -->
+  <div class="energy-card">
+
+    <h3>E. Generación propia para autoconsumo</h3>
+
+    <div class="field">
+
+      <label>
+        ¿El establecimiento genera energía para autoconsumo
+        durante su operación normal?
+        <span class="req">*</span>
+      </label>
+
+      <div class="radio-group">
+
+        <label>
+          <input
+            type="radio"
+            name="generacionPropia"
+            value="si"
+          >
+          Sí
+        </label>
+
+        <label>
+          <input
+            type="radio"
+            name="generacionPropia"
+            value="no"
+          >
+          No
+        </label>
+
+        <label>
+          <input
+            type="radio"
+            name="generacionPropia"
+            value="ns"
+          >
+          No sabe
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="listaGeneracion"
+      class="dynamic-list"
+    ></div>
+
+  </div>
+
+
+  <!-- =========================================
+       F. PLANTA DE EMERGENCIA
+  ========================================== -->
+  <div class="energy-card">
+
+    <h3>F. Planta de emergencia o respaldo</h3>
+
+    <div class="field">
+
+      <label>
+        ¿El establecimiento cuenta con planta eléctrica
+        de emergencia o respaldo?
+        <span class="req">*</span>
+      </label>
+
+      <div class="radio-group">
+
+        <label>
+          <input
+            type="radio"
+            name="plantaEmergencia"
+            value="si"
+          >
+          Sí
+        </label>
+
+        <label>
+          <input
+            type="radio"
+            name="plantaEmergencia"
+            value="no"
+          >
+          No
+        </label>
+
+        <label>
+          <input
+            type="radio"
+            name="plantaEmergencia"
+            value="ns"
+          >
+          No sabe
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="resumenPlanta"
+      class="selection-summary"
+      style="display:none;"
+    ></div>
+
+  </div>
+
+
+  <!-- =========================================
+       G. FACTURACIÓN ELÉCTRICA
+  ========================================== -->
+  <div class="energy-card">
+
+    <h3>G. Facturación eléctrica</h3>
+
+    <div class="grid-2">
+
+      <div class="field">
+
+        <label>
+          ¿Con qué periodicidad recibe su facturación eléctrica?
+          <span class="req">*</span>
+        </label>
+
+        <div class="radio-group radio-vertical">
+
+          <label>
+            <input
+              type="radio"
+              name="periodicidadFactura"
+              value="mensual"
+            >
+            Mensual
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="periodicidadFactura"
+              value="bimestral"
+            >
+            Bimestral
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="periodicidadFactura"
+              value="otra"
+            >
+            Otra periodicidad
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="periodicidadFactura"
+              value="ns"
+            >
+            No sabe
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          ¿Cuántas cuentas o medidores eléctricos corresponden
+          al establecimiento?
+        </label>
+
+        <div class="input-unit">
+
+          <input
+            id="numeroMedidores"
+            type="number"
+            min="1"
+            value="1"
+          >
+
+          <span class="unit" style="font-size:13px;">
+            medidor(es)
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="info-box">
+      En la siguiente sección se solicitará el historial de consumo
+      de electricidad de al menos los últimos 12 meses.
+      Puede utilizar el historial mostrado en su recibo más reciente.
+    </div>
+
+  </div>
+
+
+  <!-- =========================================
+       BOTONES
+  ========================================== -->
+  <div class="page-actions">
+
+    <button
+      type="button"
+      class="btn-secondary"
+      id="btnEnergiaAnterior"
+    >
+      ← Anterior
+    </button>
+
+    <button
+      type="button"
+      class="btn-primary"
+      id="btnEnergiaContinuar"
+    >
+      Guardar y continuar →
+    </button>
+
+  </div>
+
+</div>
+      
+
+
+        
 
       <div id="view-facturacion" class="survey-view hidden">
         <h1 class="section-title">3. Facturación de energía</h1>
