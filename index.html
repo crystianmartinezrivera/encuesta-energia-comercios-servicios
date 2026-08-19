@@ -1020,7 +1020,7 @@
     </div>
   </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const STORAGE_KEY = "encuestaEnergiaComerciosServicios_v1";
 
@@ -1028,14 +1028,64 @@
   // CONFIGURACIÓN DE SUPABASE
   // ======================================================
   // URL pública de la API del proyecto.
-  const SUPABASE_API_URL =
-    "https://hboxglbiwlhirdktwvwe.supabase.co/rest/v1";
+const SUPABASE_URL =
+  "https://hboxglbiwlhirdktwvwe.supabase.co";
 
-  // Clave pública para uso desde el navegador.
-  // IMPORTANTE: nunca colocar aquí una clave sb_secret_...
-  const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_p8XVnrkDjRqMaeGU4ByQEw_eFt-MSdF";
 
+// Clave pública para uso desde el navegador.
+// Nunca colocar aquí una clave sb_secret_...
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_p8XVnrkDjRqMaeGU4ByQEw_eFt-MSdF";
+
+
+// Creamos el cliente de Supabase.
+// Este cliente administrará:
+// - autenticación anónima
+// - INSERT
+// - UPDATE
+// - SELECT
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  // ======================================================
+// USUARIO ANÓNIMO
+// ======================================================
+// Busca una sesión existente en este navegador.
+// Si no existe, crea un usuario anónimo en Supabase.
+// El encuestado no verá pantalla de login.
+
+async function obtenerUsuarioAnonimo(){
+
+  // Revisamos si ya existe una sesión activa.
+  const {
+    data: { session },
+    error: sessionError
+  } = await supabaseClient.auth.getSession();
+
+  if(sessionError){
+    throw sessionError;
+  }
+
+  // Si ya existe sesión, reutilizamos el mismo usuario.
+  if(session){
+    return session.user.id;
+  }
+
+  // Si no existe, creamos un usuario anónimo nuevo.
+  const {
+    data,
+    error
+  } = await supabaseClient.auth.signInAnonymously();
+
+  if(error){
+    throw error;
+  }
+
+  return data.user.id;
+}
   const state = {
     vista: "datos",
     turnos: {
@@ -1355,18 +1405,39 @@ function calcularEdad(){
     document.getElementById("vistaInicio").classList.remove("hidden");
     window.scrollTo({top:0,behavior:"smooth"});
   });
+
 // ======================================================
-  // GUARDAR LA PÁGINA 1 EN SUPABASE
-  // ======================================================
-  // Toma los datos del formulario y crea una fila nueva
-  // en la tabla public.encuestas.
-  async function guardarEncuestaSupabase(){
+// GUARDAR O ACTUALIZAR ENCUESTA EN SUPABASE
+// ======================================================
+// Primera vez: INSERT y guarda el ID.
+// Siguientes veces: UPDATE del mismo ID.
+
+async function guardarEncuestaSupabase(){
+
+  // ------------------------------------------------------
+  // 1. OBTENEMOS EL USUARIO ANÓNIMO
+  // ------------------------------------------------------
+  const userId =
+    await obtenerUsuarioAnonimo();
+
+
+  // ------------------------------------------------------
+  // 2. REVISAMOS SI ESTA ENCUESTA YA TIENE ID
+  // ------------------------------------------------------
+  const encuestaId =
+    localStorage.getItem("encuesta_id");
+
+
+  // ------------------------------------------------------
+  // 3. PREPARAMOS LOS DATOS
+  // ------------------------------------------------------
 
   const variaEmpleados =
     valorRadio("variaEmpleados") === "si";
 
   const tieneTiempoParcial =
     valorRadio("tiempoParcial") === "si";
+
 
   const datos = {
 
@@ -1376,7 +1447,10 @@ function calcularEdad(){
       new Date().toISOString(),
 
     nombre_establecimiento:
-      document.getElementById("nombreEstablecimiento").value.trim(),
+      document
+        .getElementById("nombreEstablecimiento")
+        .value
+        .trim(),
 
     giro_codigo:
       document.getElementById("giro").value
@@ -1402,19 +1476,26 @@ function calcularEdad(){
       document.getElementById("estado").value,
 
     municipio:
-      document.getElementById("municipio").value.trim(),
+      document
+        .getElementById("municipio")
+        .value
+        .trim(),
 
     codigo_postal:
       document.getElementById("cp").value.trim() || null,
 
     horas_operacion:
       document.getElementById("horasOperacion").value
-        ? parseFloat(document.getElementById("horasOperacion").value)
+        ? parseFloat(
+            document.getElementById("horasOperacion").value
+          )
         : null,
 
     empleados_total:
       document.getElementById("empleadosTotal").value
-        ? parseInt(document.getElementById("empleadosTotal").value)
+        ? parseInt(
+            document.getElementById("empleadosTotal").value
+          )
         : null,
 
     opera_turnos:
@@ -1426,13 +1507,17 @@ function calcularEdad(){
     empleados_min:
       variaEmpleados &&
       document.getElementById("empleadosMin").value
-        ? parseInt(document.getElementById("empleadosMin").value)
+        ? parseInt(
+            document.getElementById("empleadosMin").value
+          )
         : null,
 
     empleados_max:
       variaEmpleados &&
       document.getElementById("empleadosMax").value
-        ? parseInt(document.getElementById("empleadosMax").value)
+        ? parseInt(
+            document.getElementById("empleadosMax").value
+          )
         : null,
 
     tiene_tiempo_parcial:
@@ -1441,54 +1526,90 @@ function calcularEdad(){
     empleados_completo:
       tieneTiempoParcial &&
       document.getElementById("empleadosCompleto").value
-        ? parseInt(document.getElementById("empleadosCompleto").value)
+        ? parseInt(
+            document.getElementById("empleadosCompleto").value
+          )
         : null,
 
     empleados_parcial:
       tieneTiempoParcial &&
       document.getElementById("empleadosParcial").value
-        ? parseInt(document.getElementById("empleadosParcial").value)
+        ? parseInt(
+            document.getElementById("empleadosParcial").value
+          )
         : null
+
   };
 
 
-  const respuesta = await fetch(
-    SUPABASE_API_URL + "/encuestas",
-    {
-      method: "POST",
+  // ======================================================
+  // PRIMER GUARDADO: INSERT
+  // ======================================================
+  if(!encuestaId){
 
-      headers: {
-        "apikey": SUPABASE_PUBLISHABLE_KEY,
-        "Content-Type": "application/json",
-        "Prefer": "return=minimal"
-      },
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("encuestas")
+      .insert({
+        ...datos,
+        user_id: userId
+      })
+      .select("id")
+      .single();
 
-      body: JSON.stringify(datos)
+
+    if(error){
+      throw error;
     }
-  );
 
 
-  if(!respuesta.ok){
-
-    const mensaje =
-      await respuesta.text();
-
-    console.error(
-      "Error Supabase:",
-      mensaje
+    // Guardamos el ID que Supabase creó.
+    localStorage.setItem(
+      "encuesta_id",
+      data.id
     );
 
-    throw new Error(mensaje);
+
+    console.log(
+      "Nueva encuesta creada. ID:",
+      data.id
+    );
+
+
+    return data.id;
+  }
+
+
+  // ======================================================
+  // GUARDADOS POSTERIORES: UPDATE
+  // ======================================================
+
+  const {
+    error
+  } = await supabaseClient
+    .from("encuestas")
+    .update(datos)
+    .eq(
+      "id",
+      Number(encuestaId)
+    );
+
+
+  if(error){
+    throw error;
   }
 
 
   console.log(
-    "Encuesta guardada correctamente en Supabase"
+    "Encuesta actualizada. ID:",
+    encuestaId
   );
 
-  return true;
-}
 
+  return encuestaId;
+}
   
   document.getElementById("btnGuardarHeader").addEventListener("click",()=>{
     guardarLocal(true);
