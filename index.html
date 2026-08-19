@@ -653,7 +653,7 @@
 
       <nav class="menu">
         <button class="menu-item active" data-view="datos">1. Datos generales y operación</button>
-        <button class="menu-item" data-view="energia">2. Energía</button>
+        <button class="menu-item" data-view="energia">2. Energía y características energéticas</button>
         <button class="menu-item" data-view="facturacion">3. Facturación de energía</button>
         <button class="menu-item" data-view="usos">4. Usos finales de energía</button>
         <button class="menu-item" data-view="practicas">5. Prácticas de eficiencia energética</button>
@@ -849,7 +849,7 @@
 
       <!-- RESTO DE VISTAS, POR AHORA COMO BASE -->
       <div id="view-energia" class="survey-view hidden">
-        <h1 class="section-title">2. Energía</h1>
+        <h1 class="section-title">2. Energía y características energéticas</h1>
         <div class="placeholder">
           Esta será la siguiente sección que programaremos: energéticos utilizados,
           suministro y características generales del consumo.
@@ -1414,31 +1414,22 @@ function calcularEdad(){
 
 async function guardarEncuestaSupabase(){
 
-  // ------------------------------------------------------
-  // 1. OBTENEMOS EL USUARIO ANÓNIMO
-  // ------------------------------------------------------
+  // 1. Obtiene o crea el usuario anónimo.
   const userId =
     await obtenerUsuarioAnonimo();
 
-
-  // ------------------------------------------------------
-  // 2. REVISAMOS SI ESTA ENCUESTA YA TIENE ID
-  // ------------------------------------------------------
+  // 2. Busca si esta encuesta ya tiene ID guardado.
   const encuestaId =
     localStorage.getItem("encuesta_id");
 
-
-  // ------------------------------------------------------
-  // 3. PREPARAMOS LOS DATOS
-  // ------------------------------------------------------
-
+  // 3. Convierte respuestas Sí/No.
   const variaEmpleados =
     valorRadio("variaEmpleados") === "si";
 
   const tieneTiempoParcial =
     valorRadio("tiempoParcial") === "si";
 
-
+  // 4. Prepara los datos.
   const datos = {
 
     estatus: "en_progreso",
@@ -1447,10 +1438,7 @@ async function guardarEncuestaSupabase(){
       new Date().toISOString(),
 
     nombre_establecimiento:
-      document
-        .getElementById("nombreEstablecimiento")
-        .value
-        .trim(),
+      document.getElementById("nombreEstablecimiento").value.trim(),
 
     giro_codigo:
       document.getElementById("giro").value
@@ -1476,26 +1464,19 @@ async function guardarEncuestaSupabase(){
       document.getElementById("estado").value,
 
     municipio:
-      document
-        .getElementById("municipio")
-        .value
-        .trim(),
+      document.getElementById("municipio").value.trim(),
 
     codigo_postal:
       document.getElementById("cp").value.trim() || null,
 
     horas_operacion:
       document.getElementById("horasOperacion").value
-        ? parseFloat(
-            document.getElementById("horasOperacion").value
-          )
+        ? parseFloat(document.getElementById("horasOperacion").value)
         : null,
 
     empleados_total:
       document.getElementById("empleadosTotal").value
-        ? parseInt(
-            document.getElementById("empleadosTotal").value
-          )
+        ? parseInt(document.getElementById("empleadosTotal").value)
         : null,
 
     opera_turnos:
@@ -1507,17 +1488,13 @@ async function guardarEncuestaSupabase(){
     empleados_min:
       variaEmpleados &&
       document.getElementById("empleadosMin").value
-        ? parseInt(
-            document.getElementById("empleadosMin").value
-          )
+        ? parseInt(document.getElementById("empleadosMin").value)
         : null,
 
     empleados_max:
       variaEmpleados &&
       document.getElementById("empleadosMax").value
-        ? parseInt(
-            document.getElementById("empleadosMax").value
-          )
+        ? parseInt(document.getElementById("empleadosMax").value)
         : null,
 
     tiene_tiempo_parcial:
@@ -1526,87 +1503,70 @@ async function guardarEncuestaSupabase(){
     empleados_completo:
       tieneTiempoParcial &&
       document.getElementById("empleadosCompleto").value
-        ? parseInt(
-            document.getElementById("empleadosCompleto").value
-          )
+        ? parseInt(document.getElementById("empleadosCompleto").value)
         : null,
 
     empleados_parcial:
       tieneTiempoParcial &&
       document.getElementById("empleadosParcial").value
-        ? parseInt(
-            document.getElementById("empleadosParcial").value
-          )
+        ? parseInt(document.getElementById("empleadosParcial").value)
         : null
-
   };
-
 
   // ======================================================
   // PRIMER GUARDADO: INSERT
   // ======================================================
+
   if(!encuestaId){
 
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("encuestas")
-      .insert({
-        ...datos,
-        user_id: userId
-      })
-      .select("id")
-      .single();
-
+    const { data, error } =
+      await supabaseClient
+        .from("encuestas")
+        .insert({
+          ...datos,
+          user_id: userId
+        })
+        .select("id")
+        .single();
 
     if(error){
       throw error;
     }
 
-
-    // Guardamos el ID que Supabase creó.
     localStorage.setItem(
       "encuesta_id",
       data.id
     );
-
 
     console.log(
       "Nueva encuesta creada. ID:",
       data.id
     );
 
-
     return data.id;
   }
 
-
   // ======================================================
-  // GUARDADOS POSTERIORES: UPDATE
+  // SIGUIENTES GUARDADOS: UPDATE
   // ======================================================
 
-  const {
-    error
-  } = await supabaseClient
-    .from("encuestas")
-    .update(datos)
-    .eq(
-      "id",
-      Number(encuestaId)
-    );
-
+  const { error } =
+    await supabaseClient
+      .from("encuestas")
+      .update(datos)
+      .eq(
+        "id",
+        Number(encuestaId)
+      );
 
   if(error){
     throw error;
   }
 
-
   console.log(
     "Encuesta actualizada. ID:",
     encuestaId
   );
-
 
   return encuestaId;
 }
