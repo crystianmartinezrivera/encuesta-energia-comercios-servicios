@@ -1116,81 +1116,77 @@
   <!-- =========================================
        B. ÁREAS DEL ESTABLECIMIENTO
   ========================================== -->
-  <div class="energy-card">
+ <div class="energy-card">
 
-    <div class="card-title-row">
+  <div class="card-title-row">
 
-      <div>
-        <h3>B. Áreas del establecimiento</h3>
+    <div>
+      <h3>B. Áreas del establecimiento</h3>
 
-        <p class="helper-text">
-          Agregue únicamente las áreas que existan en el establecimiento
-          e indique la cantidad y la superficie utilizada.
-        </p>
-      </div>
-
-      <button
-        type="button"
-        class="btn-secondary-small"
-        id="btnAgregarArea"
-      >
-        + Agregar área
-      </button>
-
+      <p class="helper-text">
+        Agregue únicamente las áreas que existan en el establecimiento.
+        Indique la cantidad y la superficie total utilizada por cada tipo de área.
+      </p>
     </div>
 
-
-    <div
-      id="sinAreas"
-      class="empty-message"
+    <button
+      type="button"
+      class="secondary"
+      id="btnAgregarArea"
     >
-      Aún no se han agregado áreas.
-    </div>
-
-
-    <div
-      id="contenedorTablaAreas"
-      class="table-responsive"
-      style="display:none;"
-    >
-
-      <table class="energy-table">
-
-        <thead>
-          <tr>
-            <th>Área</th>
-            <th>Cantidad</th>
-            <th>Superficie utilizada</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-
-        <tbody id="tablaAreasBody"></tbody>
-
-        <tfoot>
-          <tr>
-
-            <td colspan="2">
-              <strong>Superficie registrada</strong>
-            </td>
-
-            <td>
-              <strong id="totalSuperficieAreas">
-                0.00 m²
-              </strong>
-            </td>
-
-            <td></td>
-
-          </tr>
-        </tfoot>
-
-      </table>
-
-    </div>
+      + Agregar área
+    </button>
 
   </div>
 
+
+  <!-- Mensaje inicial -->
+  <div id="sinAreas" class="empty-message">
+    Aún no se han agregado áreas.
+  </div>
+
+
+  <!-- Lista de áreas -->
+  <div
+    id="contenedorTablaAreas"
+    class="table-responsive"
+    style="display:none;"
+  >
+
+    <table class="energy-table">
+
+      <thead>
+        <tr>
+          <th style="text-align:left;">Área</th>
+          <th style="width:110px;">Cantidad</th>
+          <th style="width:170px;">Superficie</th>
+          <th style="width:110px;">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody id="tablaAreasBody"></tbody>
+
+      <tfoot>
+        <tr>
+          <td colspan="2" style="text-align:right;">
+            <strong>Superficie registrada:</strong>
+          </td>
+
+          <td>
+            <strong id="totalSuperficieAreas">
+              0.00 m²
+            </strong>
+          </td>
+
+          <td></td>
+        </tr>
+      </tfoot>
+
+    </table>
+
+  </div>
+
+</div>
 
   <!-- =========================================
        C. ENVOLVENTE
@@ -1797,6 +1793,200 @@
     </div>
   </div>
 </div>
+<!-- =========================================
+     MODAL - AGREGAR ÁREA
+========================================== -->
+
+<div id="modalArea" class="modal-backdrop hidden">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+        <h3>Agregar área del establecimiento</h3>
+
+        <p style="margin-top:5px;color:#607080;font-size:13px;">
+          Seleccione el tipo de área e indique la cantidad
+          y la superficie total utilizada.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close"
+        data-close="modalArea"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="grid-2">
+
+      <!-- TIPO DE ÁREA -->
+      <div class="field full">
+
+        <label>
+          Tipo de área
+          <span class="req">*</span>
+        </label>
+
+        <select id="areaTipo">
+
+          <option value="">
+            Seleccione un área
+          </option>
+
+          <option value="ventas">
+            Salas de venta / exhibición
+          </option>
+
+          <option value="espera">
+            Salas de espera
+          </option>
+
+          <option value="administrativas">
+            Áreas administrativas / oficinas
+          </option>
+
+          <option value="atencion_publico">
+            Áreas de atención al público
+          </option>
+
+          <option value="comunes">
+            Áreas comunes
+          </option>
+
+          <option value="bodegas">
+            Bodegas / almacenes
+          </option>
+
+          <option value="cocina">
+            Cocina / preparación de alimentos
+          </option>
+
+          <option value="comedor">
+            Comedor / restaurante
+          </option>
+
+          <option value="habitaciones">
+            Habitaciones / alojamiento
+          </option>
+
+          <option value="banos">
+            Baños / vestidores
+          </option>
+
+          <option value="estacionamientos">
+            Estacionamientos
+          </option>
+
+          <option value="tecnicas">
+            Áreas técnicas / cuarto de máquinas
+          </option>
+
+          <option value="otro">
+            Otro
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- OTRO -->
+      <div
+        id="areaOtroBox"
+        class="field full hidden"
+      >
+
+        <label>
+          Especifique el área
+          <span class="req">*</span>
+        </label>
+
+        <input
+          id="areaOtro"
+          type="text"
+          placeholder="Ej. Alberca, gimnasio, laboratorio..."
+        >
+
+      </div>
+
+
+      <!-- CANTIDAD -->
+      <div class="field">
+
+        <label>
+          Cantidad
+          <span class="req">*</span>
+        </label>
+
+        <input
+          id="areaCantidad"
+          type="number"
+          min="1"
+          placeholder="Ej. 3"
+        >
+
+      </div>
+
+
+      <!-- SUPERFICIE -->
+      <div class="field">
+
+        <label>
+          Superficie total utilizada
+          <span class="req">*</span>
+        </label>
+
+        <div class="input-unit">
+
+          <input
+            id="areaSuperficie"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Ej. 450"
+          >
+
+          <span class="unit" style="font-size:13px;">
+            m²
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary"
+        data-close="modalArea"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarArea"
+      >
+        Agregar área
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const STORAGE_KEY = "encuestaEnergiaComerciosServicios_v1";
