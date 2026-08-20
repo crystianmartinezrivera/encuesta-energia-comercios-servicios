@@ -2867,6 +2867,438 @@ if(superficieTotal){
 
 }
   // ======================================================
+// PÁGINA 2 - LISTA DINÁMICA DE ÁREAS
+// ======================================================
+
+// Aquí guardamos temporalmente las áreas agregadas.
+let areasEstablecimiento = [];
+
+
+// ------------------------------------------------------
+// OBTENER NOMBRE VISIBLE DEL ÁREA
+// ------------------------------------------------------
+function obtenerNombreArea(){
+
+  const areaTipo =
+    document.getElementById("areaTipo");
+
+  const areaOtro =
+    document.getElementById("areaOtro");
+
+  if(areaTipo.value === "otro"){
+    return areaOtro.value.trim();
+  }
+
+  const opcionSeleccionada =
+    areaTipo.options[areaTipo.selectedIndex];
+
+  return opcionSeleccionada
+    ? opcionSeleccionada.text.trim()
+    : "";
+}
+
+
+// ------------------------------------------------------
+// CONVERTIR LA SUPERFICIE A m²
+// ------------------------------------------------------
+function calcularSuperficieAreaM2(valor, unidad){
+
+  const total =
+    parseFloat(
+      document.getElementById("superficieTotal").value
+    );
+
+  if(unidad === "m2"){
+    return valor;
+  }
+
+  if(
+    unidad === "porcentaje" &&
+    total > 0
+  ){
+    return total * valor / 100;
+  }
+
+  return 0;
+}
+
+
+// ------------------------------------------------------
+// DIBUJAR LAS ÁREAS EN LA TABLA
+// ------------------------------------------------------
+function renderizarAreas(){
+
+  const tbody =
+    document.getElementById("tablaAreasBody");
+
+  const contenedor =
+    document.getElementById("contenedorTablaAreas");
+
+  const sinAreas =
+    document.getElementById("sinAreas");
+
+  const totalTexto =
+    document.getElementById("totalSuperficieAreas");
+
+
+  tbody.innerHTML = "";
+
+
+  // Si todavía no hay áreas.
+  if(areasEstablecimiento.length === 0){
+
+    contenedor.style.display = "none";
+    sinAreas.style.display = "block";
+
+    totalTexto.textContent = "0.00 m²";
+
+    return;
+  }
+
+
+  // Si ya existen áreas.
+  sinAreas.style.display = "none";
+  contenedor.style.display = "block";
+
+
+  let superficieAcumulada = 0;
+
+
+  areasEstablecimiento.forEach((area, index) => {
+
+    superficieAcumulada += area.superficieM2;
+
+
+    const tr =
+      document.createElement("tr");
+
+
+    // Texto que mostraremos según la unidad capturada.
+    const superficieDeclarada =
+      area.unidad === "porcentaje"
+        ? `${area.superficieValor}%`
+        : `${area.superficieValor.toLocaleString("es-MX")} m²`;
+
+
+    tr.innerHTML = `
+      <td style="text-align:left;">
+        ${area.nombre}
+      </td>
+
+      <td>
+        ${area.cantidad}
+      </td>
+
+      <td>
+        ${superficieDeclarada}
+        ${
+          area.unidad === "porcentaje"
+            ? `<div style="font-size:11px;color:#607080;margin-top:3px;">
+                 ≈ ${area.superficieM2.toLocaleString(
+                   "es-MX",
+                   {
+                     minimumFractionDigits:2,
+                     maximumFractionDigits:2
+                   }
+                 )} m²
+               </div>`
+            : ""
+        }
+      </td>
+
+      <td>
+        <button
+          type="button"
+          class="btn-area-editar"
+          data-index="${index}"
+          title="Editar"
+        >
+          ✎
+        </button>
+
+        <button
+          type="button"
+          class="btn-area-eliminar"
+          data-index="${index}"
+          title="Eliminar"
+        >
+          🗑
+        </button>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+
+  });
+
+
+  totalTexto.textContent =
+    superficieAcumulada.toLocaleString(
+      "es-MX",
+      {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      }
+    ) + " m²";
+
+}
+
+
+
+// ------------------------------------------------------
+// LIMPIAR EL MODAL DESPUÉS DE AGREGAR
+// ------------------------------------------------------
+function limpiarModalArea(){
+
+  document.getElementById("areaTipo").value = "";
+
+  document.getElementById("areaOtro").value = "";
+
+  document
+    .getElementById("areaOtroBox")
+    .classList.add("hidden");
+
+  document.getElementById("areaCantidad").value = "";
+
+  document.getElementById("areaSuperficie").value = "";
+
+  document.getElementById("areaSuperficieUnidad").value = "m2";
+
+  actualizarUnidadArea();
+
+}
+
+
+
+// ------------------------------------------------------
+// BOTÓN "AGREGAR ÁREA"
+// ------------------------------------------------------
+const guardarArea =
+  document.getElementById("guardarArea");
+
+
+if(guardarArea){
+
+  guardarArea.addEventListener("click", function(){
+
+    const areaTipo =
+      document.getElementById("areaTipo");
+
+    const areaOtro =
+      document.getElementById("areaOtro");
+
+    const cantidad =
+      parseInt(
+        document.getElementById("areaCantidad").value
+      );
+
+    const superficieValor =
+      parseFloat(
+        document.getElementById("areaSuperficie").value
+      );
+
+    const unidad =
+      document.getElementById("areaSuperficieUnidad").value;
+
+
+    // --------------------------------------------------
+    // VALIDACIONES
+    // --------------------------------------------------
+
+    if(!areaTipo.value){
+
+      alert("Seleccione un tipo de área.");
+      return;
+
+    }
+
+
+    if(
+      areaTipo.value === "otro" &&
+      !areaOtro.value.trim()
+    ){
+
+      alert("Especifique el nombre del área.");
+      areaOtro.focus();
+      return;
+
+    }
+
+
+    if(
+      !cantidad ||
+      cantidad < 1
+    ){
+
+      alert("Ingrese una cantidad válida.");
+      return;
+
+    }
+
+
+    if(
+      !superficieValor ||
+      superficieValor <= 0
+    ){
+
+      alert("Ingrese una superficie válida.");
+      return;
+
+    }
+
+
+    if(
+      unidad === "porcentaje" &&
+      superficieValor > 100
+    ){
+
+      alert(
+        "El porcentaje del área no puede ser mayor a 100%."
+      );
+
+      return;
+
+    }
+
+
+    const superficieM2 =
+      calcularSuperficieAreaM2(
+        superficieValor,
+        unidad
+      );
+
+
+    if(
+      unidad === "porcentaje" &&
+      superficieM2 <= 0
+    ){
+
+      alert(
+        "Primero indique la superficie total del establecimiento para poder calcular el porcentaje."
+      );
+
+      return;
+
+    }
+
+
+    // --------------------------------------------------
+    // VERIFICAR SUMA DE PORCENTAJES
+    // --------------------------------------------------
+
+    if(unidad === "porcentaje"){
+
+      const porcentajeActual =
+        areasEstablecimiento
+          .filter(a => a.unidad === "porcentaje")
+          .reduce(
+            (suma, a) =>
+              suma + a.superficieValor,
+            0
+          );
+
+
+      if(
+        porcentajeActual + superficieValor > 100
+      ){
+
+        alert(
+          "La suma de las áreas registradas como porcentaje supera el 100% de la superficie del establecimiento."
+        );
+
+        return;
+
+      }
+
+    }
+
+
+    // --------------------------------------------------
+    // AGREGAR ÁREA
+    // --------------------------------------------------
+
+    const nuevaArea = {
+
+      tipo: areaTipo.value,
+
+      nombre:
+        obtenerNombreArea(),
+
+      cantidad:
+        cantidad,
+
+      superficieValor:
+        superficieValor,
+
+      unidad:
+        unidad,
+
+      superficieM2:
+        superficieM2
+
+    };
+
+
+    areasEstablecimiento.push(
+      nuevaArea
+    );
+
+
+    // Dibujamos nuevamente la tabla.
+    renderizarAreas();
+
+
+    // Limpiamos formulario.
+    limpiarModalArea();
+
+
+    // Cerramos modal.
+    document
+      .getElementById("modalArea")
+      .classList.add("hidden");
+
+  });
+
+}
+
+
+
+// ------------------------------------------------------
+// ELIMINAR ÁREA
+// ------------------------------------------------------
+document.addEventListener("click", function(e){
+
+  const boton =
+    e.target.closest(".btn-area-eliminar");
+
+  if(!boton){
+    return;
+  }
+
+
+  const index =
+    Number(
+      boton.dataset.index
+    );
+
+
+  if(
+    confirm(
+      "¿Desea eliminar esta área?"
+    )
+  ){
+
+    areasEstablecimiento.splice(
+      index,
+      1
+    );
+
+    renderizarAreas();
+
+  }
+
+});
+  // ======================================================
   // INICIALIZACIÓN
   // ======================================================
   // Carga las listas de años.
