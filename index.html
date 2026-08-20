@@ -2629,7 +2629,87 @@ document.addEventListener("change", function(e){
   }
 
 });
- 
+  
+ // ======================================================
+// PÁGINA 2 - MODAL PARA AGREGAR ÁREAS
+// ======================================================
+
+// Botón "+ Agregar área"
+const btnAgregarArea =
+  document.getElementById("btnAgregarArea");
+
+// Ventana emergente
+const modalArea =
+  document.getElementById("modalArea");
+
+
+// ------------------------------------------------------
+// ABRIR MODAL
+// ------------------------------------------------------
+if(btnAgregarArea && modalArea){
+
+  btnAgregarArea.addEventListener("click", function(){
+
+    modalArea.classList.remove("hidden");
+
+  });
+
+}
+
+
+// ------------------------------------------------------
+// CERRAR MODAL
+// ------------------------------------------------------
+// Funciona con la X y con el botón Cancelar,
+// porque ambos tienen data-close="modalArea".
+
+document.addEventListener("click", function(e){
+
+  const botonCerrar =
+    e.target.closest('[data-close="modalArea"]');
+
+  if(botonCerrar){
+
+    modalArea.classList.add("hidden");
+
+  }
+
+});
+
+
+// ------------------------------------------------------
+// SI SELECCIONA "OTRO" TIPO DE ÁREA
+// ------------------------------------------------------
+
+document.addEventListener("change", function(e){
+
+  if(e.target.id === "areaTipo"){
+
+    const areaOtroBox =
+      document.getElementById("areaOtroBox");
+
+    const areaOtro =
+      document.getElementById("areaOtro");
+
+    if(e.target.value === "otro"){
+
+      areaOtroBox.classList.remove("hidden");
+
+      setTimeout(() => {
+        areaOtro.focus();
+      }, 50);
+
+    }else{
+
+      areaOtroBox.classList.add("hidden");
+      areaOtro.value = "";
+
+    }
+
+  }
+
+});
+  
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
