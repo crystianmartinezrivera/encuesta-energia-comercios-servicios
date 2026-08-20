@@ -640,72 +640,61 @@
   padding:7px 10px;
   font-size:12px;
 }
-    <div class="fisicas-layout">
+    /* =====================================================
+   CARACTERÍSTICAS FÍSICAS - DISTRIBUCIÓN HORIZONTAL
+   ===================================================== */
 
-  <!-- TIPO DE ESPACIO -->
-  <div class="field">
-    <label for="tipoEdificacion">
-      ¿En qué tipo de espacio o régimen de uso opera el establecimiento?
-      <span class="req">*</span>
-    </label>
+/* Columna izquierda + columna derecha */
+.fisicas-layout{
+    display:grid;
+    grid-template-columns: 1.35fr 1.15fr;
+    gap:28px;
+    align-items:start;
+}
 
-    <select id="tipoEdificacion" required>
-      <!-- tus opciones actuales -->
-    </select>
+/* Los dos campos de la derecha quedan horizontales */
+.fisicas-derecha{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:18px;
+    align-items:start;
+}
 
-    <div
-      id="tipoEdificacionOtroBox"
-      class="field-extra"
-      style="display:none;"
-    >
-      <input
-        id="tipoEdificacionOtro"
-        type="text"
-        placeholder="Especifique"
-      >
-    </div>
-  </div>
+/* Cada campo puede ocupar correctamente su columna */
+.fisicas-derecha .field{
+    min-width:0;
+}
 
+/* El conjunto input + unidad usa todo su espacio disponible */
+.fisicas-derecha .input-unit{
+    width:100%;
+}
 
-  <!-- SUPERFICIE -->
-  <div class="field">
-    <label for="superficieTotal">
-      Superficie utilizada por el establecimiento
-      <span class="req">*</span>
-    </label>
+/* El input aprovecha el espacio restante */
+.fisicas-derecha .input-unit input{
+    min-width:0;
+    width:100%;
+}
 
-    <div class="input-unit">
-      <input
-        id="superficieTotal"
-        type="number"
-        min="1"
-        required
-      >
-      <span class="unit">m²</span>
-    </div>
-  </div>
+/* Responsive */
+@media (max-width:900px){
 
+    .fisicas-layout{
+        grid-template-columns:1fr;
+    }
 
-  <!-- NÚMERO DE NIVELES -->
-  <div class="field">
-    <label for="numeroNiveles">
-      Número de pisos o niveles
-      <span class="req">*</span>
-    </label>
+    .fisicas-derecha{
+        grid-template-columns:1fr 1fr;
+    }
+}
 
-    <div class="input-unit">
-      <input
-        id="numeroNiveles"
-        type="number"
-        min="1"
-        required
-      >
-      <span class="unit">niveles</span>
-    </div>
-  </div>
+@media (max-width:600px){
 
-</div>
-  </style>
+    .fisicas-derecha{
+        grid-template-columns:1fr;
+    }
+}
+</style>
 </head>
 
 <body>
