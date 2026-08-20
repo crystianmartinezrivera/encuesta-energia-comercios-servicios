@@ -576,6 +576,41 @@
         font-size:24px;
       }
     }
+    /* =========================================
+   CARACTERÍSTICAS FÍSICAS - PÁGINA 2
+========================================= */
+
+.fisicas-layout{
+  display:grid;
+  grid-template-columns:1.15fr 1fr;
+  gap:28px;
+  align-items:start;
+}
+
+.fisicas-derecha{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.fisicas-layout .field{
+  min-width:0;
+}
+
+.fisicas-layout select,
+.fisicas-layout input{
+  width:100%;
+}
+
+.field-extra{
+  margin-top:12px;
+}
+
+@media (max-width:900px){
+  .fisicas-layout{
+    grid-template-columns:1fr;
+  }
+}
   </style>
 </head>
 
@@ -964,46 +999,7 @@
   </div>
 
 </div>
-  /* =========================================
-   CARACTERÍSTICAS FÍSICAS - PÁGINA 2
-========================================= */
-
-.fisicas-layout{
-  display:grid;
-  grid-template-columns:1.15fr 1fr;
-  gap:28px;
-  align-items:start;
-}
-
-.fisicas-derecha{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-
-.fisicas-layout .field{
-  min-width:0;
-}
-
-.fisicas-layout select,
-.fisicas-layout input{
-  width:100%;
-}
-
-.field-extra{
-  margin-top:12px;
-}
-
-
-/* Pantallas pequeñas */
-@media (max-width:900px){
-
-  .fisicas-layout{
-    grid-template-columns:1fr;
-  }
-
-}
-
+  
   <!-- =========================================
        B. ÁREAS DEL ESTABLECIMIENTO
   ========================================== -->
