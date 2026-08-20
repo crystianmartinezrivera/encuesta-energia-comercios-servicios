@@ -811,10 +811,9 @@
 .envolvente-grid{
     display:grid;
     grid-template-columns:
-        minmax(230px, 0.95fr)
+        minmax(240px, 0.95fr)
         minmax(300px, 1.25fr)
-        minmax(230px, 0.95fr);
-
+        minmax(240px, 0.95fr);
     gap:22px;
     align-items:start;
 }
@@ -865,7 +864,16 @@
         min-height:0;
     }
 }
+.radio-inline label{
+  white-space:nowrap;
+}
 
+.radio-inline{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  flex-wrap:nowrap;
+}
 </style>
 </head>
 
@@ -1375,12 +1383,16 @@
     <select id="materialMuros">
       <option value="">Seleccione una opción</option>
       <option value="hormigon">Hormigón / concreto</option>
-      <option value="adobe">Adobe</option>
+      <option value="block_concreto">Block / concreto</option>
+      <option value="ladrillo_piedra">Ladrillo / tabique / piedra</option>
+       <option value="adobe">Adobe</option>
+      <option value="panel_prefabricado">Panel prefabricado</option>
       <option value="metal">Metal</option>
-      <option value="vidrio">Vidrio</option>
+      <option value="vidrio">Vidrio predominante</option>
+      <option value="madera">Madera</option>
       <option value="otro">Otro</option>
       <option value="ns">No sabe</option>
-    </select>
+      </select>
   </div>
 
 
