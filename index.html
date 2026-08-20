@@ -3492,6 +3492,70 @@ document.addEventListener("click", function(e){
 
 });
   // ======================================================
+// PÁGINA 2 - "OTRO" EN CARACTERÍSTICAS DE LA ENVOLVENTE
+// ======================================================
+
+document.addEventListener("change", function(e){
+
+  // ----------------------------------------------------
+  // MATERIAL DE LOS MUROS
+  // ----------------------------------------------------
+  if(e.target.id === "materialMuros"){
+
+    const caja =
+      document.getElementById("materialMurosOtroBox");
+
+    const campo =
+      document.getElementById("materialMurosOtro");
+
+    if(e.target.value === "otro"){
+
+      caja.classList.remove("hidden");
+
+      setTimeout(() => {
+        campo.focus();
+      }, 50);
+
+    }else{
+
+      caja.classList.add("hidden");
+      campo.value = "";
+
+    }
+
+  }
+
+
+  // ----------------------------------------------------
+  // TIPO DE VENTANAS
+  // ----------------------------------------------------
+  if(e.target.id === "tipoVentanas"){
+
+    const caja =
+      document.getElementById("tipoVentanasOtroBox");
+
+    const campo =
+      document.getElementById("tipoVentanasOtro");
+
+    if(e.target.value === "otro"){
+
+      caja.classList.remove("hidden");
+
+      setTimeout(() => {
+        campo.focus();
+      }, 50);
+
+    }else{
+
+      caja.classList.add("hidden");
+      campo.value = "";
+
+    }
+
+  }
+
+});
+  // ======================================================
   // INICIALIZACIÓN
   // ======================================================
   // Carga las listas de años.
