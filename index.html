@@ -854,45 +854,69 @@
 </h1>
 
 <div class="energy-page">
+<!-- =========================================
+     A. CARACTERÍSTICAS FÍSICAS
+========================================== -->
 
-  <!-- =========================================
-       A. CARACTERÍSTICAS FÍSICAS
-  ========================================== -->
-  <div class="energy-card">
-    <h3>A. Características físicas del establecimiento</h3>
+<div class="energy-card">
 
-    <div class="grid-2">
+  <h3>A. Características físicas del establecimiento</h3>
 
-      <div class="field">
-        <label>
-          ¿En qué tipo de edificación se encuentra el establecimiento?
-          <span class="req">*</span>
-        </label>
+  <div class="fisicas-layout">
 
-        <select id="tipoEdificacion">
-          <option value="">Seleccione una opción</option>
-          <option value="propia">Edificación propia</option>
-          <option value="rentada">Edificación rentada</option>
-          <option value="compartida">
-            Edificación con renta compartida con otros negocios
-          </option>
-          <option value="otro">Otro</option>
-        </select>
-        <!-- Este campo está oculto normalmente.
-             Aparece cuando se selecciona "Otro". -->
-    <div
-    id="tipoEdificacionOtroBox"
-    class="field-extra"
-    style="display:none;"
->
-    <input
-        id="tipoEdificacionOtro"
-        type="text"
-        placeholder="Especifique el tipo de edificación"
-    >
+    <!-- COLUMNA IZQUIERDA -->
+    <div class="field">
+
+      <label>
+        ¿En qué tipo de espacio o régimen de uso opera el establecimiento?
+        <span class="req">*</span>
+      </label>
+
+      <select id="tipoEdificacion">
+        <option value="">Seleccione una opción</option>
+
+        <option value="propia_independiente">
+          Edificación propia e independiente
+        </option>
+
+        <option value="propia_compartida">
+          Edificación propia pero compartida con otros negocios
+        </option>
+
+        <option value="rentada_exclusiva">
+          Edificación rentada de uso exclusivo
+        </option>
+
+        <option value="rentada_compartida">
+          Edificación rentada y compartida con otros negocios
+        </option>
+
+        <option value="otro">
+          Otro
+        </option>
+      </select>
+
+      <!-- Solo aparece si selecciona Otro -->
+      <div
+        id="tipoEdificacionOtroBox"
+        class="field-extra"
+        style="display:none;"
+      >
+        <input
+          id="tipoEdificacionOtro"
+          type="text"
+          placeholder="Especifique el tipo de edificación"
+        >
       </div>
 
+    </div>
+
+
+    <!-- COLUMNA DERECHA -->
+    <div class="fisicas-derecha">
+
       <div class="field">
+
         <label>
           Superficie utilizada por el establecimiento
           <span class="req">*</span>
@@ -905,11 +929,17 @@
             min="1"
             step="0.01"
           >
-          <span class="unit" style="font-size:13px;">m²</span>
+
+          <span class="unit" style="font-size:13px;">
+            m²
+          </span>
         </div>
+
       </div>
 
+
       <div class="field">
+
         <label>
           Número de pisos o niveles
           <span class="req">*</span>
@@ -921,13 +951,58 @@
             type="number"
             min="1"
           >
-          <span class="unit" style="font-size:13px;">niveles</span>
+
+          <span class="unit" style="font-size:13px;">
+            niveles
+          </span>
         </div>
+
       </div>
 
     </div>
+
   </div>
 
+</div>
+  /* =========================================
+   CARACTERÍSTICAS FÍSICAS - PÁGINA 2
+========================================= */
+
+.fisicas-layout{
+  display:grid;
+  grid-template-columns:1.15fr 1fr;
+  gap:28px;
+  align-items:start;
+}
+
+.fisicas-derecha{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.fisicas-layout .field{
+  min-width:0;
+}
+
+.fisicas-layout select,
+.fisicas-layout input{
+  width:100%;
+}
+
+.field-extra{
+  margin-top:12px;
+}
+
+
+/* Pantallas pequeñas */
+@media (max-width:900px){
+
+  .fisicas-layout{
+    grid-template-columns:1fr;
+  }
+
+}
 
   <!-- =========================================
        B. ÁREAS DEL ESTABLECIMIENTO
