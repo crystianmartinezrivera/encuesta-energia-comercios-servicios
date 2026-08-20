@@ -874,6 +874,27 @@
   gap:18px;
   flex-wrap:nowrap;
 }
+    .envolvente-grid .field > label{
+    display:block;
+    height:34px;
+    min-height:34px;
+    margin-bottom:7px;
+    line-height:17px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.radio-inline{
+    height:44px;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:nowrap;
+}
+
+.radio-inline label{
+    white-space:nowrap;
+}
 </style>
 </head>
 
@@ -1376,8 +1397,8 @@
   <!-- MUROS -->
   <div class="field envolvente-muros">
     <label>
-      Material predominante de los muros exteriores
-      <span class="req">*</span>
+      Material predominante <br>
+      de los muros exteriores<span class="req">*</span>
     </label>
 
     <select id="materialMuros">
@@ -1400,8 +1421,8 @@
  <div class="field envolvente-aislamiento">
 
   <label>
-    ¿Los muros exteriores cuentan con aislamiento térmico?
-    <span class="req">*</span>
+    ¿Los muros exteriores cuentan <br>
+    con aislamiento térmico? <span class="req">*</span>
   </label>
 
   <div class="radio-inline">
@@ -1446,8 +1467,8 @@
   <!-- VENTANAS -->
   <div class="field envolvente-ventanas">
     <label>
-      Tipo predominante de ventanas
-      <span class="req">*</span>
+      Tipo predominante <br> 
+      de ventanas <span class="req">*</span>
     </label>
 
     <select id="tipoVentanas">
