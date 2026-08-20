@@ -640,6 +640,71 @@
   padding:7px 10px;
   font-size:12px;
 }
+    <div class="fisicas-layout">
+
+  <!-- TIPO DE ESPACIO -->
+  <div class="field">
+    <label for="tipoEdificacion">
+      ¿En qué tipo de espacio o régimen de uso opera el establecimiento?
+      <span class="req">*</span>
+    </label>
+
+    <select id="tipoEdificacion" required>
+      <!-- tus opciones actuales -->
+    </select>
+
+    <div
+      id="tipoEdificacionOtroBox"
+      class="field-extra"
+      style="display:none;"
+    >
+      <input
+        id="tipoEdificacionOtro"
+        type="text"
+        placeholder="Especifique"
+      >
+    </div>
+  </div>
+
+
+  <!-- SUPERFICIE -->
+  <div class="field">
+    <label for="superficieTotal">
+      Superficie utilizada por el establecimiento
+      <span class="req">*</span>
+    </label>
+
+    <div class="input-unit">
+      <input
+        id="superficieTotal"
+        type="number"
+        min="1"
+        required
+      >
+      <span class="unit">m²</span>
+    </div>
+  </div>
+
+
+  <!-- NÚMERO DE NIVELES -->
+  <div class="field">
+    <label for="numeroNiveles">
+      Número de pisos o niveles
+      <span class="req">*</span>
+    </label>
+
+    <div class="input-unit">
+      <input
+        id="numeroNiveles"
+        type="number"
+        min="1"
+        required
+      >
+      <span class="unit">niveles</span>
+    </div>
+  </div>
+
+</div>
   </style>
 </head>
 
