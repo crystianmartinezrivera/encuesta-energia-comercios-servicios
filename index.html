@@ -189,7 +189,7 @@
     /* APP */
     .app-shell{
       display:grid;
-      grid-template-columns:220px minmax(0,1fr) 210px;
+      grid-template-columns:200px minmax(0,1fr) 190px;
       gap:24px;
       max-width:1540px;
       margin:auto;
@@ -878,6 +878,18 @@
           </option>
           <option value="otro">Otro</option>
         </select>
+        <!-- Este campo está oculto normalmente.
+             Aparece cuando se selecciona "Otro". -->
+    <div
+    id="tipoEdificacionOtroBox"
+    class="field-extra"
+    style="display:none;"
+>
+    <input
+        id="tipoEdificacionOtro"
+        type="text"
+        placeholder="Especifique el tipo de edificación"
+    >
       </div>
 
       <div class="field">
@@ -2209,39 +2221,41 @@ async function guardarEncuestaSupabase(){
       guardarLocal(false);
     }
   });
-
-  // ======================================================
+// ======================================================
 // PÁGINA 2 - TIPO DE EDIFICACIÓN
 // ======================================================
+// Si el usuario selecciona "Otro", aparece el campo
+// para especificar el tipo de edificación.
 
-const tipoEdificacion =
-  document.getElementById("tipoEdificacion");
+document.addEventListener("change", function(e){
 
-const tipoEdificacionOtroBox =
-  document.getElementById("tipoEdificacionOtroBox");
+  if(e.target.id === "tipoEdificacion"){
 
-const tipoEdificacionOtro =
-  document.getElementById("tipoEdificacionOtro");
+    const cajaOtro =
+      document.getElementById("tipoEdificacionOtroBox");
 
-if(tipoEdificacion){
+    const campoOtro =
+      document.getElementById("tipoEdificacionOtro");
 
-  tipoEdificacion.addEventListener("change", function(){
+    if(e.target.value === "otro"){
 
-    if(this.value === "otro"){
+      cajaOtro.style.display = "block";
 
-      tipoEdificacionOtroBox.style.display = "block";
-      tipoEdificacionOtro.focus();
+      setTimeout(() => {
+        campoOtro.focus();
+      }, 50);
 
     } else {
 
-      tipoEdificacionOtroBox.style.display = "none";
-      tipoEdificacionOtro.value = "";
+      cajaOtro.style.display = "none";
+      campoOtro.value = "";
 
     }
 
-  });
+  }
 
-}
+});
+ 
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
