@@ -2219,7 +2219,130 @@
   </div>
 
 </div>
-  
+<!-- =========================================
+     MODAL - AISLAMIENTO TÉRMICO
+========================================== -->
+
+<div id="modalAislamiento" class="modal-backdrop hidden">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+        <h3>Tipo de aislamiento térmico</h3>
+
+        <p style="margin-top:5px;color:#607080;font-size:13px;">
+          Seleccione el tipo predominante de aislamiento térmico
+          presente en los muros exteriores.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close"
+        data-close="modalAislamiento"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="field">
+
+      <label>
+        Tipo de aislamiento
+        <span class="req">*</span>
+      </label>
+
+      <select id="tipoAislamiento">
+        <option value="">Seleccione una opción</option>
+
+        <option value="poliestireno_expandido">
+          Poliestireno expandido (EPS)
+        </option>
+
+        <option value="poliestireno_extruido">
+          Poliestireno extruido (XPS)
+        </option>
+
+        <option value="poliuretano">
+          Poliuretano
+        </option>
+
+        <option value="lana_mineral">
+          Lana mineral
+        </option>
+
+        <option value="fibra_vidrio">
+          Fibra de vidrio
+        </option>
+
+        <option value="panel_aislado">
+          Panel aislado / panel sándwich
+        </option>
+
+        <option value="celulosa">
+          Celulosa
+        </option>
+
+        <option value="corcho">
+          Corcho
+        </option>
+
+        <option value="otro">
+          Otro
+        </option>
+
+        <option value="ns">
+          No sabe
+        </option>
+      </select>
+
+    </div>
+
+
+    <!-- SOLO SI SELECCIONA OTRO -->
+    <div
+      id="tipoAislamientoOtroBox"
+      class="field hidden"
+      style="margin-top:14px;"
+    >
+      <label>
+        Especifique el tipo de aislamiento
+      </label>
+
+      <input
+        id="tipoAislamientoOtro"
+        type="text"
+        placeholder="Especifique"
+      >
+    </div>
+
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary"
+        data-close="modalAislamiento"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarAislamiento"
+      >
+        Guardar
+      </button>
+
+    </div>
+
+  </div>
+
+</div>  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const STORAGE_KEY = "encuestaEnergiaComerciosServicios_v1";
@@ -3554,6 +3677,174 @@ document.addEventListener("change", function(e){
   }
 
 });
+  // ======================================================
+// PÁGINA 2 - AISLAMIENTO TÉRMICO
+// ======================================================
+
+const modalAislamiento =
+  document.getElementById("modalAislamiento");
+
+
+// ------------------------------------------------------
+// ABRIR MODAL CUANDO RESPONDE "SÍ"
+// ------------------------------------------------------
+document.addEventListener("change", function(e){
+
+  if(
+    e.target.name === "aislamiento" &&
+    e.target.value === "si"
+  ){
+
+    modalAislamiento.classList.remove("hidden");
+
+  }
+
+
+  // Si cambia a No o No sabe,
+  // limpiamos el aislamiento registrado.
+  if(
+    e.target.name === "aislamiento" &&
+    (e.target.value === "no" || e.target.value === "ns")
+  ){
+
+    document.getElementById("tipoAislamiento").value = "";
+
+    document.getElementById("tipoAislamientoOtro").value = "";
+
+    document
+      .getElementById("tipoAislamientoOtroBox")
+      .classList.add("hidden");
+
+    const resumen =
+      document.getElementById("resumenAislamiento");
+
+    resumen.style.display = "none";
+    resumen.textContent = "";
+
+  }
+
+});
+
+// ------------------------------------------------------
+// SI SELECCIONA "OTRO" EN EL MODAL
+// ------------------------------------------------------
+document.addEventListener("change", function(e){
+
+  if(e.target.id === "tipoAislamiento"){
+
+    const caja =
+      document.getElementById("tipoAislamientoOtroBox");
+
+    const campo =
+      document.getElementById("tipoAislamientoOtro");
+
+    if(e.target.value === "otro"){
+
+      caja.classList.remove("hidden");
+
+      setTimeout(() => {
+        campo.focus();
+      }, 50);
+
+    }else{
+
+      caja.classList.add("hidden");
+      campo.value = "";
+
+    }
+
+  }
+
+});
+
+
+// ------------------------------------------------------
+// CERRAR MODAL
+// ------------------------------------------------------
+document.addEventListener("click", function(e){
+
+  const cerrar =
+    e.target.closest('[data-close="modalAislamiento"]');
+
+  if(cerrar){
+
+    modalAislamiento.classList.add("hidden");
+
+  }
+
+});
+
+
+// ------------------------------------------------------
+// GUARDAR AISLAMIENTO
+// ------------------------------------------------------
+const guardarAislamiento =
+  document.getElementById("guardarAislamiento");
+
+
+if(guardarAislamiento){
+
+  guardarAislamiento.addEventListener("click", function(){
+
+    const select =
+      document.getElementById("tipoAislamiento");
+
+    const otro =
+      document.getElementById("tipoAislamientoOtro");
+
+    const resumen =
+      document.getElementById("resumenAislamiento");
+
+
+    if(!select.value){
+
+      alert("Seleccione un tipo de aislamiento.");
+      return;
+
+    }
+
+
+    if(
+      select.value === "otro" &&
+      !otro.value.trim()
+    ){
+
+      alert("Especifique el tipo de aislamiento.");
+      otro.focus();
+      return;
+
+    }
+
+
+    let nombre;
+
+
+    if(select.value === "otro"){
+
+      nombre = otro.value.trim();
+
+    }else{
+
+      nombre =
+        select.options[
+          select.selectedIndex
+        ].text.trim();
+
+    }
+
+
+    resumen.textContent =
+      "Aislamiento registrado: " + nombre;
+
+    resumen.style.display = "block";
+
+
+    modalAislamiento.classList.add("hidden");
+
+  });
+
+}
+  
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
