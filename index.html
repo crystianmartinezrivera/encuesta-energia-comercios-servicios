@@ -1505,8 +1505,9 @@
     type="text"
     placeholder="Especifique el tipo de ventana"
   >
+  </div>
  </div>
-</div>
+ </div>
 </div>
   <!-- =========================================
        D. ENERGÉTICOS UTILIZADOS
@@ -3988,7 +3989,42 @@ document.addEventListener("change", function(e){
   }
 
 });
+// ======================================================
+// D. ENERGÉTICOS - ABRIR / CERRAR MODAL
+// ======================================================
 
+const btnAgregarEnergetico =
+  document.getElementById("btnAgregarEnergetico");
+
+const modalEnergetico =
+  document.getElementById("modalEnergetico");
+
+
+// Abrir modal
+if(btnAgregarEnergetico && modalEnergetico){
+
+  btnAgregarEnergetico.addEventListener("click", function(){
+
+    modalEnergetico.classList.remove("hidden");
+
+  });
+
+}
+
+
+// Cerrar modal con X o Cancelar
+document.addEventListener("click", function(e){
+
+  const cerrar =
+    e.target.closest('[data-close="modalEnergetico"]');
+
+  if(cerrar && modalEnergetico){
+
+    modalEnergetico.classList.add("hidden");
+
+  }
+
+});
   
   // ======================================================
   // INICIALIZACIÓN
