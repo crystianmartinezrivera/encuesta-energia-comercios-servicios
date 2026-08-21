@@ -1513,97 +1513,58 @@
   ========================================== -->
   <div class="energy-card energy-subsection">
 
+  <div class="card-title-row">
+
     <h3 class="energy-subsection-title">
       D. Energéticos utilizados
     </h3>
 
-    <p class="helper-text">
-      Seleccione todos los energéticos que utiliza actualmente
-      el establecimiento.
-    </p>
-
-
-    <div class="energy-check-grid">
-
-      <label>
-        <input type="checkbox" name="energetico" value="electricidad">
-        Electricidad de la red
-      </label>
-
-      <label>
-        <input type="checkbox" name="energetico" value="gas_natural">
-        Gas natural
-      </label>
-
-      <label>
-        <input type="checkbox" name="energetico" value="glp_tanque">
-        GLP – tanque estacionario
-      </label>
-
-      <label>
-        <input type="checkbox" name="energetico" value="glp_cilindro">
-        GLP – cilindro
-      </label>
-
-      <label>
-        <input type="checkbox" name="energetico" value="diesel">
-        Diésel
-      </label>
-
-      <label>
-        <input type="checkbox" name="energetico" value="gasolina">
-        Gasolina
-      </label>
-
-      <label>
-        <input type="checkbox" name="energetico" value="combustoleo">
-        Combustóleo
-      </label>
-
-      <label>
-        <input type="checkbox" name="energetico" value="biomasa">
-        Leña / biomasa
-      </label>
-
-      <label>
-        <input type="checkbox" name="energetico" value="carbon">
-        Carbón
-      </label>
-
-      <label>
-        <input type="checkbox" name="energetico" value="energia_termica">
-        Energía térmica adquirida
-      </label>
-
-      <label>
-        <input
-          id="energeticoOtroCheck"
-          type="checkbox"
-          name="energetico"
-          value="otro"
-        >
-        Otro
-      </label>
-
-    </div>
-
-
-    <div
-      id="energeticoOtroBox"
-      class="field"
-      style="display:none; margin-top:16px;"
+    <button
+      type="button"
+      id="btnAgregarEnergetico"
+      class="secondary btn-agregar-area"
     >
-      <label>Especifique el otro energético</label>
-
-      <input
-        id="energeticoOtro"
-        type="text"
-        placeholder="Especifique"
-      >
-    </div>
+      + Agregar energético
+    </button>
 
   </div>
 
+  <p class="helper-text">
+    Agregue únicamente los energéticos que utiliza actualmente
+    el establecimiento.
+  </p>
+
+  <div id="sinEnergeticos" class="empty-message">
+    Aún no se han agregado energéticos.
+  </div>
+
+  <div
+    id="contenedorTablaEnergeticos"
+    class="table-responsive"
+    style="display:none;"
+  >
+
+    <table class="energy-table">
+
+      <thead>
+        <tr>
+          <th style="text-align:left;">
+            Energético
+          </th>
+
+          <th style="width:120px;">
+            Acciones
+          </th>
+        </tr>
+      </thead>
+
+      <tbody id="tablaEnergeticosBody"></tbody>
+
+    </table>
+
+  </div>
+
+</div>
 
   <!-- =========================================
        E. GENERACIÓN PROPIA
