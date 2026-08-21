@@ -2467,6 +2467,299 @@
   </div>
 
 </div>
+
+<!-- =========================================
+     MODAL - GENERACIÓN PROPIA
+========================================== -->
+
+<div id="modalGeneracion" class="modal-backdrop hidden">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+        <h3>Generación propia para autoconsumo</h3>
+
+        <p style="margin-top:5px;color:#607080;font-size:13px;">
+          Indique las características principales del sistema
+          de generación utilizado en el establecimiento.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close"
+        data-close="modalGeneracion"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Tipo de generación
+        <span class="req">*</span>
+      </label>
+
+      <select id="tipoGeneracion">
+
+        <option value="">Seleccione una opción</option>
+
+        <option value="fotovoltaica">
+          Solar fotovoltaica
+        </option>
+
+        <option value="cogeneracion">
+          Cogeneración
+        </option>
+
+        <option value="eolica">
+          Eólica
+        </option>
+
+        <option value="biomasa">
+          Biomasa / biogás
+        </option>
+
+        <option value="generador_gas">
+          Generador a gas
+        </option>
+
+        <option value="generador_diesel">
+          Generador a diésel
+        </option>
+
+        <option value="otro">
+          Otro
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- OTRO -->
+    <div
+      id="tipoGeneracionOtroBox"
+      class="field hidden"
+      style="margin-top:14px;"
+    >
+
+      <label>
+        Especifique el tipo de generación
+        <span class="req">*</span>
+      </label>
+
+      <input
+        id="tipoGeneracionOtro"
+        type="text"
+        placeholder="Especifique"
+      >
+
+    </div>
+
+
+    <!-- CAPACIDAD -->
+    <div class="field" style="margin-top:14px;">
+
+      <label>
+        Capacidad instalada
+      </label>
+
+      <div class="input-unit">
+
+        <input
+          id="capacidadGeneracion"
+          type="number"
+          min="0"
+          step="0.01"
+        >
+
+        <select id="unidadGeneracion">
+          <option value="kW">kW</option>
+          <option value="MW">MW</option>
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary"
+        data-close="modalGeneracion"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarGeneracion"
+      >
+        Guardar
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+  <!-- =========================================
+     MODAL - PLANTA DE EMERGENCIA
+========================================== -->
+
+<div id="modalPlanta" class="modal-backdrop hidden">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+        <h3>Planta de emergencia o respaldo</h3>
+
+        <p style="margin-top:5px;color:#607080;font-size:13px;">
+          Indique las características principales de la planta
+          eléctrica de emergencia o respaldo.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close"
+        data-close="modalPlanta"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Energético utilizado
+        <span class="req">*</span>
+      </label>
+
+      <select id="combustiblePlanta">
+
+        <option value="">Seleccione una opción</option>
+
+        <option value="diesel">Diésel</option>
+        <option value="gas_natural">Gas natural</option>
+        <option value="glp">GLP</option>
+        <option value="gasolina">Gasolina</option>
+        <option value="otro">Otro</option>
+
+      </select>
+
+    </div>
+
+
+    <!-- OTRO -->
+    <div
+      id="combustiblePlantaOtroBox"
+      class="field hidden"
+      style="margin-top:14px;"
+    >
+
+      <label>
+        Especifique el energético
+        <span class="req">*</span>
+      </label>
+
+      <input
+        id="combustiblePlantaOtro"
+        type="text"
+        placeholder="Especifique"
+      >
+
+    </div>
+
+
+    <!-- CAPACIDAD -->
+    <div class="field" style="margin-top:14px;">
+
+      <label>
+        Capacidad de la planta
+      </label>
+
+      <div class="input-unit">
+
+        <input
+          id="capacidadPlanta"
+          type="number"
+          min="0"
+          step="0.01"
+        >
+
+        <select id="unidadPlanta">
+          <option value="kW">kW</option>
+          <option value="MW">MW</option>
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <!-- HORAS -->
+    <div class="field" style="margin-top:14px;">
+
+      <label>
+        Horas aproximadas de operación al año
+      </label>
+
+      <div class="input-unit">
+
+        <input
+          id="horasPlanta"
+          type="number"
+          min="0"
+          step="1"
+        >
+
+        <span class="unit">
+          h/año
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary"
+        data-close="modalPlanta"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarPlanta"
+      >
+        Guardar
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+  
         
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
