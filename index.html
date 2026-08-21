@@ -4025,6 +4025,528 @@ document.addEventListener("click", function(e){
   }
 
 });
+  // ======================================================
+// D. ENERGÉTICOS UTILIZADOS
+// ======================================================
+
+// Lista de energéticos agregados por el establecimiento.
+let energeticosEstablecimiento = [];
+
+
+// ======================================================
+// 1. ELEMENTOS PRINCIPALES
+// ======================================================
+
+const btnAgregarEnergetico =
+  document.getElementById("btnAgregarEnergetico");
+
+const modalEnergetico =
+  document.getElementById("modalEnergetico");
+
+
+// ======================================================
+// 2. ABRIR MODAL
+// ======================================================
+
+if(btnAgregarEnergetico && modalEnergetico){
+
+  btnAgregarEnergetico.addEventListener("click", function(){
+
+    // Reinicia el selector cada vez que abre.
+    const select =
+      document.getElementById("energeticoTipo");
+
+    const otroCampo =
+      document.getElementById("energeticoOtroModal");
+
+    const otroBox =
+      document.getElementById("energeticoOtroModalBox");
+
+
+    if(select){
+      select.value = "";
+    }
+
+    if(otroCampo){
+      otroCampo.value = "";
+    }
+
+    if(otroBox){
+      otroBox.classList.add("hidden");
+    }
+
+
+    // Actualiza cuáles energéticos ya fueron utilizados.
+    actualizarOpcionesEnergeticos();
+
+
+    // Abre modal.
+    modalEnergetico.classList.remove("hidden");
+
+  });
+
+}
+
+
+// ======================================================
+// 3. CERRAR MODAL
+// ======================================================
+
+document.addEventListener("click", function(e){
+
+  const cerrar =
+    e.target.closest(
+      '[data-close="modalEnergetico"]'
+    );
+
+  if(cerrar && modalEnergetico){
+
+    modalEnergetico.classList.add("hidden");
+
+  }
+
+});
+
+
+// ======================================================
+// 4. MOSTRAR CAMPO CUANDO SELECCIONA "OTRO"
+// ======================================================
+
+document.addEventListener("change", function(e){
+
+  if(e.target.id !== "energeticoTipo"){
+    return;
+  }
+
+
+  const otroBox =
+    document.getElementById("energeticoOtroModalBox");
+
+  const otroCampo =
+    document.getElementById("energeticoOtroModal");
+
+
+  if(e.target.value === "otro"){
+
+    if(otroBox){
+      otroBox.classList.remove("hidden");
+    }
+
+    if(otroCampo){
+
+      setTimeout(function(){
+        otroCampo.focus();
+      }, 50);
+
+    }
+
+  }else{
+
+    if(otroBox){
+      otroBox.classList.add("hidden");
+    }
+
+    if(otroCampo){
+      otroCampo.value = "";
+    }
+
+  }
+
+});
+
+
+// ======================================================
+// 5. ACTUALIZAR OPCIONES DISPONIBLES
+// ======================================================
+
+function actualizarOpcionesEnergeticos(){
+
+  const select =
+    document.getElementById("energeticoTipo");
+
+  if(!select){
+    return;
+  }
+
+
+  Array.from(select.options).forEach(function(option){
+
+    // Estas dos opciones siempre permanecen disponibles.
+    if(
+      option.value === "" ||
+      option.value === "otro"
+    ){
+
+      option.disabled = false;
+      return;
+
+    }
+
+
+    // Busca si ya fue agregado.
+    const yaExiste =
+      energeticosEstablecimiento.some(
+        function(energetico){
+
+          return energetico.codigo === option.value;
+
+        }
+      );
+
+
+    // Si ya existe, queda deshabilitado.
+    option.disabled = yaExiste;
+
+  });
+
+}
+
+
+// ======================================================
+// 6. DIBUJAR TABLA DE ENERGÉTICOS
+// ======================================================
+
+function renderizarEnergeticos(){
+
+  const tbody =
+    document.getElementById("tablaEnergeticosBody");
+
+  const contenedor =
+    document.getElementById(
+      "contenedorTablaEnergeticos"
+    );
+
+  const sinEnergeticos =
+    document.getElementById("sinEnergeticos");
+
+
+  if(
+    !tbody ||
+    !contenedor ||
+    !sinEnergeticos
+  ){
+    return;
+  }
+
+
+  tbody.innerHTML = "";
+
+
+  // Si no hay energéticos.
+  if(energeticosEstablecimiento.length === 0){
+
+    contenedor.style.display = "none";
+    sinEnergeticos.style.display = "block";
+
+    return;
+
+  }
+
+
+  // Si hay energéticos.
+  sinEnergeticos.style.display = "none";
+  contenedor.style.display = "block";
+
+
+  energeticosEstablecimiento.forEach(
+    function(energetico, index){
+
+      const tr =
+        document.createElement("tr");
+
+
+      const tdNombre =
+        document.createElement("td");
+
+      tdNombre.style.textAlign = "left";
+
+      tdNombre.textContent =
+        energetico.nombre;
+
+
+      const tdAcciones =
+        document.createElement("td");
+
+
+      const botonEliminar =
+        document.createElement("button");
+
+      botonEliminar.type = "button";
+
+      botonEliminar.className =
+        "btn-energetico-eliminar";
+
+      botonEliminar.dataset.index = index;
+
+      botonEliminar.title =
+        "Eliminar energético";
+
+      botonEliminar.textContent = "🗑";
+
+
+      tdAcciones.appendChild(
+        botonEliminar
+      );
+
+
+      tr.appendChild(tdNombre);
+      tr.appendChild(tdAcciones);
+
+
+      tbody.appendChild(tr);
+
+    }
+  );
+
+}
+
+
+// ======================================================
+// 7. CREAR CÓDIGO PARA ENERGÉTICOS "OTRO"
+// ======================================================
+
+function crearCodigoEnergeticoOtro(nombre){
+
+  return (
+    "otro_" +
+    nombre
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "")
+  );
+
+}
+
+
+// ======================================================
+// 8. AGREGAR ENERGÉTICO
+// ======================================================
+
+document.addEventListener("click", function(e){
+
+  if(e.target.id !== "guardarEnergetico"){
+    return;
+  }
+
+
+  const select =
+    document.getElementById("energeticoTipo");
+
+  const otro =
+    document.getElementById(
+      "energeticoOtroModal"
+    );
+
+  const otroBox =
+    document.getElementById(
+      "energeticoOtroModalBox"
+    );
+
+
+  if(!select || !select.value){
+
+    alert(
+      "Seleccione un energético."
+    );
+
+    return;
+
+  }
+
+
+  let codigo = select.value;
+  let nombre = "";
+
+
+  // ----------------------------------------------------
+  // SI SELECCIONÓ "OTRO"
+  // ----------------------------------------------------
+
+  if(codigo === "otro"){
+
+    nombre =
+      otro ? otro.value.trim() : "";
+
+
+    if(!nombre){
+
+      alert(
+        "Especifique el energético."
+      );
+
+      if(otro){
+        otro.focus();
+      }
+
+      return;
+
+    }
+
+
+    codigo =
+      crearCodigoEnergeticoOtro(nombre);
+
+  }
+
+
+  // ----------------------------------------------------
+  // ENERGÉTICO DE LA LISTA
+  // ----------------------------------------------------
+
+  else{
+
+    nombre =
+      select.options[
+        select.selectedIndex
+      ].text.trim();
+
+  }
+
+
+  // ====================================================
+  // 9. EVITAR DUPLICADOS
+  // ====================================================
+
+  const nombreNormalizado =
+    nombre
+      .trim()
+      .toLowerCase();
+
+
+  const yaExiste =
+    energeticosEstablecimiento.some(
+      function(energetico){
+
+        return (
+          energetico.codigo === codigo ||
+          energetico.nombre
+            .trim()
+            .toLowerCase() === nombreNormalizado
+        );
+
+      }
+    );
+
+
+  if(yaExiste){
+
+    alert(
+      "Este energético ya fue agregado."
+    );
+
+    return;
+
+  }
+
+
+  // ====================================================
+  // 10. GUARDAR EN LA LISTA
+  // ====================================================
+
+  energeticosEstablecimiento.push({
+
+    codigo: codigo,
+    nombre: nombre
+
+  });
+
+
+  // Actualiza tabla.
+  renderizarEnergeticos();
+
+
+  // Deshabilita energético utilizado.
+  actualizarOpcionesEnergeticos();
+
+
+  // ====================================================
+  // 11. LIMPIAR MODAL
+  // ====================================================
+
+  select.value = "";
+
+
+  if(otro){
+    otro.value = "";
+  }
+
+
+  if(otroBox){
+    otroBox.classList.add("hidden");
+  }
+
+
+  // Cierra modal.
+  if(modalEnergetico){
+    modalEnergetico.classList.add("hidden");
+  }
+
+});
+
+
+// ======================================================
+// 12. ELIMINAR ENERGÉTICO
+// ======================================================
+
+document.addEventListener("click", function(e){
+
+  const boton =
+    e.target.closest(
+      ".btn-energetico-eliminar"
+    );
+
+
+  if(!boton){
+    return;
+  }
+
+
+  const index =
+    Number(boton.dataset.index);
+
+
+  if(
+    Number.isNaN(index) ||
+    !energeticosEstablecimiento[index]
+  ){
+    return;
+  }
+
+
+  const nombre =
+    energeticosEstablecimiento[index].nombre;
+
+
+  const confirmar =
+    confirm(
+      '¿Desea eliminar "' +
+      nombre +
+      '"?'
+    );
+
+
+  if(!confirmar){
+    return;
+  }
+
+
+  // Elimina de la lista.
+  energeticosEstablecimiento.splice(
+    index,
+    1
+  );
+
+
+  // Actualiza tabla.
+  renderizarEnergeticos();
+
+
+  // Vuelve a habilitarlo en el selector.
+  actualizarOpcionesEnergeticos();
+
+});
   
   // ======================================================
   // INICIALIZACIÓN
