@@ -4770,20 +4770,15 @@ document.addEventListener("click", function(e){
   // ====================================================
 
   energeticosEstablecimiento.push({
-
     codigo: codigo,
     nombre: nombre
-
   });
-
-
   // Actualiza tabla.
   renderizarEnergeticos();
-
-
   // Deshabilita energético utilizado.
   actualizarOpcionesEnergeticos();
-
+  /* Mostrar u ocultar G según exista electricidad */
+  actualizarSeccionFacturacionElectrica();
 
   // ====================================================
   // 11. LIMPIAR MODAL
@@ -4855,20 +4850,17 @@ document.addEventListener("click", function(e){
     return;
   }
 
-
   // Elimina de la lista.
   energeticosEstablecimiento.splice(
     index,
     1
   );
-
-
   // Actualiza tabla.
   renderizarEnergeticos();
-
-
   // Vuelve a habilitarlo en el selector.
   actualizarOpcionesEnergeticos();
+  /* Actualizar sección G */
+  actualizarSeccionFacturacionElectrica();  
 
 });
   // ======================================================
@@ -5403,6 +5395,65 @@ document.addEventListener("change", function(e){
   }
 
 });  
+  // ======================================================
+// G. MOSTRAR FACTURACIÓN SOLO SI USA ELECTRICIDAD
+// ======================================================
+
+function actualizarSeccionFacturacionElectrica(){
+
+  const seccion =
+    document.getElementById("seccionFacturacionElectrica");
+
+  if(!seccion){
+    return;
+  }
+
+  const usaElectricidad =
+    energeticosEstablecimiento.some(
+      function(energetico){
+        return energetico.codigo === "electricidad";
+      }
+    );
+
+  if(usaElectricidad){
+
+    seccion.classList.remove("hidden");
+
+  }else{
+
+    seccion.classList.add("hidden");
+
+    const periodicidad =
+      document.getElementById("periodicidadFactura");
+
+    const otra =
+      document.getElementById("periodicidadOtra");
+
+    const otraBox =
+      document.getElementById("periodicidadOtraBox");
+
+    const medidores =
+      document.getElementById("numeroMedidores");
+
+    if(periodicidad){
+      periodicidad.value = "";
+    }
+
+    if(otra){
+      otra.value = "";
+    }
+
+    if(otraBox){
+      otraBox.classList.add("hidden");
+    }
+
+    if(medidores){
+      medidores.value = "1";
+    }
+
+  }
+
+}
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
