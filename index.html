@@ -4559,10 +4559,13 @@ function renderizarEnergeticos(){
   // Si no hay energéticos.
   if(energeticosEstablecimiento.length === 0){
 
-    contenedor.style.display = "none";
-    sinEnergeticos.style.display = "block";
+  contenedor.style.display = "none";
+  sinEnergeticos.style.display = "block";
 
-    return;
+  actualizarSeccionFacturacionElectrica();
+
+  return;
+}
 
   }
 
@@ -4621,7 +4624,8 @@ function renderizarEnergeticos(){
 
     }
   );
-
+// Actualiza G cada vez que se redibuja la lista
+actualizarSeccionFacturacionElectrica();
 }
 
 
