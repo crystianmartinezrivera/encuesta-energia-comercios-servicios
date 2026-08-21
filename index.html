@@ -3851,8 +3851,51 @@ document.addEventListener("click", function(e){
   if(modal){
     modal.classList.add("hidden");
   }
+});
+  // ======================================================
+// LIMPIAR AISLAMIENTO SI RESPONDE "NO" O "NO SABE"
+// ======================================================
+
+document.addEventListener("change", function(e){
+
+  if(
+    e.target.name === "aislamiento" &&
+    (e.target.value === "no" || e.target.value === "ns")
+  ){
+
+    const tipoAislamiento =
+      document.getElementById("tipoAislamiento");
+
+    const tipoAislamientoOtro =
+      document.getElementById("tipoAislamientoOtro");
+
+    const tipoAislamientoOtroBox =
+      document.getElementById("tipoAislamientoOtroBox");
+
+    const resumenAislamiento =
+      document.getElementById("resumenAislamiento");
+
+    if(tipoAislamiento){
+      tipoAislamiento.value = "";
+    }
+
+    if(tipoAislamientoOtro){
+      tipoAislamientoOtro.value = "";
+    }
+
+    if(tipoAislamientoOtroBox){
+      tipoAislamientoOtroBox.classList.add("hidden");
+    }
+
+    if(resumenAislamiento){
+      resumenAislamiento.textContent = "";
+      resumenAislamiento.style.display = "none";
+    }
+
+  }
 
 });
+
   
   // ======================================================
   // INICIALIZACIÓN
