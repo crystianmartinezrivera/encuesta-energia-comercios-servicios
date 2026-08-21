@@ -930,6 +930,29 @@
     }
 
 }
+/* =====================================================
+   G. FACTURACIÓN ELÉCTRICA
+   ===================================================== */
+
+.facturacion-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:28px;
+    align-items:start;
+}
+
+.facturacion-ayuda{
+    margin-top:18px;
+    margin-bottom:0;
+}
+
+@media (max-width:900px){
+
+    .facturacion-grid{
+        grid-template-columns:1fr;
+    }
+
+}    
 </style>
 </head>
 
@@ -1719,99 +1742,112 @@
   <!-- =========================================
        G. FACTURACIÓN ELÉCTRICA
   ========================================== -->
-  <div class="energy-card energy-subsection">
+ 
+<div
+  id="seccionFacturacionElectrica"
+  class="energy-card energy-subsection hidden"
+>
 
-    <h3 class="energy-subsection-title">
-      G. Facturación eléctrica
-    </h3>
+  <h3 class="energy-subsection-title">
+    G. Características de la facturación eléctrica
+  </h3>
 
-    <div class="grid-2">
-
-      <div class="field">
-
-        <label>
-          ¿Con qué periodicidad recibe su facturación eléctrica?
-          <span class="req">*</span>
-        </label>
-
-        <div class="radio-group radio-vertical">
-
-          <label>
-            <input
-              type="radio"
-              name="periodicidadFactura"
-              value="mensual"
-            >
-            Mensual
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="periodicidadFactura"
-              value="bimestral"
-            >
-            Bimestral
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="periodicidadFactura"
-              value="otra"
-            >
-            Otra periodicidad
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="periodicidadFactura"
-              value="ns"
-            >
-            No sabe
-          </label>
-
-        </div>
-
-      </div>
+  <p class="helper-text">
+    Indique cómo recibe normalmente la facturación de electricidad
+    del establecimiento.
+  </p>
 
 
-      <div class="field">
+  <div class="facturacion-grid">
 
-        <label>
-          ¿Cuántas cuentas o medidores eléctricos corresponden
-          al establecimiento?
-        </label>
+    <!-- PERIODICIDAD -->
+    <div class="field">
 
-        <div class="input-unit">
+      <label>
+        Periodicidad de la facturación
+        <span class="req">*</span>
+      </label>
 
-          <input
-            id="numeroMedidores"
-            type="number"
-            min="1"
-            value="1"
-          >
+      <select id="periodicidadFactura">
 
-          <span class="unit" style="font-size:13px;">
-            medidor(es)
-          </span>
+        <option value="">
+          Seleccione una opción
+        </option>
 
-        </div>
+        <option value="mensual">
+          Mensual
+        </option>
+
+        <option value="bimestral">
+          Bimestral
+        </option>
+
+        <option value="otra">
+          Otra periodicidad
+        </option>
+
+        <option value="ns">
+          No sabe
+        </option>
+
+      </select>
+
+
+      <!-- SOLO SI SELECCIONA OTRA -->
+      <div
+        id="periodicidadOtraBox"
+        class="field-extra hidden"
+      >
+
+        <input
+          id="periodicidadOtra"
+          type="text"
+          placeholder="Especifique la periodicidad"
+        >
 
       </div>
 
     </div>
 
 
-    <div class="info-box">
-      En la siguiente sección se solicitará el historial de consumo
-      de electricidad de al menos los últimos 12 meses.
-      Puede utilizar el historial mostrado en su recibo más reciente.
+    <!-- MEDIDORES -->
+    <div class="field">
+
+      <label>
+        Número de cuentas o medidores eléctricos
+      </label>
+
+      <div class="input-unit">
+
+        <input
+          id="numeroMedidores"
+          type="number"
+          min="1"
+          step="1"
+          value="1"
+        >
+
+        <span class="unit">
+          medidor(es)
+        </span>
+
+      </div>
+
     </div>
 
   </div>
 
+
+  <div class="info-banner facturacion-ayuda">
+
+    <strong>Para la siguiente sección:</strong>
+    tenga a la mano su recibo de electricidad más reciente.
+    Normalmente contiene el historial de consumo de los meses
+    o periodos anteriores.
+
+  </div>
+
+</div>
 
   <!-- =========================================
        BOTONES
@@ -5269,6 +5305,104 @@ document.addEventListener("click", function(e){
     .classList.add("hidden");
 
 });
+  // ======================================================
+// G. MOSTRAR FACTURACIÓN SOLO SI USA ELECTRICIDAD
+// ======================================================
+
+function actualizarSeccionFacturacionElectrica(){
+
+  const seccion =
+    document.getElementById(
+      "seccionFacturacionElectrica"
+    );
+
+  if(!seccion){
+    return;
+  }
+
+
+  const usaElectricidad =
+    energeticosEstablecimiento.some(
+      function(energetico){
+
+        return energetico.codigo === "electricidad";
+
+      }
+    );
+
+
+  if(usaElectricidad){
+
+    seccion.classList.remove("hidden");
+
+  }else{
+
+    seccion.classList.add("hidden");
+
+    // Limpia información si se elimina electricidad.
+    const periodicidad =
+      document.getElementById("periodicidadFactura");
+
+    const otra =
+      document.getElementById("periodicidadOtra");
+
+    const otraBox =
+      document.getElementById("periodicidadOtraBox");
+
+    const medidores =
+      document.getElementById("numeroMedidores");
+
+
+    if(periodicidad){
+      periodicidad.value = "";
+    }
+
+    if(otra){
+      otra.value = "";
+    }
+
+    if(otraBox){
+      otraBox.classList.add("hidden");
+    }
+
+    if(medidores){
+      medidores.value = "1";
+    }
+
+  }
+
+}
+// ======================================================
+// G. OTRA PERIODICIDAD
+// ======================================================
+
+document.addEventListener("change", function(e){
+
+  if(e.target.id !== "periodicidadFactura"){
+    return;
+  }
+
+
+  const caja =
+    document.getElementById("periodicidadOtraBox");
+
+  const campo =
+    document.getElementById("periodicidadOtra");
+
+
+  if(e.target.value === "otra"){
+
+    caja.classList.remove("hidden");
+    campo.focus();
+
+  }else{
+
+    caja.classList.add("hidden");
+    campo.value = "";
+
+  }
+
+});  
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
