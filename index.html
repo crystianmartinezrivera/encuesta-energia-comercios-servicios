@@ -1443,6 +1443,7 @@
 
     <label>
       <input
+        id="aislamientoSi"
         type="radio"
         name="aislamiento"
         value="si"
@@ -3685,17 +3686,17 @@ document.addEventListener("change", function(e){
 
 });
 // ======================================================
-// PÁGINA 2 - AISLAMIENTO TÉRMICO
+// PÁGINA 2 - ABRIR MODAL DE AISLAMIENTO
 // ======================================================
 
-document.addEventListener("change", function(e){
-if(
-    e.target.matches(
-      'input[name="aislamiento"][value="si"]'
-    )
-  ){
+const aislamientoSi =
+  document.getElementById("aislamientoSi");
 
-    // Cerramos el modal de áreas por seguridad.
+if(aislamientoSi){
+
+  aislamientoSi.addEventListener("click", function(){
+
+    // Cerramos cualquier otro modal que pudiera estar abierto.
     const modalArea =
       document.getElementById("modalArea");
 
@@ -3703,7 +3704,7 @@ if(
       modalArea.classList.add("hidden");
     }
 
-    // Abrimos únicamente aislamiento.
+    // Abrimos aislamiento.
     const modalAislamiento =
       document.getElementById("modalAislamiento");
 
@@ -3711,9 +3712,9 @@ if(
       modalAislamiento.classList.remove("hidden");
     }
 
-  }
+  });
 
-});
+}
 // ======================================================
 // "OTRO" DENTRO DEL MODAL DE AISLAMIENTO
 // ======================================================
