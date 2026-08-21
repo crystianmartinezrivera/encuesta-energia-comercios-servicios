@@ -1446,7 +1446,6 @@
         type="radio"
         name="aislamiento"
         value="si"
-        onclick="document.getElementById('modalAislamiento').classList.remove('hidden')"
       >
       Sí
     </label>
@@ -3004,10 +3003,20 @@ const modalArea =
 // ABRIR MODAL
 // ------------------------------------------------------
 if(btnAgregarArea && modalArea){
+btnAgregarArea.addEventListener("click", function(){
 
-  btnAgregarArea.addEventListener("click", function(){
+  // Por seguridad cerramos el modal de aislamiento.
+  const modalAislamiento =
+    document.getElementById("modalAislamiento");
 
-    modalArea.classList.remove("hidden");
+  if(modalAislamiento){
+    modalAislamiento.classList.add("hidden");
+  }
+
+  // Abrimos únicamente el modal de áreas.
+  modalArea.classList.remove("hidden");
+
+});
 
   });
 
@@ -3683,69 +3692,31 @@ document.addEventListener("change", function(e){
 // ======================================================
 
 document.addEventListener("change", function(e){
-
-  // ====================================================
-  // 1. RESPUESTA SÍ / NO / NO SABE
-  // ====================================================
-
-  if(
-    e.target.name === "aislamiento" ||
-    e.target.name === "aislamientoMuros"
+if(
+    e.target.matches(
+      'input[name="aislamiento"][value="si"]'
+    )
   ){
 
-    const modal =
-      document.getElementById("modalAislamiento");
+    // Cerramos el modal de áreas por seguridad.
+    const modalArea =
+      document.getElementById("modalArea");
 
-    const resumen =
-      document.getElementById("resumenAislamiento");
-
-
-    // Si responde SÍ, abre la ventana
-    if(e.target.value === "si"){
-
-      if(modal){
-        modal.classList.remove("hidden");
-      }
-
+    if(modalArea){
+      modalArea.classList.add("hidden");
     }
 
+    // Abrimos únicamente aislamiento.
+    const modalAislamiento =
+      document.getElementById("modalAislamiento");
 
-    // Si responde NO o NO SABE, limpia información anterior
-    if(
-      e.target.value === "no" ||
-      e.target.value === "ns"
-    ){
-
-      const tipo =
-        document.getElementById("tipoAislamiento");
-
-      const otro =
-        document.getElementById("tipoAislamientoOtro");
-
-      const otroBox =
-        document.getElementById("tipoAislamientoOtroBox");
-
-
-      if(tipo){
-        tipo.value = "";
-      }
-
-      if(otro){
-        otro.value = "";
-      }
-
-      if(otroBox){
-        otroBox.classList.add("hidden");
-      }
-
-      if(resumen){
-        resumen.style.display = "none";
-        resumen.textContent = "";
-      }
-
+    if(modalAislamiento){
+      modalAislamiento.classList.remove("hidden");
     }
 
   }
+
+});
 
 
   // ====================================================
