@@ -2301,10 +2301,142 @@
       </button>
 
     </div>
+  </div>
+</div>  
+
+<!-- =========================================
+     MODAL - AGREGAR ENERGÉTICO
+========================================== -->
+
+<div id="modalEnergetico" class="modal-backdrop hidden">
+
+   <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+        <h3>Agregar energético</h3>
+
+        <p style="margin-top:5px;color:#607080;font-size:13px;">
+          Seleccione un energético utilizado actualmente
+          en el establecimiento.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close"
+        data-close="modalEnergetico"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="field">
+
+      <label>
+        Energético
+        <span class="req">*</span>
+      </label>
+
+      <select id="energeticoTipo">
+
+        <option value="">
+          Seleccione una opción
+        </option>
+
+        <option value="electricidad">
+          Electricidad de la red
+        </option>
+
+        <option value="gas_natural">
+          Gas natural
+        </option>
+
+        <option value="glp_tanque">
+          GLP – tanque estacionario
+        </option>
+
+        <option value="glp_cilindro">
+          GLP – cilindro
+        </option>
+
+        <option value="diesel">
+          Diésel
+        </option>
+
+        <option value="gasolina">
+          Gasolina
+        </option>
+
+        <option value="combustoleo">
+          Combustóleo
+        </option>
+
+        <option value="biomasa">
+          Leña / biomasa
+        </option>
+
+        <option value="carbon">
+          Carbón
+        </option>
+
+        <option value="energia_termica">
+          Energía térmica adquirida
+        </option>
+
+        <option value="otro">
+          Otro
+        </option>
+
+      </select>
+
+    </div>
+
+    <div
+      id="energeticoOtroModalBox"
+      class="field hidden"
+      style="margin-top:14px;"
+    >
+
+      <label>
+        Especifique el energético
+        <span class="req">*</span>
+      </label>
+
+      <input
+        id="energeticoOtroModal"
+        type="text"
+        placeholder="Especifique"
+      >
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary"
+        data-close="modalEnergetico"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarEnergetico"
+      >
+        Agregar energético
+      </button>
+
+    </div>
 
   </div>
 
-</div>  
+</div>
+        
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const STORAGE_KEY = "encuestaEnergiaComerciosServicios_v1";
