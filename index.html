@@ -899,7 +899,37 @@
 .envolvente-aislamiento{
     transform:translateX(70px);
 }
+/* =====================================================
+   E + F EN DOS COLUMNAS
+   ===================================================== */
 
+.energia-doble-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:28px;
+    align-items:start;
+}
+
+.energia-doble-grid .energy-subsection{
+    margin-bottom:24px;
+}
+
+.energia-doble-grid .field > label{
+    min-height:42px;
+    line-height:1.25;
+}
+
+@media (max-width:900px){
+
+    .energia-doble-grid{
+        grid-template-columns:1fr;
+    }
+
+    .energia-doble-grid .field > label{
+        min-height:auto;
+    }
+
+}
 </style>
 </head>
 
@@ -1566,15 +1596,15 @@
   </div>
 
 </div>
-
+<div class="energia-doble-grid">
   <!-- =========================================
        E. GENERACIÓN PROPIA
   ========================================== -->
-  <div class="energy-card energy-subsection">
+ <div class="energy-card energy-subsection">
 
     <h3 class="energy-subsection-title">
       E. Generación propia para autoconsumo
-      </h3>
+    </h3>
 
     <div class="field">
 
@@ -1617,10 +1647,10 @@
 
     </div>
 
-
     <div
-      id="listaGeneracion"
-      class="dynamic-list"
+      id="resumenGeneracion"
+      class="selection-summary"
+      style="display:none;"
     ></div>
 
   </div>
@@ -1629,11 +1659,12 @@
   <!-- =========================================
        F. PLANTA DE EMERGENCIA
   ========================================== -->
+
   <div class="energy-card energy-subsection">
 
     <h3 class="energy-subsection-title">
       F. Planta de emergencia o respaldo
-      </h3>
+    </h3>
 
     <div class="field">
 
@@ -1676,7 +1707,6 @@
 
     </div>
 
-
     <div
       id="resumenPlanta"
       class="selection-summary"
@@ -1685,7 +1715,7 @@
 
   </div>
 
-
+</div>
   <!-- =========================================
        G. FACTURACIÓN ELÉCTRICA
   ========================================== -->
