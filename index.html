@@ -3714,11 +3714,11 @@ if(
   }
 
 });
+// ======================================================
+// "OTRO" DENTRO DEL MODAL DE AISLAMIENTO
+// ======================================================
 
-
-  // ====================================================
-  // 2. "OTRO" DENTRO DEL MODAL
-  // ====================================================
+document.addEventListener("change", function(e){
 
   if(e.target.id === "tipoAislamiento"){
 
@@ -3728,28 +3728,18 @@ if(
     const campo =
       document.getElementById("tipoAislamientoOtro");
 
-
     if(e.target.value === "otro"){
 
-      if(caja){
-        caja.classList.remove("hidden");
-      }
+      caja.classList.remove("hidden");
 
-      if(campo){
-        setTimeout(() => {
-          campo.focus();
-        }, 50);
-      }
+      setTimeout(() => {
+        campo.focus();
+      }, 50);
 
     }else{
 
-      if(caja){
-        caja.classList.add("hidden");
-      }
-
-      if(campo){
-        campo.value = "";
-      }
+      caja.classList.add("hidden");
+      campo.value = "";
 
     }
 
@@ -3757,7 +3747,7 @@ if(
 
 });
 
-
+ 
 // ======================================================
 // CERRAR MODAL AISLAMIENTO
 // ======================================================
