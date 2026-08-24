@@ -1030,7 +1030,15 @@
     width:100%;
     min-width:0;
 }
-    
+
+    /* Tabla de plantas de emergencia */
+#tablaPlantasContenedor .energy-table th:last-child,
+#tablaPlantasContenedor .energy-table td:last-child{
+    width:95px;
+    white-space:nowrap;
+    text-align:center;
+}
+   
 </style>
 </head>
 
@@ -1888,21 +1896,21 @@
 
       <thead>
         <tr>
-          <th style="text-align:left;">
-            Energético
-          </th>
+<th style="text-align:left; width:30%;">
+  Energético
+</th>
 
-          <th style="width:95px;">
-            Capacidad
-          </th>
+<th style="width:90px;">
+  Capacidad
+</th>
 
-          <th style="width:95px;">
-            Operación
-          </th>
+<th style="width:90px;">
+  Operación
+</th>
 
-          <th style="width:65px;">
-            Acciones
-          </th>
+<th style="width:85px; white-space:nowrap;">
+  Acciones
+</th>  
         </tr>
       </thead>
 
