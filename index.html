@@ -953,6 +953,34 @@
     }
 
 }    
+
+/* =====================================================
+   NAVEGACIÓN INFERIOR - PÁGINA 2
+   ===================================================== */
+
+.page-actions{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    margin-top:28px;
+    padding-top:24px;
+    border-top:1px solid #dce5ed;
+}
+
+.page-actions .secondary,
+.page-actions .primary{
+    min-height:48px;
+    padding:0 28px;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:700;
+}
+
+.page-actions .primary{
+    margin-left:auto;
+}
+   
 </style>
 </head>
 
@@ -1852,25 +1880,25 @@
   <!-- =========================================
        BOTONES
   ========================================== -->
-  <div class="page-actions">
+ <div class="page-actions">
 
-    <button
-      type="button"
-      class="btn-secondary"
-      id="btnEnergiaAnterior"
-    >
-      ← Anterior
-    </button>
+  <button
+    type="button"
+    class="secondary"
+    id="btnEnergiaAnterior"
+  >
+    ← Anterior
+  </button>
 
-    <button
-      type="button"
-      class="btn-primary"
-      id="btnEnergiaContinuar"
-    >
-      Guardar y continuar →
-    </button>
+  <button
+    type="button"
+    class="primary"
+    id="btnEnergiaContinuar"
+  >
+    Guardar y continuar →
+  </button>
 
-  </div>
+</div>
 
 </div>
       
@@ -5575,7 +5603,7 @@ if(btnEnergiaAnterior){
   btnEnergiaAnterior.addEventListener("click", function(){
 
     // Regresa a Página 1
-    mostrarVista("general");
+   mostrarVista("datos");
 
     // Recupera la ayuda lateral de Página 1
     mostrarAyudaPagina(1);
