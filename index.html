@@ -6041,7 +6041,206 @@ if(btnEnergiaAnterior){
   });
 
 }
-  
+  // ======================================================
+// PÁGINA 2 - GUARDAR DATOS PRINCIPALES EN SUPABASE
+// ======================================================
+
+async function guardarCaracteristicasEnergia(){
+
+  const encuestaId =
+    localStorage.getItem("encuesta_id");
+
+  if(!encuestaId){
+    throw new Error(
+      "No se encontró el identificador de la encuesta."
+    );
+  }
+
+
+  const datos = {
+
+    encuesta_id:
+      Number(encuestaId),
+
+
+    // A. CARACTERÍSTICAS FÍSICAS
+    tipo_edificacion:
+      document.getElementById("tipoEdificacion").value || null,
+
+    tipo_edificacion_otro:
+      document.getElementById("tipoEdificacion").value === "otro"
+        ? document.getElementById("tipoEdificacionOtro").value.trim()
+        : null,
+
+    superficie_total_m2:
+      document.getElementById("superficieTotal").value
+        ? Number(
+            document.getElementById("superficieTotal").value
+          )
+        : null,
+
+    numero_niveles:
+      document.getElementById("numeroNiveles").value
+        ? Number(
+            document.getElementById("numeroNiveles").value
+          )
+        : null,
+
+
+    // C. ENVOLVENTE
+    material_muros:
+      document.getElementById("materialMuros").value || null,
+
+    material_muros_otro:
+      document.getElementById("materialMuros").value === "otro"
+        ? document.getElementById("materialMurosOtro").value.trim()
+        : null,
+
+    aislamiento_respuesta:
+      valorRadio("aislamiento") || null,
+
+    tipo_aislamiento:
+      valorRadio("aislamiento") === "si"
+        ? document.getElementById("tipoAislamiento").value || null
+        : null,
+
+    tipo_aislamiento_otro:
+      valorRadio("aislamiento") === "si" &&
+      document.getElementById("tipoAislamiento").value === "otro"
+        ? document.getElementById("tipoAislamientoOtro").value.trim()
+        : null,
+
+    tipo_ventanas:
+      document.getElementById("tipoVentanas").value || null,
+
+    tipo_ventanas_otro:
+      document.getElementById("tipoVentanas").value === "otro"
+        ? document.getElementById("tipoVentanasOtro").value.trim()
+        : null,
+
+
+    // E. GENERACIÓN PROPIA
+    generacion_propia_respuesta:
+      valorRadio("generacionPropia") || null,
+
+
+    // F. PLANTA DE EMERGENCIA
+    planta_emergencia_respuesta:
+      valorRadio("plantaEmergencia") || null,
+
+
+    // G. FACTURACIÓN ELÉCTRICA
+    periodicidad_electrica:
+      document.getElementById("periodicidadFactura")
+        ? document.getElementById("periodicidadFactura").value || null
+        : null,
+
+    periodicidad_otra:
+      document.getElementById("periodicidadFactura") &&
+      document.getElementById("periodicidadFactura").value === "otra"
+        ? document.getElementById("periodicidadOtra").value.trim()
+        : null,
+
+    numero_medidores:
+      document.getElementById("numeroMedidores") &&
+      document.getElementById("numeroMedidores").value
+        ? Number(
+            document.getElementById("numeroMedidores").value
+          )
+        : null,
+
+
+    ultima_actualizacion:
+      new Date().toISOString()
+
+  };
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("energia_caracteristicas")
+      .upsert(
+        datos,
+        {
+          onConflict: "encuesta_id"
+        }
+      );
+
+
+  if(error){
+    throw error;
+  }
+
+
+  console.log(
+    "Características de energía guardadas correctamente."
+  );
+
+}
+  // ======================================================
+// PÁGINA 2 - BOTÓN GUARDAR Y CONTINUAR
+// PRUEBA INICIAL: SOLO GUARDA energia_caracteristicas
+// ======================================================
+
+const btnEnergiaContinuar =
+  document.getElementById("btnEnergiaContinuar");
+
+
+if(btnEnergiaContinuar){
+
+  btnEnergiaContinuar.addEventListener(
+    "click",
+    async function(){
+
+      try {
+
+        btnEnergiaContinuar.disabled = true;
+
+        btnEnergiaContinuar.textContent =
+          "Guardando...";
+
+
+        await guardarCaracteristicasEnergia();
+
+
+        alert(
+          "La información de la Página 2 se guardó correctamente."
+        );
+
+
+        // Por ahora NO avanzamos automáticamente.
+        // Primero comprobaremos la tabla en Supabase.
+
+
+      } catch(error) {
+
+        console.error(
+          "Error al guardar Página 2:",
+          error
+        );
+
+
+        alert(
+          "No fue posible guardar la información. " +
+          "Revise la consola para identificar el error."
+        );
+
+
+      } finally {
+
+        btnEnergiaContinuar.disabled = false;
+
+        btnEnergiaContinuar.textContent =
+          "Guardar y continuar →";
+
+      }
+
+    }
+  );
+
+}
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
