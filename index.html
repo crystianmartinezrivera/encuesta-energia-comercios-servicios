@@ -980,7 +980,73 @@
 .page-actions .primary{
     margin-left:auto;
 }
-   
+
+/* =====================================================
+   AJUSTE COMPACTO PARA E + F
+   ===================================================== */
+
+.energia-doble-grid{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
+    gap:20px;
+    align-items:start;
+}
+
+/* Evita que el contenido fuerce el ancho de las columnas */
+.energia-doble-grid > .energy-card{
+    min-width:0;
+}
+
+/* Tablas compactas dentro de E y F */
+.energia-doble-grid .table-responsive{
+    width:100%;
+    overflow-x:auto;
+}
+
+.energia-doble-grid .energy-table{
+    width:100%;
+    table-layout:fixed;
+    font-size:12px;
+}
+
+.energia-doble-grid .energy-table th,
+.energia-doble-grid .energy-table td{
+    padding:8px 6px;
+    word-wrap:break-word;
+    overflow-wrap:anywhere;
+}
+
+/* Botones agregar más compactos */
+#btnAgregarGeneracion,
+#btnAgregarPlanta{
+    width:auto;
+    min-height:38px;
+    padding:0 14px;
+    font-size:13px;
+    border-radius:8px;
+}
+
+/* Mensajes vacíos más compactos */
+#sinGeneracion,
+#sinPlantas{
+    font-size:12px;
+    padding:10px 12px;
+}
+
+/* Evita que los botones internos ocupen toda la fila */
+.energia-doble-grid button{
+    max-width:100%;
+}
+
+/* Mantener dos columnas hasta pantallas más pequeñas */
+@media (max-width:700px){
+
+    .energia-doble-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+    
 </style>
 </head>
 
@@ -1733,8 +1799,8 @@
       <thead>
         <tr>
           <th style="text-align:left;">Tecnología</th>
-          <th style="width:170px;">Capacidad</th>
-          <th style="width:100px;">Acciones</th>
+          <th style="width:110px;">Capacidad</th>
+          <th style="width:70px;">Acciones</th>
         </tr>
       </thead>
 
@@ -1838,15 +1904,15 @@
             Energético
           </th>
 
-          <th style="width:140px;">
+          <th style="width:95px;">
             Capacidad
           </th>
 
-          <th style="width:140px;">
+          <th style="width:95px;">
             Operación
           </th>
 
-          <th style="width:100px;">
+          <th style="width:65px;">
             Acciones
           </th>
         </tr>
