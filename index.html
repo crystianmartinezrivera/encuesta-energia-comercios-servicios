@@ -6173,7 +6173,267 @@ async function guardarCaracteristicasEnergia(){
     throw error;
   }
 
+// ======================================================
+// B. ÁREAS DEL ESTABLECIMIENTO
+// ======================================================
 
+const {
+  error: errorBorrarAreas
+} =
+  await supabaseClient
+    .from("areas_establecimiento")
+    .delete()
+    .eq(
+      "encuesta_id",
+      Number(encuestaId)
+    );
+
+if(errorBorrarAreas){
+  throw errorBorrarAreas;
+}
+
+
+if(areasEstablecimiento.length > 0){
+
+  const filasAreas =
+    areasEstablecimiento.map(function(area){
+
+      return {
+
+        encuesta_id:
+          Number(encuestaId),
+
+        tipo:
+          area.tipo,
+
+        nombre:
+          area.nombre,
+
+        cantidad:
+          area.cantidad,
+
+        superficie_valor:
+          area.superficieValor,
+
+        unidad:
+          area.unidad,
+
+        superficie_m2:
+          area.superficieM2
+
+      };
+
+    });
+
+
+  const {
+    error: errorAreas
+  } =
+    await supabaseClient
+      .from("areas_establecimiento")
+      .insert(filasAreas);
+
+
+  if(errorAreas){
+    throw errorAreas;
+  }
+
+}
+
+
+// ======================================================
+// D. ENERGÉTICOS UTILIZADOS
+// ======================================================
+
+const {
+  error: errorBorrarEnergeticos
+} =
+  await supabaseClient
+    .from("energeticos_establecimiento")
+    .delete()
+    .eq(
+      "encuesta_id",
+      Number(encuestaId)
+    );
+
+if(errorBorrarEnergeticos){
+  throw errorBorrarEnergeticos;
+}
+
+
+if(energeticosEstablecimiento.length > 0){
+
+  const filasEnergeticos =
+    energeticosEstablecimiento.map(
+      function(energetico){
+
+        return {
+
+          encuesta_id:
+            Number(encuestaId),
+
+          codigo:
+            energetico.codigo,
+
+          nombre:
+            energetico.nombre
+
+        };
+
+      }
+    );
+
+
+  const {
+    error: errorEnergeticos
+  } =
+    await supabaseClient
+      .from("energeticos_establecimiento")
+      .insert(filasEnergeticos);
+
+
+  if(errorEnergeticos){
+    throw errorEnergeticos;
+  }
+
+}
+
+
+// ======================================================
+// E. SISTEMAS DE GENERACIÓN PROPIA
+// ======================================================
+
+const {
+  error: errorBorrarGeneracion
+} =
+  await supabaseClient
+    .from("sistemas_generacion")
+    .delete()
+    .eq(
+      "encuesta_id",
+      Number(encuestaId)
+    );
+
+if(errorBorrarGeneracion){
+  throw errorBorrarGeneracion;
+}
+
+
+if(sistemasGeneracion.length > 0){
+
+  const filasGeneracion =
+    sistemasGeneracion.map(
+      function(sistema){
+
+        return {
+
+          encuesta_id:
+            Number(encuestaId),
+
+          tecnologia:
+            sistema.tecnologia,
+
+          nombre:
+            sistema.nombre,
+
+          tecnologia_otro:
+            sistema.tecnologia_otro,
+
+          capacidad:
+            sistema.capacidad,
+
+          unidad:
+            sistema.unidad
+
+        };
+
+      }
+    );
+
+
+  const {
+    error: errorGeneracion
+  } =
+    await supabaseClient
+      .from("sistemas_generacion")
+      .insert(filasGeneracion);
+
+
+  if(errorGeneracion){
+    throw errorGeneracion;
+  }
+
+}
+
+
+// ======================================================
+// F. PLANTAS DE EMERGENCIA
+// ======================================================
+
+const {
+  error: errorBorrarPlantas
+} =
+  await supabaseClient
+    .from("plantas_emergencia")
+    .delete()
+    .eq(
+      "encuesta_id",
+      Number(encuestaId)
+    );
+
+if(errorBorrarPlantas){
+  throw errorBorrarPlantas;
+}
+
+
+if(plantasEmergencia.length > 0){
+
+  const filasPlantas =
+    plantasEmergencia.map(
+      function(planta){
+
+        return {
+
+          encuesta_id:
+            Number(encuestaId),
+
+          energetico:
+            planta.energetico,
+
+          nombre:
+            planta.nombre,
+
+          energetico_otro:
+            planta.energetico_otro,
+
+          capacidad:
+            planta.capacidad,
+
+          unidad:
+            planta.unidad,
+
+          horas_anuales:
+            planta.horas_anuales
+
+        };
+
+      }
+    );
+
+
+  const {
+    error: errorPlantas
+  } =
+    await supabaseClient
+      .from("plantas_emergencia")
+      .insert(filasPlantas);
+
+
+  if(errorPlantas){
+    throw errorPlantas;
+  }
+
+}
   console.log(
     "Características de energía guardadas correctamente."
   );
@@ -6181,7 +6441,6 @@ async function guardarCaracteristicasEnergia(){
 }
   // ======================================================
 // PÁGINA 2 - BOTÓN GUARDAR Y CONTINUAR
-// PRUEBA INICIAL: SOLO GUARDA energia_caracteristicas
 // ======================================================
 
 const btnEnergiaContinuar =
@@ -6208,12 +6467,8 @@ if(btnEnergiaContinuar){
         alert(
           "La información de la Página 2 se guardó correctamente."
         );
-
-
-        // Por ahora NO avanzamos automáticamente.
-        // Primero comprobaremos la tabla en Supabase.
-
-
+       mostrarVista("facturacion");
+       
       } catch(error) {
 
         console.error(
