@@ -3462,6 +3462,7 @@ async function guardarEncuestaSupabase(){
 
       // 5. Si Supabase respondió correctamente, pasa a Energía.
       mostrarVista("energia");
+      mostrarAyudaPagina(2);
 
     } catch(error) {
       console.error(error);
@@ -3472,7 +3473,7 @@ async function guardarEncuestaSupabase(){
       );
     }
   });
-
+      
   // ======================================================
   // AUTOGUARDADO EN EL NAVEGADOR
   // ======================================================
@@ -5532,6 +5533,57 @@ function actualizarSeccionFacturacionElectrica(){
   }
 
 }
+// ======================================================
+// AYUDA DERECHA - CAMBIO ENTRE PÁGINA 1 Y PÁGINA 2
+// ======================================================
+
+function mostrarAyudaPagina(numero){
+
+  const ayuda1 =
+    document.getElementById("ayudaPagina1");
+
+  const ayuda2 =
+    document.getElementById("ayudaPagina2");
+
+  if(!ayuda1 || !ayuda2){
+    return;
+  }
+
+  if(numero === 2){
+
+    ayuda1.classList.add("hidden");
+    ayuda2.classList.remove("hidden");
+
+  }else{
+
+    ayuda2.classList.add("hidden");
+    ayuda1.classList.remove("hidden");
+
+  }
+
+}
+
+// ======================================================
+// PÁGINA 2 - BOTÓN ANTERIOR
+// ======================================================
+
+const btnEnergiaAnterior =
+  document.getElementById("btnEnergiaAnterior");
+
+if(btnEnergiaAnterior){
+
+  btnEnergiaAnterior.addEventListener("click", function(){
+
+    // Regresa a Página 1
+    mostrarVista("general");
+
+    // Recupera la ayuda lateral de Página 1
+    mostrarAyudaPagina(1);
+
+  });
+
+}
+  
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
