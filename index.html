@@ -899,37 +899,7 @@
 .envolvente-aislamiento{
     transform:translateX(70px);
 }
-/* =====================================================
-   E + F EN DOS COLUMNAS
-   ===================================================== */
 
-.energia-doble-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:28px;
-    align-items:start;
-}
-
-.energia-doble-grid .energy-subsection{
-    margin-bottom:24px;
-}
-
-.energia-doble-grid .field > label{
-    min-height:42px;
-    line-height:1.25;
-}
-
-@media (max-width:900px){
-
-    .energia-doble-grid{
-        grid-template-columns:1fr;
-    }
-
-    .energia-doble-grid .field > label{
-        min-height:auto;
-    }
-
-}
 /* =====================================================
    G. FACTURACIÓN ELÉCTRICA
    ===================================================== */
@@ -982,9 +952,8 @@
 }
 
 /* =====================================================
-   AJUSTE COMPACTO PARA E + F
+   E + F EN DOS COLUMNAS - AJUSTE DEFINITIVO
    ===================================================== */
-
 .energia-doble-grid{
     display:grid;
     grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
@@ -992,12 +961,16 @@
     align-items:start;
 }
 
-/* Evita que el contenido fuerce el ancho de las columnas */
 .energia-doble-grid > .energy-card{
     min-width:0;
+    margin-bottom:24px;
 }
 
-/* Tablas compactas dentro de E y F */
+.energia-doble-grid .field > label{
+    min-height:42px;
+    line-height:1.25;
+}
+
 .energia-doble-grid .table-responsive{
     width:100%;
     overflow-x:auto;
@@ -1016,7 +989,6 @@
     overflow-wrap:anywhere;
 }
 
-/* Botones agregar más compactos */
 #btnAgregarGeneracion,
 #btnAgregarPlanta{
     width:auto;
@@ -1026,26 +998,29 @@
     border-radius:8px;
 }
 
-/* Mensajes vacíos más compactos */
 #sinGeneracion,
 #sinPlantas{
     font-size:12px;
     padding:10px 12px;
 }
 
-/* Evita que los botones internos ocupen toda la fila */
 .energia-doble-grid button{
     max-width:100%;
 }
 
-/* Mantener dos columnas hasta pantallas más pequeñas */
-@media (max-width:700px){
+/* Solo en pantallas realmente pequeñas pasa a una columna */
+@media (max-width:650px){
 
     .energia-doble-grid{
         grid-template-columns:1fr;
     }
 
+    .energia-doble-grid .field > label{
+        min-height:auto;
+    }
+
 }
+
     
 </style>
 </head>
