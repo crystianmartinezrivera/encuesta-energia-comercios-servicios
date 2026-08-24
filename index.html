@@ -1699,12 +1699,54 @@
     </div>
 
     <div
-      id="resumenGeneracion"
-      class="selection-summary"
-      style="display:none;"
-    ></div>
+<!-- SISTEMAS DE GENERACIÓN REGISTRADOS -->
+<div
+  id="contenedorGeneracion"
+  class="hidden"
+  style="margin-top:16px;"
+>
 
+  <button
+    type="button"
+    id="btnAgregarGeneracion"
+    class="secondary"
+  >
+    + Agregar sistema de generación
+  </button>
+
+  <div
+    id="sinGeneracion"
+    class="empty-message"
+    style="margin-top:12px;"
+  >
+    Aún no se han agregado sistemas de generación.
   </div>
+
+  <div
+    id="tablaGeneracionContenedor"
+    class="table-responsive"
+    style="display:none; margin-top:12px;"
+  >
+
+    <table class="energy-table">
+
+      <thead>
+        <tr>
+          <th style="text-align:left;">Tecnología</th>
+          <th style="width:170px;">Capacidad</th>
+          <th style="width:100px;">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody id="tablaGeneracionBody"></tbody>
+
+    </table>
+
+   </div>
+
+ </div>
+
+</div>
 
 
   <!-- =========================================
@@ -1759,12 +1801,64 @@
     </div>
 
     <div
-      id="resumenPlanta"
-      class="selection-summary"
-      style="display:none;"
-    ></div>
+ <!-- PLANTAS DE EMERGENCIA REGISTRADAS -->
+<div
+  id="contenedorPlantas"
+  class="hidden"
+  style="margin-top:16px;"
+>
+
+  <button
+    type="button"
+    id="btnAgregarPlanta"
+    class="secondary"
+  >
+    + Agregar planta
+  </button>
+
+  <div
+    id="sinPlantas"
+    class="empty-message"
+    style="margin-top:12px;"
+  >
+    Aún no se han agregado plantas de emergencia.
+  </div>
+
+  <div
+    id="tablaPlantasContenedor"
+    class="table-responsive"
+    style="display:none; margin-top:12px;"
+  >
+
+    <table class="energy-table">
+
+      <thead>
+        <tr>
+          <th style="text-align:left;">
+            Energético
+          </th>
+
+          <th style="width:140px;">
+            Capacidad
+          </th>
+
+          <th style="width:140px;">
+            Operación
+          </th>
+
+          <th style="width:100px;">
+            Acciones
+          </th>
+        </tr>
+      </thead>
+
+      <tbody id="tablaPlantasBody"></tbody>
+
+    </table>
 
   </div>
+
+</div>     
 
 </div>
   <!-- =========================================
@@ -4970,9 +5064,17 @@ document.addEventListener("click", function(e){
   actualizarSeccionFacturacionElectrica();  
 
 });
-  // ======================================================
-// E. GENERACIÓN PROPIA
+
 // ======================================================
+// E. GENERACIÓN PROPIA - MÚLTIPLES SISTEMAS
+// ======================================================
+
+let sistemasGeneracion = [];
+
+
+// ------------------------------------------------------
+// MOSTRAR E CUANDO RESPONDE SÍ
+// ------------------------------------------------------
 
 document.addEventListener("change", function(e){
 
@@ -4980,75 +5082,61 @@ document.addEventListener("change", function(e){
     return;
   }
 
+  const contenedor =
+    document.getElementById("contenedorGeneracion");
+
   const modal =
     document.getElementById("modalGeneracion");
 
-  const resumen =
-    document.getElementById("resumenGeneracion");
 
-  // SÍ → abrir modal
   if(e.target.value === "si"){
 
-    if(modal){
+    contenedor.classList.remove("hidden");
+
+    // Si aún no existe ningún sistema,
+    // abrimos directamente el primer modal.
+    if(sistemasGeneracion.length === 0){
       modal.classList.remove("hidden");
     }
 
-  }
+  }else{
 
-  // NO / NO SABE → limpiar información
-  if(
-    e.target.value === "no" ||
-    e.target.value === "ns"
-  ){
+    // NO / NO SABE
+    sistemasGeneracion = [];
 
-    const tipo =
-      document.getElementById("tipoGeneracion");
+    renderizarGeneracion();
 
-    const otro =
-      document.getElementById("tipoGeneracionOtro");
+    contenedor.classList.add("hidden");
 
-    const otroBox =
-      document.getElementById("tipoGeneracionOtroBox");
-
-    const capacidad =
-      document.getElementById("capacidadGeneracion");
-
-    const unidad =
-      document.getElementById("unidadGeneracion");
-
-    if(tipo){
-      tipo.value = "";
-    }
-
-    if(otro){
-      otro.value = "";
-    }
-
-    if(otroBox){
-      otroBox.classList.add("hidden");
-    }
-
-    if(capacidad){
-      capacidad.value = "";
-    }
-
-    if(unidad){
-      unidad.value = "kW";
-    }
-
-    if(resumen){
-      resumen.textContent = "";
-      resumen.style.display = "none";
-    }
+    limpiarModalGeneracion();
 
   }
 
 });
 
 
-// ======================================================
-// E. "OTRO" EN TIPO DE GENERACIÓN
-// ======================================================
+// ------------------------------------------------------
+// BOTÓN + AGREGAR SISTEMA
+// ------------------------------------------------------
+
+document.addEventListener("click", function(e){
+
+  if(e.target.id !== "btnAgregarGeneracion"){
+    return;
+  }
+
+  limpiarModalGeneracion();
+
+  document
+    .getElementById("modalGeneracion")
+    .classList.remove("hidden");
+
+});
+
+
+// ------------------------------------------------------
+// OTRO TIPO DE GENERACIÓN
+// ------------------------------------------------------
 
 document.addEventListener("change", function(e){
 
@@ -5061,6 +5149,7 @@ document.addEventListener("change", function(e){
 
   const campo =
     document.getElementById("tipoGeneracionOtro");
+
 
   if(e.target.value === "otro"){
 
@@ -5077,35 +5166,16 @@ document.addEventListener("change", function(e){
 });
 
 
-// ======================================================
-// E. CERRAR MODAL
-// ======================================================
-
-document.addEventListener("click", function(e){
-
-  const cerrar =
-    e.target.closest('[data-close="modalGeneracion"]');
-
-  if(cerrar){
-
-    document
-      .getElementById("modalGeneracion")
-      .classList.add("hidden");
-
-  }
-
-});
-
-
-// ======================================================
-// E. GUARDAR GENERACIÓN
-// ======================================================
+// ------------------------------------------------------
+// GUARDAR SISTEMA DE GENERACIÓN
+// ------------------------------------------------------
 
 document.addEventListener("click", function(e){
 
   if(e.target.id !== "guardarGeneracion"){
     return;
   }
+
 
   const tipo =
     document.getElementById("tipoGeneracion");
@@ -5118,9 +5188,6 @@ document.addEventListener("click", function(e){
 
   const unidad =
     document.getElementById("unidadGeneracion");
-
-  const resumen =
-    document.getElementById("resumenGeneracion");
 
 
   if(!tipo.value){
@@ -5143,29 +5210,42 @@ document.addEventListener("click", function(e){
   }
 
 
-  let nombre =
+  const nombre =
     tipo.value === "otro"
       ? otro.value.trim()
-      : tipo.options[tipo.selectedIndex].text.trim();
+      : tipo.options[
+          tipo.selectedIndex
+        ].text.trim();
 
 
-  let texto =
-    "Generación registrada: " + nombre;
+  sistemasGeneracion.push({
+
+    tecnologia: tipo.value,
+
+    nombre: nombre,
+
+    tecnologia_otro:
+      tipo.value === "otro"
+        ? otro.value.trim()
+        : null,
+
+    capacidad:
+      capacidad.value
+        ? Number(capacidad.value)
+        : null,
+
+    unidad:
+      capacidad.value
+        ? unidad.value
+        : null
+
+  });
 
 
-  if(capacidad.value){
+  renderizarGeneracion();
 
-    texto +=
-      " – " +
-      capacidad.value +
-      " " +
-      unidad.value;
+  limpiarModalGeneracion();
 
-  }
-
-
-  resumen.textContent = texto;
-  resumen.style.display = "block";
 
   document
     .getElementById("modalGeneracion")
@@ -5174,86 +5254,155 @@ document.addEventListener("click", function(e){
 });
 
 
-// ======================================================
-// F. PLANTA DE EMERGENCIA
-// ======================================================
+// ------------------------------------------------------
+// DIBUJAR SISTEMAS
+// ------------------------------------------------------
 
-document.addEventListener("change", function(e){
+function renderizarGeneracion(){
 
-  if(e.target.name !== "plantaEmergencia"){
+  const tbody =
+    document.getElementById("tablaGeneracionBody");
+
+  const tabla =
+    document.getElementById(
+      "tablaGeneracionContenedor"
+    );
+
+  const vacio =
+    document.getElementById("sinGeneracion");
+
+
+  tbody.innerHTML = "";
+
+
+  if(sistemasGeneracion.length === 0){
+
+    tabla.style.display = "none";
+    vacio.style.display = "block";
+
+    return;
+
+  }
+
+
+  vacio.style.display = "none";
+  tabla.style.display = "block";
+
+
+  sistemasGeneracion.forEach(
+    function(sistema, index){
+
+      const tr =
+        document.createElement("tr");
+
+
+      const capacidad =
+        sistema.capacidad !== null
+          ? sistema.capacidad + " " + sistema.unidad
+          : "No disponible";
+
+
+      tr.innerHTML = `
+        <td style="text-align:left;">
+          ${sistema.nombre}
+        </td>
+
+        <td>
+          ${capacidad}
+        </td>
+
+        <td>
+          <button
+            type="button"
+            class="btn-eliminar-generacion"
+            data-index="${index}"
+            title="Eliminar"
+          >
+            🗑
+          </button>
+        </td>
+      `;
+
+
+      tbody.appendChild(tr);
+
+    }
+  );
+
+}
+
+
+// ------------------------------------------------------
+// ELIMINAR SISTEMA
+// ------------------------------------------------------
+
+document.addEventListener("click", function(e){
+
+  const boton =
+    e.target.closest(".btn-eliminar-generacion");
+
+  if(!boton){
     return;
   }
 
-  const modal =
-    document.getElementById("modalPlanta");
 
-  const resumen =
-    document.getElementById("resumenPlanta");
+  const index =
+    Number(boton.dataset.index);
 
 
-  // SÍ → abrir modal
-  if(e.target.value === "si"){
-
-    if(modal){
-      modal.classList.remove("hidden");
-    }
-
+  if(
+    !confirm(
+      "¿Desea eliminar este sistema de generación?"
+    )
+  ){
+    return;
   }
 
 
-  // NO / NO SABE → limpiar datos
-  if(
-    e.target.value === "no" ||
-    e.target.value === "ns"
-  ){
+  sistemasGeneracion.splice(index, 1);
 
-    const combustible =
-      document.getElementById("combustiblePlanta");
+  renderizarGeneracion();
 
-    const otro =
-      document.getElementById("combustiblePlantaOtro");
-
-    const otroBox =
-      document.getElementById("combustiblePlantaOtroBox");
-
-    const capacidad =
-      document.getElementById("capacidadPlanta");
-
-    const unidad =
-      document.getElementById("unidadPlanta");
-
-    const horas =
-      document.getElementById("horasPlanta");
+});
 
 
-    if(combustible){
-      combustible.value = "";
-    }
+// ------------------------------------------------------
+// LIMPIAR MODAL E
+// ------------------------------------------------------
 
-    if(otro){
-      otro.value = "";
-    }
+function limpiarModalGeneracion(){
 
-    if(otroBox){
-      otroBox.classList.add("hidden");
-    }
+  document.getElementById("tipoGeneracion").value = "";
 
-    if(capacidad){
-      capacidad.value = "";
-    }
+  document.getElementById("tipoGeneracionOtro").value = "";
 
-    if(unidad){
-      unidad.value = "kW";
-    }
+  document
+    .getElementById("tipoGeneracionOtroBox")
+    .classList.add("hidden");
 
-    if(horas){
-      horas.value = "";
-    }
+  document.getElementById("capacidadGeneracion").value = "";
 
-    if(resumen){
-      resumen.textContent = "";
-      resumen.style.display = "none";
-    }
+  document.getElementById("unidadGeneracion").value = "kW";
+
+}
+
+
+// ------------------------------------------------------
+// CERRAR MODAL E
+// ------------------------------------------------------
+
+document.addEventListener("click", function(e){
+
+  const cerrar =
+    e.target.closest(
+      '[data-close="modalGeneracion"]'
+    );
+
+  if(cerrar){
+
+    document
+      .getElementById("modalGeneracion")
+      .classList.add("hidden");
 
   }
 
@@ -5261,14 +5410,81 @@ document.addEventListener("change", function(e){
 
 
 // ======================================================
-// F. "OTRO" EN ENERGÉTICO DE LA PLANTA
+// F. PLANTAS DE EMERGENCIA - MÚLTIPLES
 // ======================================================
+
+let plantasEmergencia = [];
+
+
+// ------------------------------------------------------
+// RESPUESTA SÍ / NO / NO SABE
+// ------------------------------------------------------
+
+document.addEventListener("change", function(e){
+
+  if(e.target.name !== "plantaEmergencia"){
+    return;
+  }
+
+  const contenedor =
+    document.getElementById("contenedorPlantas");
+
+  const modal =
+    document.getElementById("modalPlanta");
+
+
+  if(e.target.value === "si"){
+
+    contenedor.classList.remove("hidden");
+
+    if(plantasEmergencia.length === 0){
+      modal.classList.remove("hidden");
+    }
+
+  }else{
+
+    plantasEmergencia = [];
+
+    renderizarPlantas();
+
+    contenedor.classList.add("hidden");
+
+    limpiarModalPlanta();
+
+  }
+
+});
+
+
+// ------------------------------------------------------
+// + AGREGAR PLANTA
+// ------------------------------------------------------
+
+document.addEventListener("click", function(e){
+
+  if(e.target.id !== "btnAgregarPlanta"){
+    return;
+  }
+
+  limpiarModalPlanta();
+
+  document
+    .getElementById("modalPlanta")
+    .classList.remove("hidden");
+
+});
+
+
+// ------------------------------------------------------
+// OTRO ENERGÉTICO
+// ------------------------------------------------------
 
 document.addEventListener("change", function(e){
 
   if(e.target.id !== "combustiblePlanta"){
     return;
   }
+
 
   const caja =
     document.getElementById("combustiblePlantaOtroBox");
@@ -5292,29 +5508,9 @@ document.addEventListener("change", function(e){
 });
 
 
-// ======================================================
-// F. CERRAR MODAL
-// ======================================================
-
-document.addEventListener("click", function(e){
-
-  const cerrar =
-    e.target.closest('[data-close="modalPlanta"]');
-
-  if(cerrar){
-
-    document
-      .getElementById("modalPlanta")
-      .classList.add("hidden");
-
-  }
-
-});
-
-
-// ======================================================
-// F. GUARDAR PLANTA
-// ======================================================
+// ------------------------------------------------------
+// GUARDAR PLANTA
+// ------------------------------------------------------
 
 document.addEventListener("click", function(e){
 
@@ -5337,9 +5533,6 @@ document.addEventListener("click", function(e){
 
   const horas =
     document.getElementById("horasPlanta");
-
-  const resumen =
-    document.getElementById("resumenPlanta");
 
 
   if(!combustible.value){
@@ -5370,33 +5563,38 @@ document.addEventListener("click", function(e){
         ].text.trim();
 
 
-  let texto =
-    "Planta registrada: " + nombre;
+  plantasEmergencia.push({
+
+    energetico: combustible.value,
+
+    nombre: nombre,
+
+    energetico_otro:
+      combustible.value === "otro"
+        ? otro.value.trim()
+        : null,
+
+    capacidad:
+      capacidad.value
+        ? Number(capacidad.value)
+        : null,
+
+    unidad:
+      capacidad.value
+        ? unidad.value
+        : null,
+
+    horas_anuales:
+      horas.value
+        ? Number(horas.value)
+        : null
+
+  });
 
 
-  if(capacidad.value){
+  renderizarPlantas();
 
-    texto +=
-      " – " +
-      capacidad.value +
-      " " +
-      unidad.value;
-
-  }
-
-
-  if(horas.value){
-
-    texto +=
-      " – " +
-      horas.value +
-      " h/año";
-
-  }
-
-
-  resumen.textContent = texto;
-  resumen.style.display = "block";
+  limpiarModalPlanta();
 
 
   document
@@ -5404,6 +5602,174 @@ document.addEventListener("click", function(e){
     .classList.add("hidden");
 
 });
+
+
+// ------------------------------------------------------
+// DIBUJAR PLANTAS
+// ------------------------------------------------------
+
+function renderizarPlantas(){
+
+  const tbody =
+    document.getElementById("tablaPlantasBody");
+
+  const tabla =
+    document.getElementById(
+      "tablaPlantasContenedor"
+    );
+
+  const vacio =
+    document.getElementById("sinPlantas");
+
+
+  tbody.innerHTML = "";
+
+
+  if(plantasEmergencia.length === 0){
+
+    tabla.style.display = "none";
+    vacio.style.display = "block";
+
+    return;
+
+  }
+
+
+  vacio.style.display = "none";
+  tabla.style.display = "block";
+
+
+  plantasEmergencia.forEach(
+    function(planta, index){
+
+      const capacidad =
+        planta.capacidad !== null
+          ? planta.capacidad + " " + planta.unidad
+          : "No disponible";
+
+
+      const horas =
+        planta.horas_anuales !== null
+          ? planta.horas_anuales + " h/año"
+          : "No disponible";
+
+
+      const tr =
+        document.createElement("tr");
+
+
+      tr.innerHTML = `
+        <td style="text-align:left;">
+          ${planta.nombre}
+        </td>
+
+        <td>
+          ${capacidad}
+        </td>
+
+        <td>
+          ${horas}
+        </td>
+
+        <td>
+          <button
+            type="button"
+            class="btn-eliminar-planta"
+            data-index="${index}"
+            title="Eliminar"
+          >
+            🗑
+          </button>
+        </td>
+      `;
+
+
+      tbody.appendChild(tr);
+
+    }
+  );
+
+}
+
+
+// ------------------------------------------------------
+// ELIMINAR PLANTA
+// ------------------------------------------------------
+
+document.addEventListener("click", function(e){
+
+  const boton =
+    e.target.closest(".btn-eliminar-planta");
+
+  if(!boton){
+    return;
+  }
+
+
+  const index =
+    Number(boton.dataset.index);
+
+
+  if(
+    !confirm(
+      "¿Desea eliminar esta planta de emergencia?"
+    )
+  ){
+    return;
+  }
+
+
+  plantasEmergencia.splice(index, 1);
+
+  renderizarPlantas();
+
+});
+
+
+// ------------------------------------------------------
+// LIMPIAR MODAL F
+// ------------------------------------------------------
+
+function limpiarModalPlanta(){
+
+  document.getElementById("combustiblePlanta").value = "";
+
+  document.getElementById("combustiblePlantaOtro").value = "";
+
+  document
+    .getElementById("combustiblePlantaOtroBox")
+    .classList.add("hidden");
+
+  document.getElementById("capacidadPlanta").value = "";
+
+  document.getElementById("unidadPlanta").value = "kW";
+
+  document.getElementById("horasPlanta").value = "";
+
+}
+
+
+// ------------------------------------------------------
+// CERRAR MODAL F
+// ------------------------------------------------------
+
+document.addEventListener("click", function(e){
+
+  const cerrar =
+    e.target.closest(
+      '[data-close="modalPlanta"]'
+    );
+
+  if(cerrar){
+
+    document
+      .getElementById("modalPlanta")
+      .classList.add("hidden");
+
+  }
+
+});
+  
   // ======================================================
 // G. MOSTRAR FACTURACIÓN SOLO SI USA ELECTRICIDAD
 // ======================================================
