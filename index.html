@@ -3786,6 +3786,19 @@ function calcularEdad(){
     document.getElementById("barraProgreso").style.width = `${porcentaje}%`;
 
     guardarLocal(false);
+    if(nombre === "energia"){
+
+  cargarListasPagina2DesdeSupabase()
+    .catch(function(error){
+
+      console.error(
+        "No se pudo recuperar Página 2:",
+        error
+      );
+
+    });
+
+}
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
@@ -4272,7 +4285,7 @@ if(superficieTotal){
 
 // Aquí guardamos temporalmente las áreas agregadas.
 let areasEstablecimiento = [];
-
+let listasPagina2Cargadas = false;
 
 // ------------------------------------------------------
 // OBTENER NOMBRE VISIBLE DEL ÁREA
@@ -6827,14 +6840,14 @@ if(btnEnergiaContinuar){
         alert(
           "La información de la Página 2 se guardó correctamente."
         );
-       mostrarVista("facturacion");
-       const energeticosFacturacion =
+     
+         const energeticosFacturacion =
          await cargarEnergeticosFacturacion();
 
       renderizarModulosFacturacion(
       energeticosFacturacion
      );
-       
+         mostrarVista("facturacion");
       } catch(error) {
 
         console.error(
@@ -7121,6 +7134,416 @@ async function renderizarModulosFacturacion(listaEnergeticos){
 
 }
 
+
+  // ======================================================
+// PÁGINA 2 - RECUPERAR LISTAS DESDE SUPABASE
+// ======================================================
+
+async function cargarListasPagina2DesdeSupabase(){
+
+  const encuestaId =
+    localStorage.getItem("encuesta_id");
+
+  if(!encuestaId){
+    return;
+  }
+
+  const id = Number(encuestaId);
+// ====================================================
+// A / C / E / F / G. CARACTERÍSTICAS GENERALES
+// ====================================================
+
+const {
+  data: caracteristicas,
+  error: errorCaracteristicas
+} =
+  await supabaseClient
+    .from("energia_caracteristicas")
+    .select("*")
+    .eq("encuesta_id", id)
+    .maybeSingle();
+
+if(errorCaracteristicas){
+  throw errorCaracteristicas;
+}
+
+
+if(caracteristicas){
+
+  // --------------------------------------------------
+  // A. CARACTERÍSTICAS FÍSICAS
+  // --------------------------------------------------
+
+  const tipoEdificacion =
+    document.getElementById("tipoEdificacion");
+
+  const tipoEdificacionOtro =
+    document.getElementById("tipoEdificacionOtro");
+
+  const tipoEdificacionOtroBox =
+    document.getElementById("tipoEdificacionOtroBox");
+
+  const superficieTotal =
+    document.getElementById("superficieTotal");
+
+  const numeroNiveles =
+    document.getElementById("numeroNiveles");
+
+
+  if(tipoEdificacion){
+    tipoEdificacion.value =
+      caracteristicas.tipo_edificacion || "";
+  }
+
+  if(tipoEdificacionOtro){
+    tipoEdificacionOtro.value =
+      caracteristicas.tipo_edificacion_otro || "";
+  }
+
+  if(tipoEdificacionOtroBox){
+
+    if(caracteristicas.tipo_edificacion === "otro"){
+      tipoEdificacionOtroBox.style.display = "block";
+    }else{
+      tipoEdificacionOtroBox.style.display = "none";
+    }
+
+  }
+
+  if(superficieTotal){
+    superficieTotal.value =
+      caracteristicas.superficie_total_m2 ?? "";
+  }
+
+  if(numeroNiveles){
+    numeroNiveles.value =
+      caracteristicas.numero_niveles ?? "";
+  }
+
+
+  // --------------------------------------------------
+  // C. ENVOLVENTE
+  // --------------------------------------------------
+
+  const materialMuros =
+    document.getElementById("materialMuros");
+
+  const materialMurosOtro =
+    document.getElementById("materialMurosOtro");
+
+  const materialMurosOtroBox =
+    document.getElementById("materialMurosOtroBox");
+
+  const tipoAislamiento =
+    document.getElementById("tipoAislamiento");
+
+  const tipoAislamientoOtro =
+    document.getElementById("tipoAislamientoOtro");
+
+  const tipoAislamientoOtroBox =
+    document.getElementById("tipoAislamientoOtroBox");
+
+  const tipoVentanas =
+    document.getElementById("tipoVentanas");
+
+  const tipoVentanasOtro =
+    document.getElementById("tipoVentanasOtro");
+
+  const tipoVentanasOtroBox =
+    document.getElementById("tipoVentanasOtroBox");
+
+
+  if(materialMuros){
+    materialMuros.value =
+      caracteristicas.material_muros || "";
+  }
+
+  if(materialMurosOtro){
+    materialMurosOtro.value =
+      caracteristicas.material_muros_otro || "";
+  }
+
+  if(materialMurosOtroBox){
+
+    if(caracteristicas.material_muros === "otro"){
+      materialMurosOtroBox.classList.remove("hidden");
+    }else{
+      materialMurosOtroBox.classList.add("hidden");
+    }
+
+  }
+
+
+  setRadio(
+    "aislamiento",
+    caracteristicas.aislamiento_respuesta || ""
+  );
+
+
+  if(tipoAislamiento){
+    tipoAislamiento.value =
+      caracteristicas.tipo_aislamiento || "";
+  }
+
+  if(tipoAislamientoOtro){
+    tipoAislamientoOtro.value =
+      caracteristicas.tipo_aislamiento_otro || "";
+  }
+
+  if(tipoAislamientoOtroBox){
+
+    if(
+      caracteristicas.aislamiento_respuesta === "si" &&
+      caracteristicas.tipo_aislamiento === "otro"
+    ){
+      tipoAislamientoOtroBox.classList.remove("hidden");
+    }else{
+      tipoAislamientoOtroBox.classList.add("hidden");
+    }
+
+  }
+
+
+  if(tipoVentanas){
+    tipoVentanas.value =
+      caracteristicas.tipo_ventanas || "";
+  }
+
+  if(tipoVentanasOtro){
+    tipoVentanasOtro.value =
+      caracteristicas.tipo_ventanas_otro || "";
+  }
+
+  if(tipoVentanasOtroBox){
+
+    if(caracteristicas.tipo_ventanas === "otro"){
+      tipoVentanasOtroBox.classList.remove("hidden");
+    }else{
+      tipoVentanasOtroBox.classList.add("hidden");
+    }
+
+  }
+
+
+  // --------------------------------------------------
+  // E. GENERACIÓN PROPIA
+  // --------------------------------------------------
+
+  setRadio(
+    "generacionPropia",
+    caracteristicas.generacion_propia_respuesta || ""
+  );
+
+
+  // --------------------------------------------------
+  // F. PLANTA DE EMERGENCIA
+  // --------------------------------------------------
+
+  setRadio(
+    "plantaEmergencia",
+    caracteristicas.planta_emergencia_respuesta || ""
+  );
+
+
+  // --------------------------------------------------
+  // G. FACTURACIÓN ELÉCTRICA
+  // --------------------------------------------------
+
+  const periodicidadFactura =
+    document.getElementById("periodicidadFactura");
+
+  const periodicidadOtra =
+    document.getElementById("periodicidadOtra");
+
+  const periodicidadOtraBox =
+    document.getElementById("periodicidadOtraBox");
+
+  const numeroMedidores =
+    document.getElementById("numeroMedidores");
+
+
+  if(periodicidadFactura){
+    periodicidadFactura.value =
+      caracteristicas.periodicidad_electrica || "";
+  }
+
+  if(periodicidadOtra){
+    periodicidadOtra.value =
+      caracteristicas.periodicidad_otra || "";
+  }
+
+  if(periodicidadOtraBox){
+
+    if(caracteristicas.periodicidad_electrica === "otra"){
+      periodicidadOtraBox.classList.remove("hidden");
+    }else{
+      periodicidadOtraBox.classList.add("hidden");
+    }
+
+  }
+
+  if(numeroMedidores){
+    numeroMedidores.value =
+      caracteristicas.numero_medidores ?? 1;
+  }
+
+}
+
+  // ====================================================
+  // B. ÁREAS
+  // ====================================================
+
+  const {
+    data: areas,
+    error: errorAreas
+  } =
+    await supabaseClient
+      .from("areas_establecimiento")
+      .select("*")
+      .eq("encuesta_id", id)
+      .order("id", { ascending:true });
+
+  if(errorAreas){
+    throw errorAreas;
+  }
+
+
+  areasEstablecimiento =
+    (areas || []).map(function(a){
+
+      return {
+        tipo: a.tipo,
+        nombre: a.nombre,
+        cantidad: Number(a.cantidad),
+        superficieValor: Number(a.superficie_valor),
+        unidad: a.unidad,
+        superficieM2: Number(a.superficie_m2)
+      };
+
+    });
+
+  renderizarAreas();
+
+
+  // ====================================================
+  // D. ENERGÉTICOS
+  // ====================================================
+
+  const {
+    data: energeticos,
+    error: errorEnergeticos
+  } =
+    await supabaseClient
+      .from("energeticos_establecimiento")
+      .select("*")
+      .eq("encuesta_id", id)
+      .order("id", { ascending:true });
+
+  if(errorEnergeticos){
+    throw errorEnergeticos;
+  }
+
+
+  energeticosEstablecimiento =
+    (energeticos || []).map(function(e){
+
+      return {
+        codigo: e.codigo,
+        nombre: e.nombre
+      };
+
+    });
+
+  renderizarEnergeticos();
+  actualizarOpcionesEnergeticos();
+  actualizarSeccionFacturacionElectrica();
+
+  // ====================================================
+  // E. GENERACIÓN PROPIA
+  // ====================================================
+
+  const {
+    data: generacion,
+    error: errorGeneracion
+  } =
+    await supabaseClient
+      .from("sistemas_generacion")
+      .select("*")
+      .eq("encuesta_id", id)
+      .order("id", { ascending:true });
+
+  if(errorGeneracion){
+    throw errorGeneracion;
+  }
+
+
+  sistemasGeneracion =
+    (generacion || []).map(function(g){
+
+      return {
+        tecnologia: g.tecnologia,
+        nombre: g.nombre,
+        tecnologia_otro: g.tecnologia_otro,
+        capacidad: Number(g.capacidad),
+        unidad: g.unidad
+      };
+
+    });
+
+
+  // ====================================================
+  // F. PLANTAS DE EMERGENCIA
+  // ====================================================
+
+  const {
+    data: plantas,
+    error: errorPlantas
+  } =
+    await supabaseClient
+      .from("plantas_emergencia")
+      .select("*")
+      .eq("encuesta_id", id)
+      .order("id", { ascending:true });
+
+  if(errorPlantas){
+    throw errorPlantas;
+  }
+
+
+  plantasEmergencia =
+    (plantas || []).map(function(p){
+
+      return {
+        energetico: p.energetico,
+        nombre: p.nombre,
+        energetico_otro: p.energetico_otro,
+        capacidad: Number(p.capacidad),
+        unidad: p.unidad,
+        horas_anuales:
+          p.horas_anuales !== null
+            ? Number(p.horas_anuales)
+            : null
+      };
+
+    });
+
+
+  // Estas funciones deben ser las que ya usas para
+  // dibujar las tablas de E y F.
+  if(typeof renderizarGeneracion === "function"){
+    renderizarGeneracion();
+  }
+
+  if(typeof renderizarPlantas === "function"){
+    renderizarPlantas();
+  }
+
+   listasPagina2Cargadas = true;
+  console.log(
+    "Listas de Página 2 recuperadas desde Supabase."
+  );
+
+}
   
   // ======================================================
   // INICIALIZACIÓN
