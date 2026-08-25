@@ -6828,7 +6828,12 @@ if(btnEnergiaContinuar){
           "La información de la Página 2 se guardó correctamente."
         );
        mostrarVista("facturacion");
-       renderizarModulosFacturacion();
+       const energeticosFacturacion =
+         await cargarEnergeticosFacturacion();
+
+      renderizarModulosFacturacion(
+      energeticosFacturacion
+     );
        
       } catch(error) {
 
@@ -6861,8 +6866,7 @@ if(btnEnergiaContinuar){
 // ======================================================
 // PÁGINA 3 - RENDERIZAR ENERGÉTICOS DE FACTURACIÓN
 // ======================================================
-
-function renderizarModulosFacturacion(){
+function renderizarModulosFacturacion(listaEnergeticos){
 
   const contenedor =
     document.getElementById(
@@ -6876,12 +6880,15 @@ function renderizarModulosFacturacion(){
   contenedor.innerHTML = "";
 
 
-  // Si no existen energéticos registrados
-  if(energeticosEstablecimiento.length === 0){
+  if(
+    !listaEnergeticos ||
+    listaEnergeticos.length === 0
+  ){
 
     contenedor.innerHTML = `
       <div class="empty-message">
-        No se han registrado energéticos en la sección anterior.
+        No se encontraron energéticos registrados
+        para esta encuesta.
       </div>
     `;
 
@@ -6889,8 +6896,7 @@ function renderizarModulosFacturacion(){
   }
 
 
-  // Crear un módulo por cada energético
-  energeticosEstablecimiento.forEach(
+  listaEnergeticos.forEach(
     function(energetico, index){
 
       const letra =
@@ -6898,7 +6904,6 @@ function renderizarModulosFacturacion(){
 
       const esElectricidad =
         energetico.codigo === "electricidad";
-
 
       const card =
         document.createElement("div");
@@ -6935,17 +6940,14 @@ function renderizarModulosFacturacion(){
 
           </div>
 
-
           <p class="helper-text">
             Registre los consumos, costos y datos eléctricos
             disponibles para cada periodo de facturación.
           </p>
 
-
           <div class="empty-message">
             Aún no se han agregado facturas.
           </div>
-
 
           <div
             class="table-responsive"
@@ -6996,12 +6998,11 @@ function renderizarModulosFacturacion(){
 
         `;
 
-
-      // ==================================================
-      // OTROS ENERGÉTICOS
-      // ==================================================
-
       }else{
+
+        // ==================================================
+        // OTROS ENERGÉTICOS
+        // ==================================================
 
         card.innerHTML = `
 
@@ -7022,17 +7023,14 @@ function renderizarModulosFacturacion(){
 
           </div>
 
-
           <p class="helper-text">
             Registre el consumo y costo correspondiente
             a cada periodo disponible.
           </p>
 
-
           <div class="empty-message">
             Aún no se han agregado facturas.
           </div>
-
 
           <div
             class="table-responsive"
@@ -7077,13 +7075,52 @@ function renderizarModulosFacturacion(){
 
       }
 
-
       contenedor.appendChild(card);
 
     }
   );
 
 }
+
+
+  // ======================================================
+// PÁGINA 3 - CARGAR ENERGÉTICOS DESDE SUPABASE
+// ======================================================
+
+async function renderizarModulosFacturacion(listaEnergeticos){
+
+  const encuestaId =
+    localStorage.getItem("encuesta_id");
+
+  if(!encuestaId){
+    throw new Error(
+      "No se encontró el identificador de la encuesta."
+    );
+  }
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("energeticos_establecimiento")
+      .select("codigo,nombre")
+      .eq(
+        "encuesta_id",
+        Number(encuestaId)
+      )
+      .order("id", {
+        ascending:true
+      });
+
+  if(error){
+    throw error;
+  }
+
+  return data || [];
+
+}
+
   
   // ======================================================
   // INICIALIZACIÓN
