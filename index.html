@@ -2060,16 +2060,46 @@
 
 </div>
       
+<!-- =========================================
+       PAGINA 3 FACTURACIÓN DE ENERGÍA
+  ========================================== -->
+<div id="view-facturacion" class="survey-view hidden">
 
+  <h1 class="section-title">
+    3. Facturación de energía
+  </h1>
 
+  <div class="info-banner">
+    ⓘ Registre la información disponible en sus facturas o recibos de energía.
+    Se mostrarán únicamente los energéticos seleccionados en la sección anterior.
+  </div>
+
+  <!-- CONTENEDOR DINÁMICO -->
+  <div id="contenedorFacturacionEnergeticos"></div>
+
+  <!-- BOTONES -->
+  <div class="page-actions">
+
+    <button
+      type="button"
+      class="secondary"
+      id="btnFacturacionAnterior"
+    >
+      ← Anterior
+    </button>
+
+    <button
+      type="button"
+      class="primary"
+      id="btnFacturacionContinuar"
+    >
+      Guardar y continuar →
+    </button>
+
+  </div>
+
+</div>
         
-
-      <div id="view-facturacion" class="survey-view hidden">
-        <h1 class="section-title">3. Facturación de energía</h1>
-        <div class="placeholder">
-          Aquí capturaremos consumos, costos y periodos de facturación.
-        </div>
-      </div>
 
       <div id="view-usos" class="survey-view hidden">
         <h1 class="section-title">4. Usos finales de energía</h1>
@@ -3058,7 +3088,337 @@
   </div>
 
 </div>
-  
+
+        <!-- =========================================
+     MODAL - AGREGAR FACTURA DE ENERGÍA
+========================================== -->
+
+<div id="modalFacturaEnergia" class="modal-backdrop hidden">
+
+  <div class="modal">
+
+    <!-- ENCABEZADO -->
+    <div class="modal-head">
+
+      <div>
+        <h3 id="tituloModalFactura">
+          Agregar factura
+        </h3>
+
+        <p style="margin-top:5px; color:#607080; font-size:13px;">
+          Capture la información disponible en la factura o recibo.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close"
+        data-close="modalFacturaEnergia"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <!-- =====================================
+         PERIODO DE FACTURACIÓN
+    ====================================== -->
+
+    <div class="grid-2">
+
+      <div class="field">
+        <label>
+          Inicio del periodo
+          <span class="req">*</span>
+        </label>
+
+        <input
+          id="facturaFechaInicio"
+          type="date"
+        >
+      </div>
+
+
+      <div class="field">
+        <label>
+          Fin del periodo
+          <span class="req">*</span>
+        </label>
+
+        <input
+          id="facturaFechaFin"
+          type="date"
+        >
+      </div>
+
+    </div>
+
+
+    <!-- =====================================
+         DATOS GENERALES DE LA FACTURA
+    ====================================== -->
+
+    <div class="grid-2">
+
+      <div class="field">
+        <label>
+          Consumo
+          <span class="req">*</span>
+        </label>
+
+        <input
+          id="facturaConsumo"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="Ej. 25430"
+        >
+      </div>
+
+
+      <div class="field">
+        <label>
+          Unidad
+          <span class="req">*</span>
+        </label>
+
+        <select id="facturaUnidad">
+          <option value="">
+            Seleccione una unidad
+          </option>
+        </select>
+      </div>
+
+
+      <div class="field">
+        <label>
+          Costo total del periodo
+        </label>
+
+        <div class="input-unit">
+
+          <input
+            id="facturaCosto"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Ej. 58200"
+          >
+
+          <span class="unit">
+            $
+          </span>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- =====================================
+         SOLO PARA ELECTRICIDAD
+    ====================================== -->
+
+    <div
+      id="camposFacturaElectrica"
+      class="hidden"
+      style="margin-top:22px;"
+    >
+
+      <h4 style="margin:0 0 14px 0; color:#0b497c;">
+        Datos del suministro eléctrico
+      </h4>
+
+
+      <div class="grid-2">
+
+        <!-- TARIFA -->
+
+        <div class="field">
+          <label>
+            Tarifa eléctrica
+          </label>
+
+          <select id="facturaTarifa">
+
+            <option value="">
+              Seleccione una opción
+            </option>
+
+            <option value="PDBT">
+              PDBT - Pequeña Demanda en Baja Tensión
+            </option>
+
+            <option value="GDBT">
+              GDBT - Gran Demanda en Baja Tensión
+            </option>
+
+            <option value="GDMTO">
+              GDMTO - Gran Demanda en Media Tensión Ordinaria
+            </option>
+
+            <option value="GDMTH">
+              GDMTH - Gran Demanda en Media Tensión Horaria
+            </option>
+
+            <option value="DAC">
+              DAC - Doméstica de Alto Consumo
+            </option>
+
+            <option value="1">
+              1 - Doméstica
+            </option>
+
+            <option value="NS">
+              No sabe
+            </option>
+
+          </select>
+        </div>
+
+
+        <!-- POTENCIA CONTRATADA -->
+
+        <div class="field">
+          <label>
+            Potencia contratada
+          </label>
+
+          <div class="input-unit">
+
+            <input
+              id="facturaPotenciaContratada"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ej. 600"
+            >
+
+            <span class="unit">
+              kW
+            </span>
+
+          </div>
+        </div>
+
+
+        <!-- DEMANDA MÁXIMA -->
+
+        <div class="field">
+          <label>
+            Demanda máxima
+          </label>
+
+          <div class="input-unit">
+
+            <input
+              id="facturaDemanda"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ej. 452.58"
+            >
+
+            <span class="unit">
+              kW
+            </span>
+
+          </div>
+        </div>
+
+
+        <!-- FACTOR DE POTENCIA -->
+
+        <div class="field">
+          <label>
+            Factor de potencia
+          </label>
+
+          <div class="input-unit">
+
+            <input
+              id="facturaFactorPotencia"
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="Ej. 98.5"
+            >
+
+            <span class="unit">
+              %
+            </span>
+
+          </div>
+        </div>
+
+
+        <!-- CARGO POR DEMANDA -->
+
+        <div class="field">
+          <label>
+            Cargo por demanda
+          </label>
+
+          <div class="input-unit">
+
+            <input
+              id="facturaCargoDemanda"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ej. 7561"
+            >
+
+            <span class="unit">
+              $
+            </span>
+
+          </div>
+        </div>
+
+      </div>
+
+
+      <p class="helper-text" style="margin-top:10px;">
+        La tarifa, potencia contratada, demanda máxima, factor de potencia
+        y cargo por demanda son opcionales. Regístrelos cuando aparezcan
+        en la factura eléctrica.
+      </p>
+
+    </div>
+
+
+    <!-- =====================================
+         BOTONES DEL MODAL
+    ====================================== -->
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary"
+        data-close="modalFacturaEnergia"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarFacturaEnergia"
+      >
+        Agregar factura
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+        
         
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -6468,6 +6828,7 @@ if(btnEnergiaContinuar){
           "La información de la Página 2 se guardó correctamente."
         );
        mostrarVista("facturacion");
+       renderizarModulosFacturacion();
        
       } catch(error) {
 
@@ -6496,6 +6857,234 @@ if(btnEnergiaContinuar){
   );
 
 }
+
+// ======================================================
+// PÁGINA 3 - RENDERIZAR ENERGÉTICOS DE FACTURACIÓN
+// ======================================================
+
+function renderizarModulosFacturacion(){
+
+  const contenedor =
+    document.getElementById(
+      "contenedorFacturacionEnergeticos"
+    );
+
+  if(!contenedor){
+    return;
+  }
+
+  contenedor.innerHTML = "";
+
+
+  // Si no existen energéticos registrados
+  if(energeticosEstablecimiento.length === 0){
+
+    contenedor.innerHTML = `
+      <div class="empty-message">
+        No se han registrado energéticos en la sección anterior.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  // Crear un módulo por cada energético
+  energeticosEstablecimiento.forEach(
+    function(energetico, index){
+
+      const letra =
+        String.fromCharCode(65 + index);
+
+      const esElectricidad =
+        energetico.codigo === "electricidad";
+
+
+      const card =
+        document.createElement("div");
+
+      card.className =
+        "energy-card energy-subsection";
+
+      card.dataset.codigo =
+        energetico.codigo;
+
+
+      // ==================================================
+      // ELECTRICIDAD
+      // ==================================================
+
+      if(esElectricidad){
+
+        card.innerHTML = `
+
+          <div class="card-title-row">
+
+            <h3 class="energy-subsection-title">
+              ${letra}. ${energetico.nombre}
+            </h3>
+
+            <button
+              type="button"
+              class="secondary btn-agregar-factura"
+              data-codigo="${energetico.codigo}"
+              data-nombre="${energetico.nombre}"
+            >
+              + Agregar factura
+            </button>
+
+          </div>
+
+
+          <p class="helper-text">
+            Registre los consumos, costos y datos eléctricos
+            disponibles para cada periodo de facturación.
+          </p>
+
+
+          <div class="empty-message">
+            Aún no se han agregado facturas.
+          </div>
+
+
+          <div
+            class="table-responsive"
+            style="margin-top:12px;"
+          >
+
+            <table class="energy-table">
+
+              <thead>
+                <tr>
+
+                  <th style="text-align:left;">
+                    Periodo
+                  </th>
+
+                  <th style="width:90px;">
+                    Tarifa
+                  </th>
+
+                  <th style="width:110px;">
+                    Consumo
+                  </th>
+
+                  <th style="width:100px;">
+                    Demanda
+                  </th>
+
+                  <th style="width:75px;">
+                    F.P.
+                  </th>
+
+                  <th style="width:105px;">
+                    Costo
+                  </th>
+
+                  <th style="width:85px;">
+                    Acciones
+                  </th>
+
+                </tr>
+              </thead>
+
+              <tbody></tbody>
+
+            </table>
+
+          </div>
+
+        `;
+
+
+      // ==================================================
+      // OTROS ENERGÉTICOS
+      // ==================================================
+
+      }else{
+
+        card.innerHTML = `
+
+          <div class="card-title-row">
+
+            <h3 class="energy-subsection-title">
+              ${letra}. ${energetico.nombre}
+            </h3>
+
+            <button
+              type="button"
+              class="secondary btn-agregar-factura"
+              data-codigo="${energetico.codigo}"
+              data-nombre="${energetico.nombre}"
+            >
+              + Agregar factura
+            </button>
+
+          </div>
+
+
+          <p class="helper-text">
+            Registre el consumo y costo correspondiente
+            a cada periodo disponible.
+          </p>
+
+
+          <div class="empty-message">
+            Aún no se han agregado facturas.
+          </div>
+
+
+          <div
+            class="table-responsive"
+            style="margin-top:12px;"
+          >
+
+            <table class="energy-table">
+
+              <thead>
+                <tr>
+
+                  <th style="text-align:left;">
+                    Periodo
+                  </th>
+
+                  <th>
+                    Consumo
+                  </th>
+
+                  <th style="width:100px;">
+                    Unidad
+                  </th>
+
+                  <th>
+                    Costo
+                  </th>
+
+                  <th style="width:85px;">
+                    Acciones
+                  </th>
+
+                </tr>
+              </thead>
+
+              <tbody></tbody>
+
+            </table>
+
+          </div>
+
+        `;
+
+      }
+
+
+      contenedor.appendChild(card);
+
+    }
+  );
+
+}
+  
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
