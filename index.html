@@ -6840,7 +6840,7 @@ if(btnEnergiaContinuar){
         alert(
           "La información de la Página 2 se guardó correctamente."
         );
-     const encuestaIdFacturacion =
+const encuestaIdFacturacion =
   localStorage.getItem("encuesta_id");
 
 const {
@@ -6870,9 +6870,16 @@ console.log(
   energeticosFacturacion
 );
 
+
+// PRIMERO mostrar Página 3
+mostrarVista("facturacion");
+
+
+// DESPUÉS construir las tarjetas
 renderizarModulosFacturacion(
   energeticosFacturacion || []
 );
+
 
 console.log(
   "Tarjetas creadas:",
@@ -6880,38 +6887,35 @@ console.log(
     "#contenedorFacturacionEnergeticos .energy-card"
   ).length
 );
-        
-mostrarVista("facturacion");
-     
-    
-      } catch(error) {
-
-        console.error(
-          "Error al guardar Página 2:",
-          error
-        );
 
 
-        alert(
-          "No fue posible guardar la información. " +
-          "Revise la consola para identificar el error."
-        );
+} catch(error) {
 
-
-      } finally {
-
-        btnEnergiaContinuar.disabled = false;
-
-        btnEnergiaContinuar.textContent =
-          "Guardar y continuar →";
-
-      }
-
-    }
+  console.error(
+    "Error al guardar Página 2:",
+    error
   );
+
+  alert(
+    "No fue posible guardar la información. " +
+    "Revise la consola para identificar el error."
+  );
+
+} finally {
+
+  btnEnergiaContinuar.disabled = false;
+
+  btnEnergiaContinuar.textContent =
+    "Guardar y continuar →";
 
 }
 
+}
+);
+
+}
+
+       
 // ======================================================
 // PÁGINA 3 - RENDERIZAR ENERGÉTICOS DE FACTURACIÓN
 // ======================================================
