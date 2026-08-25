@@ -6840,14 +6840,43 @@ if(btnEnergiaContinuar){
         alert(
           "La información de la Página 2 se guardó correctamente."
         );
-     
-         const energeticosFacturacion =
-         await cargarEnergeticosFacturacion();
+     const encuestaIdFacturacion =
+  localStorage.getItem("encuesta_id");
 
-      renderizarModulosFacturacion(
-      energeticosFacturacion
-     );
-         mostrarVista("facturacion");
+const {
+  data: energeticosFacturacion,
+  error: errorEnergeticosFacturacion
+} =
+  await supabaseClient
+    .from("energeticos_establecimiento")
+    .select("codigo,nombre")
+    .eq(
+      "encuesta_id",
+      Number(encuestaIdFacturacion)
+    )
+    .order(
+      "id",
+      {
+        ascending:true
+      }
+    );
+
+if(errorEnergeticosFacturacion){
+  throw errorEnergeticosFacturacion;
+}
+
+console.log(
+  "Energéticos para Página 3:",
+  energeticosFacturacion
+);
+
+renderizarModulosFacturacion(
+  energeticosFacturacion || []
+);
+
+mostrarVista("facturacion");
+     
+    
       } catch(error) {
 
         console.error(
