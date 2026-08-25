@@ -7544,6 +7544,46 @@ if(caracteristicas){
   );
 
 }
+// ======================================================
+// PÁGINA 3 - CARGAR ENERGÉTICOS DESDE SUPABASE
+// ======================================================
+
+async function cargarEnergeticosFacturacion(){
+
+  const encuestaId =
+    localStorage.getItem("encuesta_id");
+
+  if(!encuestaId){
+    throw new Error(
+      "No se encontró el identificador de la encuesta."
+    );
+  }
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("energeticos_establecimiento")
+      .select("codigo,nombre")
+      .eq(
+        "encuesta_id",
+        Number(encuestaId)
+      )
+      .order(
+        "id",
+        {
+          ascending:true
+        }
+      );
+
+  if(error){
+    throw error;
+  }
+
+  return data || [];
+
+}
   
   // ======================================================
   // INICIALIZACIÓN
