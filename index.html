@@ -4142,8 +4142,16 @@ async function guardarEncuestaSupabase(){
       alert("La información fue guardada correctamente.");
 
       // 5. Si Supabase respondió correctamente, pasa a Energía.
+
+      document
+  .getElementById("vistaInicio")
+  .classList.add("hidden");
+
+document
+  .getElementById("vistaEncuesta")
+  .classList.remove("hidden");
       mostrarVista("energia");
-      mostrarAyudaPagina(2);
+      
 
     } catch(error) {
       console.error(error);
