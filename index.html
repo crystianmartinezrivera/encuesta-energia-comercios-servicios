@@ -3819,6 +3819,11 @@ function calcularEdad(){
       return;
     }
 
+    guardarLocal(false);
+  cerrarModal("modalParcial");
+
+}); // ← CIERRA guardarParcial
+    
 function mostrarVista(nombre){
 state.vista = nombre;
 
