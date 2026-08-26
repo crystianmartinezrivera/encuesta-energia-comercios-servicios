@@ -8463,43 +8463,6 @@ if(btnFacturacionAnterior){
 
 }
 
-const btnFacturacionContinuar =
-  document.getElementById("btnFacturacionContinuar");
-
-if(btnFacturacionContinuar){
-
-  btnFacturacionContinuar.addEventListener(
-    "click",
-    function(){
-
-      console.log(
-        "Facturas registradas:",
-        facturasEnergia
-      );
-
-      mostrarVista("usos");
-
-    }
-  );
-
-}
-
-const btnFacturacionAnterior =
-  document.getElementById("btnFacturacionAnterior");
-
-if(btnFacturacionAnterior){
-
-  btnFacturacionAnterior.addEventListener(
-    "click",
-    function(){
-
-      mostrarVista("energia");
-
-    }
-  );
-
-}
-  
   
   // ======================================================
   // INICIALIZACIÓN
