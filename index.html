@@ -1303,7 +1303,10 @@
 
           <div class="buttons">
             <button type="button" class="secondary" id="btnVolverInicio">← Anterior</button>
-            <button type="submit" class="primary">Guardar y continuar →</button>
+            <button  type="button"  class="primary"  id="btnDatosContinuar">
+  Guardar y continuar →
+</button>
+            
           </div>
 
           <div class="save-hint" id="saveHint"></div>
@@ -8462,7 +8465,30 @@ if(btnFacturacionAnterior){
   );
 
 }
+// ======================================================
+// PÁGINA 1 - BOTÓN GUARDAR Y CONTINUAR
+// ======================================================
 
+const btnDatosContinuar =
+  document.getElementById("btnDatosContinuar");
+
+if(btnDatosContinuar){
+
+  btnDatosContinuar.addEventListener(
+    "click",
+    function(){
+
+      const formulario =
+        document.getElementById("formDatos");
+
+      if(formulario){
+        formulario.requestSubmit();
+      }
+
+    }
+  );
+
+}
   
   // ======================================================
   // INICIALIZACIÓN
