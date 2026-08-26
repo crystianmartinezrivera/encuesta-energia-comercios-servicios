@@ -7623,7 +7623,241 @@ async function cargarEnergeticosFacturacion(){
   return data || [];
 
 }
-  
+ // ======================================================
+// PÁGINA 3 - MODAL DE FACTURACIÓN
+// ======================================================
+
+let energeticoFacturaActual = null;
+
+
+// ======================================================
+// UNIDADES POR ENERGÉTICO
+// ======================================================
+
+function obtenerUnidadesFacturacion(codigo){
+
+  const unidades = {
+
+    electricidad: [
+      ["kWh", "kWh"],
+      ["MWh", "MWh"]
+    ],
+
+    gas_natural: [
+      ["m3", "m³"],
+      ["GJ", "GJ"]
+    ],
+
+    glp_tanque: [
+      ["L", "L"],
+      ["kg", "kg"]
+    ],
+
+    glp_cilindro: [
+      ["kg", "kg"],
+      ["L", "L"]
+    ],
+
+    diesel: [
+      ["L", "L"]
+    ],
+
+    gasolina: [
+      ["L", "L"]
+    ]
+
+  };
+
+  return unidades[codigo] || [
+    ["L", "L"],
+    ["kg", "kg"],
+    ["m3", "m³"],
+    ["GJ", "GJ"]
+  ];
+
+}
+
+
+// ======================================================
+// CARGAR SELECT DE UNIDADES
+// ======================================================
+
+function cargarUnidadesFactura(codigo){
+
+  const select =
+    document.getElementById("facturaUnidad");
+
+  if(!select){
+    return;
+  }
+
+  select.innerHTML =
+    '<option value="">Seleccione una unidad</option>';
+
+
+  obtenerUnidadesFacturacion(codigo)
+    .forEach(function(unidad){
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        unidad[0];
+
+      option.textContent =
+        unidad[1];
+
+      select.appendChild(option);
+
+    });
+
+
+  // Unidad predeterminada
+  if(codigo === "electricidad"){
+    select.value = "kWh";
+  }
+
+  if(codigo === "gas_natural"){
+    select.value = "m3";
+  }
+
+  if(
+    codigo === "diesel" ||
+    codigo === "gasolina" ||
+    codigo === "glp_tanque"
+  ){
+    select.value = "L";
+  }
+
+  if(codigo === "glp_cilindro"){
+    select.value = "kg";
+  }
+
+}
+
+
+// ======================================================
+// LIMPIAR MODAL
+// ======================================================
+
+function limpiarModalFactura(){
+
+  const ids = [
+    "facturaFechaInicio",
+    "facturaFechaFin",
+    "facturaConsumo",
+    "facturaCosto",
+    "facturaPotenciaContratada",
+    "facturaDemanda",
+    "facturaFactorPotencia",
+    "facturaCargoDemanda"
+  ];
+
+  ids.forEach(function(id){
+
+    const campo =
+      document.getElementById(id);
+
+    if(campo){
+      campo.value = "";
+    }
+
+  });
+
+
+  const tarifa =
+    document.getElementById("facturaTarifa");
+
+  if(tarifa){
+    tarifa.value = "";
+  }
+
+}
+
+
+// ======================================================
+// ABRIR MODAL SEGÚN ENERGÉTICO
+// ======================================================
+
+document.addEventListener(
+  "click",
+  function(event){
+
+    const boton =
+      event.target.closest(
+        ".btn-agregar-factura"
+      );
+
+    if(!boton){
+      return;
+    }
+
+
+    const codigo =
+      boton.dataset.codigo;
+
+    const nombre =
+      boton.dataset.nombre;
+
+
+    energeticoFacturaActual = {
+      codigo: codigo,
+      nombre: nombre
+    };
+
+
+    limpiarModalFactura();
+
+    cargarUnidadesFactura(codigo);
+
+
+    // Título
+    const titulo =
+      document.getElementById(
+        "tituloModalFactura"
+      );
+
+    if(titulo){
+      titulo.textContent =
+        "Agregar factura - " + nombre;
+    }
+
+
+    // Campos exclusivos de electricidad
+    const camposElectricos =
+      document.getElementById(
+        "camposFacturaElectrica"
+      );
+
+    if(camposElectricos){
+
+      if(codigo === "electricidad"){
+
+        camposElectricos
+          .classList.remove("hidden");
+
+      }else{
+
+        camposElectricos
+          .classList.add("hidden");
+
+      }
+
+    }
+
+
+    // Abrir modal
+    const modal =
+      document.getElementById(
+        "modalFacturaEnergia"
+      );
+
+    if(modal){
+      modal.classList.remove("hidden");
+    }
+
+  }
+); 
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
