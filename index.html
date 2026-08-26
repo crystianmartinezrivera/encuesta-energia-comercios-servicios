@@ -8421,6 +8421,85 @@ document.addEventListener(
   }
 );
 
+// ======================================================
+// PÁGINA 3 - BOTONES DE NAVEGACIÓN
+// ======================================================
+
+const btnFacturacionContinuar =
+  document.getElementById("btnFacturacionContinuar");
+
+if(btnFacturacionContinuar){
+
+  btnFacturacionContinuar.addEventListener(
+    "click",
+    function(){
+
+      console.log(
+        "Facturas registradas:",
+        facturasEnergia
+      );
+
+      mostrarVista("usos");
+
+    }
+  );
+
+}
+
+
+const btnFacturacionAnterior =
+  document.getElementById("btnFacturacionAnterior");
+
+if(btnFacturacionAnterior){
+
+  btnFacturacionAnterior.addEventListener(
+    "click",
+    function(){
+
+      mostrarVista("energia");
+
+    }
+  );
+
+}
+
+const btnFacturacionContinuar =
+  document.getElementById("btnFacturacionContinuar");
+
+if(btnFacturacionContinuar){
+
+  btnFacturacionContinuar.addEventListener(
+    "click",
+    function(){
+
+      console.log(
+        "Facturas registradas:",
+        facturasEnergia
+      );
+
+      mostrarVista("usos");
+
+    }
+  );
+
+}
+
+const btnFacturacionAnterior =
+  document.getElementById("btnFacturacionAnterior");
+
+if(btnFacturacionAnterior){
+
+  btnFacturacionAnterior.addEventListener(
+    "click",
+    function(){
+
+      mostrarVista("energia");
+
+    }
+  );
+
+}
+  
   
   // ======================================================
   // INICIALIZACIÓN
