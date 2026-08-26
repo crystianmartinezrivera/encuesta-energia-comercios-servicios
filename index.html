@@ -1303,10 +1303,7 @@
 
           <div class="buttons">
             <button type="button" class="secondary" id="btnVolverInicio">← Anterior</button>
-            <button type="submit" class="primary" id="btnDatosContinuar" form="formDatos">
-  Guardar y continuar →
-</button>
-            
+            <button type="submit" class="primary">Guardar y continuar →</button>
           </div>
 
           <div class="save-hint" id="saveHint"></div>
@@ -2244,821 +2241,6 @@
 
   </div>
 
-
-  <!-- =========================================
-       AYUDA - PÁGINA 3
-  ========================================== -->
-  
-  <div id="ayudaPagina3" class="hidden">
-  
-    <div class="right-card green">
-  
-      <h3>💡 ¿Por qué es importante?</h3>
-  
-      <p>
-        La información de las facturas permite conocer el consumo real
-        de energía del establecimiento y relacionarlo con sus características
-        de operación y equipamiento.
-      </p>
-  
-    </div>
-  
-  
-    <div class="right-card blue">
-  
-      <h3>📄 Información útil</h3>
-  
-      <ul>
-  
-        <li>
-          Registre los periodos disponibles de cada energético.
-        </li>
-  
-        <li>
-          Capture el consumo y el costo total reportados en la factura.
-        </li>
-  
-        <li>
-          En electricidad, registre también la tarifa, demanda máxima
-          y factor de potencia cuando estén disponibles.
-        </li>
-  
-        <li>
-          Puede agregar más de una factura para cada energético.
-        </li>
-  
-      </ul>
-  
-    </div>
-  
-  
-    <div class="right-card yellow">
-  
-      <h3>☆ Importante</h3>
-  
-      <p>
-        Si algún dato no aparece en la factura, puede dejarlo vacío
-        cuando el campo no sea obligatorio.
-      </p>
-  
-    </div>
-  
-  </div>
-  
-    
-  <!-- =========================================
-       MODAL - AGREGAR ÁREA
-  ========================================== -->
-  
-  <div id="modalArea" class="modal-backdrop hidden">
-  
-    <div class="modal">
-  
-      <div class="modal-head">
-  
-        <div>
-          <h3>Agregar área del establecimiento</h3>
-  
-          <p style="margin-top:5px;color:#607080;font-size:13px;">
-            Seleccione el tipo de área e indique la cantidad
-            y la superficie total utilizada.
-          </p>
-        </div>
-  
-        <button
-          type="button"
-          class="close"
-          data-close="modalArea"
-        >
-          ×
-        </button>
-  
-      </div>
-  
-  
-      <div class="grid-2">
-  
-        <!-- TIPO DE ÁREA -->
-        <div class="field full">
-  
-          <label>
-            Tipo de área
-            <span class="req">*</span>
-          </label>
-  
-          <select id="areaTipo">
-  
-            <option value="">
-              Seleccione un área
-            </option>
-  
-            <option value="ventas">
-              Salas de venta / exhibición
-            </option>
-  
-            <option value="espera">
-              Salas de espera
-            </option>
-  
-            <option value="administrativas">
-              Áreas administrativas / oficinas
-            </option>
-  
-            <option value="atencion_publico">
-              Áreas de atención al público
-            </option>
-  
-            <option value="comunes1">
-              Áreas comunes en interior
-            </option>
-  
-            <option value="comunes2">
-              Áreas comunes en exterior
-            </option>
-  
-            <option value="bodegas">
-              Bodegas / almacenes
-            </option>
-  
-            <option value="cocina">
-              Cocina / preparación de alimentos
-            </option>
-  
-            <option value="comedor">
-              Comedor / restaurante
-            </option>
-  
-            <option value="habitaciones">
-              Habitaciones / alojamiento
-            </option>
-  
-            <option value="banos">
-              Baños / vestidores
-            </option>
-  
-            <option value="estacionamientos">
-              Estacionamientos
-            </option>
-  
-            <option value="tecnicas">
-              Áreas técnicas / cuarto de máquinas
-            </option>
-  
-            <option value="otro">
-              Otro
-            </option>
-  
-          </select>
-  
-        </div>
-  
-  
-        <!-- OTRO -->
-        <div
-          id="areaOtroBox"
-          class="field full hidden"
-        >
-  
-          <label>
-            Especifique el área
-            <span class="req">*</span>
-          </label>
-  
-          <input
-            id="areaOtro"
-            type="text"
-            placeholder="Ej. Alberca, gimnasio, laboratorio..."
-          >
-  
-        </div>
-  
-  
-        <!-- CANTIDAD -->
-        <div class="field">
-  
-          <label>
-            Cantidad
-            <span class="req">*</span>
-          </label>
-  
-          <input
-            id="areaCantidad"
-            type="number"
-            min="1"
-            placeholder="Ej. 3"
-          >
-  
-        </div>
-  
-  
-        <!-- SUPERFICIE -->
-        <div class="field">
-  
-    <label>
-      Superficie del área
-      <span class="req">*</span>
-    </label>
-  
-    <div class="input-unit area-superficie-input">
-  
-      <input
-        id="areaSuperficie"
-        type="number"
-        min="0"
-        step="0.01"
-        placeholder="Ingrese el valor"
-      >
-  
-      <select
-        id="areaSuperficieUnidad"
-        class="unidad-select"
-      >
-        <option value="m2">m²</option>
-        <option value="porcentaje">% estimado</option>
-      </select>
-  
-    </div>
-  
-    <span
-      id="areaSuperficieAyuda"
-      class="field-help"
-    >
-      Puede indicar la superficie en m² o como porcentaje estimado
-      de la superficie total del establecimiento.
-    </span>
-  </div>
-  <!-- CIERRA grid-2 -->
-  </div>
-      <div class="modal-actions">
-  
-        <button
-          type="button"
-          class="secondary"
-          data-close="modalArea"
-        >
-          Cancelar
-        </button>
-  
-        <button
-          type="button"
-          class="primary"
-          id="guardarArea"
-        >
-          Agregar área
-        </button>
-  
-      </div>
-  
-    </div>
-  
-  </div>
-  <!-- =========================================
-       MODAL - AISLAMIENTO TÉRMICO
-  ========================================== -->
-  
-  <div id="modalAislamiento" class="modal-backdrop hidden">
-  
-    <div class="modal">
-  
-      <div class="modal-head">
-  
-        <div>
-          <h3>Tipo de aislamiento térmico</h3>
-  
-          <p style="margin-top:5px;color:#607080;font-size:13px;">
-            Seleccione el tipo predominante de aislamiento térmico
-            presente en los muros exteriores.
-          </p>
-        </div>
-  
-        <button
-          type="button"
-          class="close"
-          data-close="modalAislamiento"
-        >
-          ×
-        </button>
-  
-      </div>
-  
-      <div class="field">
-  
-        <label>
-          Tipo de aislamiento
-          <span class="req">*</span>
-        </label>
-  
-        <select id="tipoAislamiento">
-          <option value="">Seleccione una opción</option>
-  
-          <option value="poliestireno_expandido">
-            Poliestireno expandido (EPS)
-          </option>
-  
-          <option value="poliestireno_extruido">
-            Poliestireno extruido (XPS)
-          </option>
-  
-          <option value="poliuretano">
-            Poliuretano
-          </option>
-  
-          <option value="lana_mineral">
-            Lana mineral
-          </option>
-  
-          <option value="fibra_vidrio">
-            Fibra de vidrio
-          </option>
-  
-          <option value="panel_aislado">
-            Panel aislado / panel sándwich
-          </option>
-  
-          <option value="celulosa">
-            Celulosa
-          </option>
-  
-          <option value="corcho">
-            Corcho
-          </option>
-  
-          <option value="otro">
-            Otro
-          </option>
-  
-          <option value="ns">
-            No sabe
-          </option>
-        </select>
-  
-      </div>
-  
-  
-      <!-- SOLO SI SELECCIONA OTRO -->
-      <div
-        id="tipoAislamientoOtroBox"
-        class="field hidden"
-        style="margin-top:14px;"
-      >
-        <label>
-          Especifique el tipo de aislamiento
-        </label>
-  
-        <input
-          id="tipoAislamientoOtro"
-          type="text"
-          placeholder="Especifique"
-        >
-      </div>
-  
-  
-      <div class="modal-actions">
-  
-        <button
-          type="button"
-          class="secondary"
-          data-close="modalAislamiento"
-        >
-          Cancelar
-        </button>
-  
-        <button
-          type="button"
-          class="primary"
-          id="guardarAislamiento"
-        >
-          Guardar
-        </button>
-  
-      </div>
-    </div>
-  </div>  
-  
-  <!-- =========================================
-       MODAL - AGREGAR ENERGÉTICO
-  ========================================== -->
-  
-  <div id="modalEnergetico" class="modal-backdrop hidden">
-  
-     <div class="modal">
-  
-      <div class="modal-head">
-  
-        <div>
-          <h3>Agregar energético</h3>
-  
-          <p style="margin-top:5px;color:#607080;font-size:13px;">
-            Seleccione un energético utilizado actualmente
-            en el establecimiento.
-          </p>
-        </div>
-  
-        <button
-          type="button"
-          class="close"
-          data-close="modalEnergetico"
-        >
-          ×
-        </button>
-  
-      </div>
-  
-      <div class="field">
-  
-        <label>
-          Energético
-          <span class="req">*</span>
-        </label>
-  
-        <select id="energeticoTipo">
-  
-          <option value="">
-            Seleccione una opción
-          </option>
-  
-          <option value="electricidad">
-            Electricidad de la red
-          </option>
-  
-          <option value="gas_natural">
-            Gas natural
-          </option>
-  
-          <option value="glp_tanque">
-            GLP – tanque estacionario
-          </option>
-  
-          <option value="glp_cilindro">
-            GLP – cilindro
-          </option>
-  
-          <option value="diesel">
-            Diésel
-          </option>
-  
-          <option value="gasolina">
-            Gasolina
-          </option>
-  
-          <option value="combustoleo">
-            Combustóleo
-          </option>
-  
-          <option value="biomasa">
-            Leña / biomasa
-          </option>
-  
-          <option value="carbon">
-            Carbón
-          </option>
-  
-          <option value="energia_termica">
-            Energía térmica adquirida
-          </option>
-  
-          <option value="otro">
-            Otro
-          </option>
-  
-        </select>
-  
-      </div>
-  
-      <div
-        id="energeticoOtroModalBox"
-        class="field hidden"
-        style="margin-top:14px;"
-      >
-  
-        <label>
-          Especifique el energético
-          <span class="req">*</span>
-        </label>
-  
-        <input
-          id="energeticoOtroModal"
-          type="text"
-          placeholder="Especifique"
-        >
-  
-      </div>
-  
-      <div class="modal-actions">
-  
-        <button
-          type="button"
-          class="secondary"
-          data-close="modalEnergetico"
-        >
-          Cancelar
-        </button>
-  
-        <button
-          type="button"
-          class="primary"
-          id="guardarEnergetico"
-        >
-          Agregar energético
-        </button>
-  
-      </div>
-  
-    </div>
-  
-  </div>
-  
-  <!-- =========================================
-       MODAL - GENERACIÓN PROPIA
-  ========================================== -->
-  
-  <div id="modalGeneracion" class="modal-backdrop hidden">
-  
-    <div class="modal">
-  
-      <div class="modal-head">
-  
-        <div>
-          <h3>Generación propia para autoconsumo</h3>
-  
-          <p style="margin-top:5px;color:#607080;font-size:13px;">
-            Indique las características principales del sistema
-            de generación utilizado en el establecimiento.
-          </p>
-        </div>
-  
-        <button
-          type="button"
-          class="close"
-          data-close="modalGeneracion"
-        >
-          ×
-        </button>
-  
-      </div>
-  
-  
-      <div class="field">
-  
-        <label>
-          Tipo de generación
-          <span class="req">*</span>
-        </label>
-  
-        <select id="tipoGeneracion">
-  
-          <option value="">Seleccione una opción</option>
-  
-          <option value="fotovoltaica">
-            Solar fotovoltaica
-          </option>
-  
-          <option value="cogeneracion">
-            Cogeneración
-          </option>
-  
-          <option value="eolica">
-            Eólica
-          </option>
-  
-          <option value="biomasa">
-            Biomasa / biogás
-          </option>
-  
-          <option value="generador_gas">
-            Generador a gas
-          </option>
-  
-          <option value="generador_diesel">
-            Generador a diésel
-          </option>
-  
-          <option value="otro">
-            Otro
-          </option>
-  
-        </select>
-  
-      </div>
-  
-  
-      <!-- OTRO -->
-      <div
-        id="tipoGeneracionOtroBox"
-        class="field hidden"
-        style="margin-top:14px;"
-      >
-  
-        <label>
-          Especifique el tipo de generación
-          <span class="req">*</span>
-        </label>
-  
-        <input
-          id="tipoGeneracionOtro"
-          type="text"
-          placeholder="Especifique"
-        >
-  
-      </div>
-  
-  
-      <!-- CAPACIDAD -->
-      <div class="field" style="margin-top:14px;">
-  
-        <label>
-          Capacidad instalada
-        </label>
-  
-        <div class="input-unit">
-  
-          <input
-            id="capacidadGeneracion"
-            type="number"
-            min="0"
-            step="0.01"
-          >
-  
-          <select id="unidadGeneracion">
-            <option value="kW">kW</option>
-            <option value="MW">MW</option>
-          </select>
-  
-        </div>
-  
-      </div>
-  
-  
-      <div class="modal-actions">
-  
-        <button
-          type="button"
-          class="secondary"
-          data-close="modalGeneracion"
-        >
-          Cancelar
-        </button>
-  
-        <button
-          type="button"
-          class="primary"
-          id="guardarGeneracion"
-        >
-          Guardar
-        </button>
-  
-      </div>
-  
-    </div>
-  
-  </div>
-    <!-- =========================================
-       MODAL - PLANTA DE EMERGENCIA
-  ========================================== -->
-  
-  <div id="modalPlanta" class="modal-backdrop hidden">
-  
-    <div class="modal">
-  
-      <div class="modal-head">
-  
-        <div>
-          <h3>Planta de emergencia o respaldo</h3>
-  
-          <p style="margin-top:5px;color:#607080;font-size:13px;">
-            Indique las características principales de la planta
-            eléctrica de emergencia o respaldo.
-          </p>
-        </div>
-  
-        <button
-          type="button"
-          class="close"
-          data-close="modalPlanta"
-        >
-          ×
-        </button>
-  
-      </div>
-  
-  
-      <div class="field">
-  
-        <label>
-          Energético utilizado
-          <span class="req">*</span>
-        </label>
-  
-        <select id="combustiblePlanta">
-  
-          <option value="">Seleccione una opción</option>
-  
-          <option value="diesel">Diésel</option>
-          <option value="gas_natural">Gas natural</option>
-          <option value="glp">GLP</option>
-          <option value="gasolina">Gasolina</option>
-          <option value="otro">Otro</option>
-  
-        </select>
-  
-      </div>
-  
-  
-      <!-- OTRO -->
-      <div
-        id="combustiblePlantaOtroBox"
-        class="field hidden"
-        style="margin-top:14px;"
-      >
-  
-        <label>
-          Especifique el energético
-          <span class="req">*</span>
-        </label>
-  
-        <input
-          id="combustiblePlantaOtro"
-          type="text"
-          placeholder="Especifique"
-        >
-  
-      </div>
-  
-  
-      <!-- CAPACIDAD -->
-      <div class="field" style="margin-top:14px;">
-  
-        <label>
-          Capacidad de la planta
-        </label>
-  
-        <div class="input-unit">
-  
-          <input
-            id="capacidadPlanta"
-            type="number"
-            min="0"
-            step="0.01"
-          >
-  
-          <select id="unidadPlanta">
-            <option value="kW">kW</option>
-            <option value="kVA">kVA</option>
-          </select>
-  
-        </div>
-  
-      </div>
-  
-  
-      <!-- HORAS -->
-      <div class="field" style="margin-top:14px;">
-  
-        <label>
-          Horas aproximadas de operación al año
-        </label>
-  
-        <div class="input-unit">
-  
-          <input
-            id="horasPlanta"
-            type="number"
-            min="0"
-            step="1"
-          >
-  
-          <span class="unit">
-            h/año
-          </span>
-  
-        </div>
-  
-      </div>
-  
-  
-      <div class="modal-actions">
-  
-        <button
-          type="button"
-          class="secondary"
-          data-close="modalPlanta"
-        >
-          Cancelar
-        </button>
-  
-        <button
-          type="button"
-          class="primary"
-          id="guardarPlanta"
-        >
-          Guardar
-        </button>
-  
-      </div>
-  
-    </div>
-  
-  </div>
 </aside>
 
   </div>
@@ -3152,6 +2334,759 @@
       <button class="primary" type="button" id="guardarParcial">Guardar</button>
     </div>
   </div>
+</div>
+<!-- =========================================
+     MODAL - AGREGAR ÁREA
+========================================== -->
+
+<div id="modalArea" class="modal-backdrop hidden">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+        <h3>Agregar área del establecimiento</h3>
+
+        <p style="margin-top:5px;color:#607080;font-size:13px;">
+          Seleccione el tipo de área e indique la cantidad
+          y la superficie total utilizada.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close"
+        data-close="modalArea"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="grid-2">
+
+      <!-- TIPO DE ÁREA -->
+      <div class="field full">
+
+        <label>
+          Tipo de área
+          <span class="req">*</span>
+        </label>
+
+        <select id="areaTipo">
+
+          <option value="">
+            Seleccione un área
+          </option>
+
+          <option value="ventas">
+            Salas de venta / exhibición
+          </option>
+
+          <option value="espera">
+            Salas de espera
+          </option>
+
+          <option value="administrativas">
+            Áreas administrativas / oficinas
+          </option>
+
+          <option value="atencion_publico">
+            Áreas de atención al público
+          </option>
+
+          <option value="comunes1">
+            Áreas comunes en interior
+          </option>
+
+          <option value="comunes2">
+            Áreas comunes en exterior
+          </option>
+
+          <option value="bodegas">
+            Bodegas / almacenes
+          </option>
+
+          <option value="cocina">
+            Cocina / preparación de alimentos
+          </option>
+
+          <option value="comedor">
+            Comedor / restaurante
+          </option>
+
+          <option value="habitaciones">
+            Habitaciones / alojamiento
+          </option>
+
+          <option value="banos">
+            Baños / vestidores
+          </option>
+
+          <option value="estacionamientos">
+            Estacionamientos
+          </option>
+
+          <option value="tecnicas">
+            Áreas técnicas / cuarto de máquinas
+          </option>
+
+          <option value="otro">
+            Otro
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- OTRO -->
+      <div
+        id="areaOtroBox"
+        class="field full hidden"
+      >
+
+        <label>
+          Especifique el área
+          <span class="req">*</span>
+        </label>
+
+        <input
+          id="areaOtro"
+          type="text"
+          placeholder="Ej. Alberca, gimnasio, laboratorio..."
+        >
+
+      </div>
+
+
+      <!-- CANTIDAD -->
+      <div class="field">
+
+        <label>
+          Cantidad
+          <span class="req">*</span>
+        </label>
+
+        <input
+          id="areaCantidad"
+          type="number"
+          min="1"
+          placeholder="Ej. 3"
+        >
+
+      </div>
+
+
+      <!-- SUPERFICIE -->
+      <div class="field">
+
+  <label>
+    Superficie del área
+    <span class="req">*</span>
+  </label>
+
+  <div class="input-unit area-superficie-input">
+
+    <input
+      id="areaSuperficie"
+      type="number"
+      min="0"
+      step="0.01"
+      placeholder="Ingrese el valor"
+    >
+
+    <select
+      id="areaSuperficieUnidad"
+      class="unidad-select"
+    >
+      <option value="m2">m²</option>
+      <option value="porcentaje">% estimado</option>
+    </select>
+
+  </div>
+
+  <span
+    id="areaSuperficieAyuda"
+    class="field-help"
+  >
+    Puede indicar la superficie en m² o como porcentaje estimado
+    de la superficie total del establecimiento.
+  </span>
+</div>
+<!-- CIERRA grid-2 -->
+</div>
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary"
+        data-close="modalArea"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarArea"
+      >
+        Agregar área
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+<!-- =========================================
+     MODAL - AISLAMIENTO TÉRMICO
+========================================== -->
+
+<div id="modalAislamiento" class="modal-backdrop hidden">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+        <h3>Tipo de aislamiento térmico</h3>
+
+        <p style="margin-top:5px;color:#607080;font-size:13px;">
+          Seleccione el tipo predominante de aislamiento térmico
+          presente en los muros exteriores.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close"
+        data-close="modalAislamiento"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="field">
+
+      <label>
+        Tipo de aislamiento
+        <span class="req">*</span>
+      </label>
+
+      <select id="tipoAislamiento">
+        <option value="">Seleccione una opción</option>
+
+        <option value="poliestireno_expandido">
+          Poliestireno expandido (EPS)
+        </option>
+
+        <option value="poliestireno_extruido">
+          Poliestireno extruido (XPS)
+        </option>
+
+        <option value="poliuretano">
+          Poliuretano
+        </option>
+
+        <option value="lana_mineral">
+          Lana mineral
+        </option>
+
+        <option value="fibra_vidrio">
+          Fibra de vidrio
+        </option>
+
+        <option value="panel_aislado">
+          Panel aislado / panel sándwich
+        </option>
+
+        <option value="celulosa">
+          Celulosa
+        </option>
+
+        <option value="corcho">
+          Corcho
+        </option>
+
+        <option value="otro">
+          Otro
+        </option>
+
+        <option value="ns">
+          No sabe
+        </option>
+      </select>
+
+    </div>
+
+
+    <!-- SOLO SI SELECCIONA OTRO -->
+    <div
+      id="tipoAislamientoOtroBox"
+      class="field hidden"
+      style="margin-top:14px;"
+    >
+      <label>
+        Especifique el tipo de aislamiento
+      </label>
+
+      <input
+        id="tipoAislamientoOtro"
+        type="text"
+        placeholder="Especifique"
+      >
+    </div>
+
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary"
+        data-close="modalAislamiento"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarAislamiento"
+      >
+        Guardar
+      </button>
+
+    </div>
+  </div>
+</div>  
+
+<!-- =========================================
+     MODAL - AGREGAR ENERGÉTICO
+========================================== -->
+
+<div id="modalEnergetico" class="modal-backdrop hidden">
+
+   <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+        <h3>Agregar energético</h3>
+
+        <p style="margin-top:5px;color:#607080;font-size:13px;">
+          Seleccione un energético utilizado actualmente
+          en el establecimiento.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close"
+        data-close="modalEnergetico"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="field">
+
+      <label>
+        Energético
+        <span class="req">*</span>
+      </label>
+
+      <select id="energeticoTipo">
+
+        <option value="">
+          Seleccione una opción
+        </option>
+
+        <option value="electricidad">
+          Electricidad de la red
+        </option>
+
+        <option value="gas_natural">
+          Gas natural
+        </option>
+
+        <option value="glp_tanque">
+          GLP – tanque estacionario
+        </option>
+
+        <option value="glp_cilindro">
+          GLP – cilindro
+        </option>
+
+        <option value="diesel">
+          Diésel
+        </option>
+
+        <option value="gasolina">
+          Gasolina
+        </option>
+
+        <option value="combustoleo">
+          Combustóleo
+        </option>
+
+        <option value="biomasa">
+          Leña / biomasa
+        </option>
+
+        <option value="carbon">
+          Carbón
+        </option>
+
+        <option value="energia_termica">
+          Energía térmica adquirida
+        </option>
+
+        <option value="otro">
+          Otro
+        </option>
+
+      </select>
+
+    </div>
+
+    <div
+      id="energeticoOtroModalBox"
+      class="field hidden"
+      style="margin-top:14px;"
+    >
+
+      <label>
+        Especifique el energético
+        <span class="req">*</span>
+      </label>
+
+      <input
+        id="energeticoOtroModal"
+        type="text"
+        placeholder="Especifique"
+      >
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary"
+        data-close="modalEnergetico"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarEnergetico"
+      >
+        Agregar energético
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =========================================
+     MODAL - GENERACIÓN PROPIA
+========================================== -->
+
+<div id="modalGeneracion" class="modal-backdrop hidden">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+        <h3>Generación propia para autoconsumo</h3>
+
+        <p style="margin-top:5px;color:#607080;font-size:13px;">
+          Indique las características principales del sistema
+          de generación utilizado en el establecimiento.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close"
+        data-close="modalGeneracion"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Tipo de generación
+        <span class="req">*</span>
+      </label>
+
+      <select id="tipoGeneracion">
+
+        <option value="">Seleccione una opción</option>
+
+        <option value="fotovoltaica">
+          Solar fotovoltaica
+        </option>
+
+        <option value="cogeneracion">
+          Cogeneración
+        </option>
+
+        <option value="eolica">
+          Eólica
+        </option>
+
+        <option value="biomasa">
+          Biomasa / biogás
+        </option>
+
+        <option value="generador_gas">
+          Generador a gas
+        </option>
+
+        <option value="generador_diesel">
+          Generador a diésel
+        </option>
+
+        <option value="otro">
+          Otro
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- OTRO -->
+    <div
+      id="tipoGeneracionOtroBox"
+      class="field hidden"
+      style="margin-top:14px;"
+    >
+
+      <label>
+        Especifique el tipo de generación
+        <span class="req">*</span>
+      </label>
+
+      <input
+        id="tipoGeneracionOtro"
+        type="text"
+        placeholder="Especifique"
+      >
+
+    </div>
+
+
+    <!-- CAPACIDAD -->
+    <div class="field" style="margin-top:14px;">
+
+      <label>
+        Capacidad instalada
+      </label>
+
+      <div class="input-unit">
+
+        <input
+          id="capacidadGeneracion"
+          type="number"
+          min="0"
+          step="0.01"
+        >
+
+        <select id="unidadGeneracion">
+          <option value="kW">kW</option>
+          <option value="MW">MW</option>
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary"
+        data-close="modalGeneracion"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarGeneracion"
+      >
+        Guardar
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+  <!-- =========================================
+     MODAL - PLANTA DE EMERGENCIA
+========================================== -->
+
+<div id="modalPlanta" class="modal-backdrop hidden">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+        <h3>Planta de emergencia o respaldo</h3>
+
+        <p style="margin-top:5px;color:#607080;font-size:13px;">
+          Indique las características principales de la planta
+          eléctrica de emergencia o respaldo.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close"
+        data-close="modalPlanta"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Energético utilizado
+        <span class="req">*</span>
+      </label>
+
+      <select id="combustiblePlanta">
+
+        <option value="">Seleccione una opción</option>
+
+        <option value="diesel">Diésel</option>
+        <option value="gas_natural">Gas natural</option>
+        <option value="glp">GLP</option>
+        <option value="gasolina">Gasolina</option>
+        <option value="otro">Otro</option>
+
+      </select>
+
+    </div>
+
+
+    <!-- OTRO -->
+    <div
+      id="combustiblePlantaOtroBox"
+      class="field hidden"
+      style="margin-top:14px;"
+    >
+
+      <label>
+        Especifique el energético
+        <span class="req">*</span>
+      </label>
+
+      <input
+        id="combustiblePlantaOtro"
+        type="text"
+        placeholder="Especifique"
+      >
+
+    </div>
+
+
+    <!-- CAPACIDAD -->
+    <div class="field" style="margin-top:14px;">
+
+      <label>
+        Capacidad de la planta
+      </label>
+
+      <div class="input-unit">
+
+        <input
+          id="capacidadPlanta"
+          type="number"
+          min="0"
+          step="0.01"
+        >
+
+        <select id="unidadPlanta">
+          <option value="kW">kW</option>
+          <option value="kVA">kVA</option>
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <!-- HORAS -->
+    <div class="field" style="margin-top:14px;">
+
+      <label>
+        Horas aproximadas de operación al año
+      </label>
+
+      <div class="input-unit">
+
+        <input
+          id="horasPlanta"
+          type="number"
+          min="0"
+          step="1"
+        >
+
+        <span class="unit">
+          h/año
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary"
+        data-close="modalPlanta"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarPlanta"
+      >
+        Guardar
+      </button>
+
+    </div>
+
+  </div>
+
 </div>
 
         <!-- =========================================
@@ -3824,126 +3759,65 @@ function calcularEdad(){
     }
 
     guardarLocal(false);
-  cerrarModal("modalParcial");
+    cerrarModal("modalParcial");
+  });
 
-}); // ← CIERRA guardarParcial
-    
-function mostrarVista(nombre){
-state.vista = nombre;
+  document.getElementById("giro").addEventListener("change",actualizarOtroGiro);
+  document.getElementById("anioInicio").addEventListener("change", calcularEdad);
+  document.getElementById("anioConstruccion").addEventListener("change",calcularEdad);
 
-  const vistaEncuesta =
-    document.getElementById("vistaEncuesta");
+  function mostrarVista(nombre){
+    state.vista = nombre;
 
-  if(vistaEncuesta){
-    vistaEncuesta.classList.remove("hidden");
-  }
+    document.querySelectorAll(".survey-view").forEach(v=>v.classList.add("hidden"));
+    const target = document.getElementById("view-"+nombre);
+    if(target) target.classList.remove("hidden");
 
-  document
-    .querySelectorAll(".survey-view")
-    .forEach(v => v.classList.add("hidden"));
+    document.querySelectorAll(".menu-item").forEach(item=>{
+      item.classList.toggle("active",item.dataset.view===nombre);
+    });
 
-  const target =
-    document.getElementById("view-" + nombre);
+    const orden = ["datos","energia","facturacion","usos","practicas","revision","finalizar"];
+    const idx = Math.max(0,orden.indexOf(nombre));
+    const porcentaje = Math.round(((idx+1)/7)*100);
 
-  if(target){
-    target.classList.remove("hidden");
-  }
+    document.getElementById("textoProgreso").textContent = `${idx+1} de 7 secciones`;
+    document.getElementById("porcentajeProgreso").textContent = `${porcentaje}%`;
+    document.getElementById("barraProgreso").style.width = `${porcentaje}%`;
 
+    guardarLocal(false);
+    if(nombre === "energia"){
 
-  document
-    .querySelectorAll(".menu-item")
-    .forEach(item => {
+  cargarListasPagina2DesdeSupabase()
+    .catch(function(error){
 
-      item.classList.toggle(
-        "active",
-        item.dataset.view === nombre
+      console.error(
+        "No se pudo recuperar Página 2:",
+        error
       );
 
     });
 
-
-  const orden = [
-    "datos",
-    "energia",
-    "facturacion",
-    "usos",
-    "practicas",
-    "revision",
-    "finalizar"
-  ];
-
-  const idx =
-    Math.max(
-      0,
-      orden.indexOf(nombre)
-    );
-
-  const porcentaje =
-    Math.round(
-      ((idx + 1) / 7) * 100
-    );
-
-
-  document.getElementById(
-    "textoProgreso"
-  ).textContent =
-    `${idx + 1} de 7 secciones`;
-
-  document.getElementById(
-    "porcentajeProgreso"
-  ).textContent =
-    `${porcentaje}%`;
-
-  document.getElementById(
-    "barraProgreso"
-  ).style.width =
-    `${porcentaje}%`;
-
-
-  guardarLocal(false);
-
-
-  // ======================================================
-  // AYUDA LATERAL SEGÚN PÁGINA
-  // ======================================================
-
-  // Página 1
-  if(nombre === "datos"){
-    mostrarAyudaPagina(1);
+}
+    window.scrollTo({top:0,behavior:"smooth"});
   }
 
-
-  // Página 2
-  if(nombre === "energia"){
-
-    mostrarAyudaPagina(2);
-
-    cargarListasPagina2DesdeSupabase()
-      .catch(function(error){
-
-        console.error(
-          "No se pudo recuperar Página 2:",
-          error
-        );
-
-      });
-
-  }
-
-
-  // Página 3
-  if(nombre === "facturacion"){
-    mostrarAyudaPagina(3);
-  }
-
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
+  document.querySelectorAll(".menu-item").forEach(item=>{
+    item.addEventListener("click",()=>mostrarVista(item.dataset.view));
   });
 
-}
- 
+  document.getElementById("btnIniciar").addEventListener("click",()=>{
+    document.getElementById("vistaInicio").classList.add("hidden");
+    document.getElementById("vistaEncuesta").classList.remove("hidden");
+    mostrarVista("datos");
+  });
+
+  document.getElementById("btnVolverInicio").addEventListener("click",()=>{
+    guardarLocal(false);
+    document.getElementById("vistaEncuesta").classList.add("hidden");
+    document.getElementById("vistaInicio").classList.remove("hidden");
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
 
 // ======================================================
 // GUARDAR O ACTUALIZAR ENCUESTA EN SUPABASE
@@ -4146,16 +4020,8 @@ async function guardarEncuestaSupabase(){
       alert("La información fue guardada correctamente.");
 
       // 5. Si Supabase respondió correctamente, pasa a Energía.
-
-      document
-  .getElementById("vistaInicio")
-  .classList.add("hidden");
-
-document
-  .getElementById("vistaEncuesta")
-  .classList.remove("hidden");
       mostrarVista("energia");
-      
+      mostrarAyudaPagina(2);
 
     } catch(error) {
       console.error(error);
@@ -6345,7 +6211,69 @@ document.addEventListener("click", function(e){
 // G. MOSTRAR FACTURACIÓN SOLO SI USA ELECTRICIDAD
 // ======================================================
 
-/* Función duplicada eliminada durante depuración. */
+function actualizarSeccionFacturacionElectrica(){
+
+  const seccion =
+    document.getElementById(
+      "seccionFacturacionElectrica"
+    );
+
+  if(!seccion){
+    return;
+  }
+
+
+  const usaElectricidad =
+    energeticosEstablecimiento.some(
+      function(energetico){
+
+        return energetico.codigo === "electricidad";
+
+      }
+    );
+
+
+  if(usaElectricidad){
+
+    seccion.classList.remove("hidden");
+
+  }else{
+
+    seccion.classList.add("hidden");
+
+    // Limpia información si se elimina electricidad.
+    const periodicidad =
+      document.getElementById("periodicidadFactura");
+
+    const otra =
+      document.getElementById("periodicidadOtra");
+
+    const otraBox =
+      document.getElementById("periodicidadOtraBox");
+
+    const medidores =
+      document.getElementById("numeroMedidores");
+
+
+    if(periodicidad){
+      periodicidad.value = "";
+    }
+
+    if(otra){
+      otra.value = "";
+    }
+
+    if(otraBox){
+      otraBox.classList.add("hidden");
+    }
+
+    if(medidores){
+      medidores.value = "1";
+    }
+
+  }
+
+}
 // ======================================================
 // G. OTRA PERIODICIDAD
 // ======================================================
@@ -6437,8 +6365,9 @@ function actualizarSeccionFacturacionElectrica(){
 
 }
 // ======================================================
-// AYUDA DERECHA - CAMBIO ENTRE PÁGINA 1, PÁGINA 2 y 3
+// AYUDA DERECHA - CAMBIO ENTRE PÁGINA 1 Y PÁGINA 2
 // ======================================================
+
 function mostrarAyudaPagina(numero){
 
   const ayuda1 =
@@ -6447,32 +6376,23 @@ function mostrarAyudaPagina(numero){
   const ayuda2 =
     document.getElementById("ayudaPagina2");
 
-  const ayuda3 =
-    document.getElementById("ayudaPagina3");
-
-  if(!ayuda1 || !ayuda2 || !ayuda3){
+  if(!ayuda1 || !ayuda2){
     return;
   }
 
-  ayuda1.classList.add("hidden");
-  ayuda2.classList.add("hidden");
-  ayuda3.classList.add("hidden");
-
-
-  if(numero === 1){
-    ayuda1.classList.remove("hidden");
-  }
-
   if(numero === 2){
-    ayuda2.classList.remove("hidden");
-  }
 
-  if(numero === 3){
-    ayuda3.classList.remove("hidden");
+    ayuda1.classList.add("hidden");
+    ayuda2.classList.remove("hidden");
+
+  }else{
+
+    ayuda2.classList.add("hidden");
+    ayuda1.classList.remove("hidden");
+
   }
 
 }
-
 
 // ======================================================
 // PÁGINA 2 - BOTÓN ANTERIOR
@@ -7220,7 +7140,38 @@ function renderizarModulosFacturacion(listaEnergeticos){
 // PÁGINA 3 - CARGAR ENERGÉTICOS DESDE SUPABASE
 // ======================================================
 
-async /* Función duplicada eliminada durante depuración. */
+async function cargarEnergeticosFacturacion(){
+  const encuestaId =
+    localStorage.getItem("encuesta_id");
+
+  if(!encuestaId){
+    throw new Error(
+      "No se encontró el identificador de la encuesta."
+    );
+  }
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("energeticos_establecimiento")
+      .select("codigo,nombre")
+      .eq(
+        "encuesta_id",
+        Number(encuestaId)
+      )
+      .order("id", {
+        ascending:true
+      });
+
+  if(error){
+    throw error;
+  }
+
+  return data || [];
+
+}
 
 
   // ======================================================
@@ -7672,709 +7623,8 @@ async function cargarEnergeticosFacturacion(){
   return data || [];
 
 }
- // ======================================================
-// PÁGINA 3 - MODAL DE FACTURACIÓN
-// ======================================================
-
-let energeticoFacturaActual = null;
-
-
-// ======================================================
-// UNIDADES POR ENERGÉTICO
-// ======================================================
-
-function obtenerUnidadesFacturacion(codigo){
-
-  const unidades = {
-
-    electricidad: [
-      ["kWh", "kWh"],
-      ["MWh", "MWh"]
-    ],
-
-    gas_natural: [
-      ["m3", "m³"],
-      ["GJ", "GJ"]
-    ],
-
-    glp_tanque: [
-      ["L", "L"],
-      ["kg", "kg"]
-    ],
-
-    glp_cilindro: [
-      ["kg", "kg"],
-      ["L", "L"]
-    ],
-
-    diesel: [
-      ["L", "L"]
-    ],
-
-    gasolina: [
-      ["L", "L"]
-    ]
-
-  };
-
-  return unidades[codigo] || [
-    ["L", "L"],
-    ["kg", "kg"],
-    ["m3", "m³"],
-    ["GJ", "GJ"]
-  ];
-
-}
-
-
-// ======================================================
-// CARGAR SELECT DE UNIDADES
-// ======================================================
-
-function cargarUnidadesFactura(codigo){
-
-  const select =
-    document.getElementById("facturaUnidad");
-
-  if(!select){
-    return;
-  }
-
-  select.innerHTML =
-    '<option value="">Seleccione una unidad</option>';
-
-
-  obtenerUnidadesFacturacion(codigo)
-    .forEach(function(unidad){
-
-      const option =
-        document.createElement("option");
-
-      option.value =
-        unidad[0];
-
-      option.textContent =
-        unidad[1];
-
-      select.appendChild(option);
-
-    });
-
-
-  // Unidad predeterminada
-  if(codigo === "electricidad"){
-    select.value = "kWh";
-  }
-
-  if(codigo === "gas_natural"){
-    select.value = "m3";
-  }
-
-  if(
-    codigo === "diesel" ||
-    codigo === "gasolina" ||
-    codigo === "glp_tanque"
-  ){
-    select.value = "L";
-  }
-
-  if(codigo === "glp_cilindro"){
-    select.value = "kg";
-  }
-
-}
-
-
-// ======================================================
-// LIMPIAR MODAL
-// ======================================================
-
-function limpiarModalFactura(){
-
-  const ids = [
-    "facturaFechaInicio",
-    "facturaFechaFin",
-    "facturaConsumo",
-    "facturaCosto",
-    "facturaPotenciaContratada",
-    "facturaDemanda",
-    "facturaFactorPotencia",
-    "facturaCargoDemanda"
-  ];
-
-  ids.forEach(function(id){
-
-    const campo =
-      document.getElementById(id);
-
-    if(campo){
-      campo.value = "";
-    }
-
-  });
-
-
-  const tarifa =
-    document.getElementById("facturaTarifa");
-
-  if(tarifa){
-    tarifa.value = "";
-  }
-
-}
-
-
-// ======================================================
-// ABRIR MODAL SEGÚN ENERGÉTICO
-// ======================================================
-
-document.addEventListener(
-  "click",
-  function(event){
-
-    const boton =
-      event.target.closest(
-        ".btn-agregar-factura"
-      );
-
-    if(!boton){
-      return;
-    }
-
-
-    const codigo =
-      boton.dataset.codigo;
-
-    const nombre =
-      boton.dataset.nombre;
-
-
-    energeticoFacturaActual = {
-      codigo: codigo,
-      nombre: nombre
-    };
-
-
-    limpiarModalFactura();
-
-    cargarUnidadesFactura(codigo);
-
-
-    // Título
-    const titulo =
-      document.getElementById(
-        "tituloModalFactura"
-      );
-
-    if(titulo){
-      titulo.textContent =
-        "Agregar factura - " + nombre;
-    }
-
-
-    // Campos exclusivos de electricidad
-    const camposElectricos =
-      document.getElementById(
-        "camposFacturaElectrica"
-      );
-
-    if(camposElectricos){
-
-      if(codigo === "electricidad"){
-
-        camposElectricos
-          .classList.remove("hidden");
-
-      }else{
-
-        camposElectricos
-          .classList.add("hidden");
-
-      }
-
-    }
-
-
-    // Abrir modal
-    const modal =
-      document.getElementById(
-        "modalFacturaEnergia"
-      );
-
-    if(modal){
-      modal.classList.remove("hidden");
-    }
-
-  }
-); 
-// ======================================================
-// PÁGINA 3 - FACTURAS REGISTRADAS EN MEMORIA
-// ======================================================
-
-let facturasEnergia = [];
-
-
-// ======================================================
-// GUARDAR FACTURA DESDE MODAL
-// ======================================================
-
-const btnGuardarFacturaEnergia =
-  document.getElementById("guardarFacturaEnergia");
-
-if(btnGuardarFacturaEnergia){
-
-  btnGuardarFacturaEnergia.addEventListener(
-    "click",
-    function(){
-
-      if(!energeticoFacturaActual){
-        return;
-      }
-
-
-      const fechaInicio =
-        document.getElementById("facturaFechaInicio").value;
-
-      const fechaFin =
-        document.getElementById("facturaFechaFin").value;
-
-      const consumo =
-        document.getElementById("facturaConsumo").value;
-
-      const unidad =
-        document.getElementById("facturaUnidad").value;
-
-      const costo =
-        document.getElementById("facturaCosto").value;
-
-
-      // ----------------------------------------------
-      // VALIDACIONES MÍNIMAS
-      // ----------------------------------------------
-
-      if(
-        !fechaInicio ||
-        !fechaFin ||
-        !consumo ||
-        !unidad
-      ){
-
-        alert(
-          "Complete el periodo, el consumo y la unidad."
-        );
-
-        return;
-      }
-
-
-      if(
-        new Date(fechaFin) <
-        new Date(fechaInicio)
-      ){
-
-        alert(
-          "La fecha final no puede ser anterior a la fecha inicial."
-        );
-
-        return;
-      }
-
-
-      const factura = {
-
-        codigo:
-          energeticoFacturaActual.codigo,
-
-        nombre:
-          energeticoFacturaActual.nombre,
-
-        fecha_inicio:
-          fechaInicio,
-
-        fecha_fin:
-          fechaFin,
-
-        consumo:
-          Number(consumo),
-
-        unidad:
-          unidad,
-
-        costo:
-          costo
-            ? Number(costo)
-            : null,
-
-
-        // --------------------------------------------
-        // SOLO ELECTRICIDAD
-        // --------------------------------------------
-
-        tarifa:
-          energeticoFacturaActual.codigo === "electricidad"
-            ? document.getElementById("facturaTarifa").value || null
-            : null,
-
-        potencia_contratada:
-          energeticoFacturaActual.codigo === "electricidad" &&
-          document.getElementById("facturaPotenciaContratada").value
-            ? Number(
-                document.getElementById(
-                  "facturaPotenciaContratada"
-                ).value
-              )
-            : null,
-
-        demanda:
-          energeticoFacturaActual.codigo === "electricidad" &&
-          document.getElementById("facturaDemanda").value
-            ? Number(
-                document.getElementById(
-                  "facturaDemanda"
-                ).value
-              )
-            : null,
-
-        factor_potencia:
-          energeticoFacturaActual.codigo === "electricidad" &&
-          document.getElementById("facturaFactorPotencia").value
-            ? Number(
-                document.getElementById(
-                  "facturaFactorPotencia"
-                ).value
-              )
-            : null,
-
-        cargo_demanda:
-          energeticoFacturaActual.codigo === "electricidad" &&
-          document.getElementById("facturaCargoDemanda").value
-            ? Number(
-                document.getElementById(
-                  "facturaCargoDemanda"
-                ).value
-              )
-            : null
-
-      };
-
-
-      facturasEnergia.push(factura);
-
-
-      renderizarFacturasEnergia();
-
-
-      const modal =
-        document.getElementById(
-          "modalFacturaEnergia"
-        );
-
-      if(modal){
-        modal.classList.add("hidden");
-      }
-
-
-      limpiarModalFactura();
-
-      energeticoFacturaActual = null;
-
-    }
-  );
-
-}
-
-// ======================================================
-// PÁGINA 3 - RENDERIZAR FACTURAS EN SUS TABLAS
-// ======================================================
-
-function renderizarFacturasEnergia(){
-
-  const tarjetas =
-    document.querySelectorAll(
-      "#contenedorFacturacionEnergeticos .energy-card"
-    );
-
-
-  tarjetas.forEach(function(card){
-
-    const codigo =
-      card.dataset.codigo;
-
-    const tbody =
-      card.querySelector("tbody");
-
-    const mensaje =
-      card.querySelector(".empty-message");
-
-    const facturas =
-      facturasEnergia.filter(
-        function(factura){
-
-          return factura.codigo === codigo;
-
-        }
-      );
-
-
-    if(!tbody){
-      return;
-    }
-
-
-    tbody.innerHTML = "";
-
-
-    if(facturas.length === 0){
-
-      if(mensaje){
-        mensaje.style.display = "block";
-      }
-
-      return;
-    }
-
-
-    if(mensaje){
-      mensaje.style.display = "none";
-    }
-
-
-    facturas.forEach(
-      function(factura, index){
-
-        const tr =
-          document.createElement("tr");
-
-
-        const periodo =
-          factura.fecha_inicio +
-          " a " +
-          factura.fecha_fin;
-
-
-        // ============================================
-        // ELECTRICIDAD
-        // ============================================
-
-        if(codigo === "electricidad"){
-
-          tr.innerHTML = `
-
-            <td style="text-align:left;">
-              ${periodo}
-            </td>
-
-            <td>
-              ${factura.tarifa || "-"}
-            </td>
-
-            <td>
-              ${factura.consumo.toLocaleString()} ${factura.unidad}
-            </td>
-
-            <td>
-              ${
-                factura.demanda !== null
-                  ? factura.demanda.toLocaleString() + " kW"
-                  : "-"
-              }
-            </td>
-
-            <td>
-              ${
-                factura.factor_potencia !== null
-                  ? factura.factor_potencia + "%"
-                  : "-"
-              }
-            </td>
-
-            <td>
-              ${
-                factura.costo !== null
-                  ? "$" + factura.costo.toLocaleString()
-                  : "-"
-              }
-            </td>
-
-            <td>
-              <button
-                type="button"
-                class="secondary btn-eliminar-factura"
-                data-codigo="${codigo}"
-                data-index="${index}"
-                style="padding:6px 10px;"
-              >
-                🗑
-              </button>
-            </td>
-
-          `;
-
-
-        // ============================================
-        // OTROS ENERGÉTICOS
-        // ============================================
-
-        }else{
-
-          tr.innerHTML = `
-
-            <td style="text-align:left;">
-              ${periodo}
-            </td>
-
-            <td>
-              ${factura.consumo.toLocaleString()}
-            </td>
-
-            <td>
-              ${factura.unidad}
-            </td>
-
-            <td>
-              ${
-                factura.costo !== null
-                  ? "$" + factura.costo.toLocaleString()
-                  : "-"
-              }
-            </td>
-
-            <td>
-              <button
-                type="button"
-                class="secondary btn-eliminar-factura"
-                data-codigo="${codigo}"
-                data-index="${index}"
-                style="padding:6px 10px;"
-              >
-                🗑
-              </button>
-            </td>
-
-          `;
-
-        }
-
-
-        tbody.appendChild(tr);
-
-      }
-    );
-
-  });
-
-}  
+  
   // ======================================================
-// ELIMINAR FACTURA
-// ======================================================
-
-document.addEventListener(
-  "click",
-  function(event){
-
-    const boton =
-      event.target.closest(
-        ".btn-eliminar-factura"
-      );
-
-    if(!boton){
-      return;
-    }
-
-
-    const codigo =
-      boton.dataset.codigo;
-
-    const indexVisible =
-      Number(boton.dataset.index);
-
-
-    const indicesReales = [];
-
-    facturasEnergia.forEach(
-      function(factura, indexReal){
-
-        if(factura.codigo === codigo){
-          indicesReales.push(indexReal);
-        }
-
-      }
-    );
-
-
-    const indexReal =
-      indicesReales[indexVisible];
-
-
-    if(indexReal === undefined){
-      return;
-    }
-
-
-    const confirmar =
-      confirm(
-        "¿Desea eliminar esta factura?"
-      );
-
-    if(!confirmar){
-      return;
-    }
-
-
-    facturasEnergia.splice(
-      indexReal,
-      1
-    );
-
-
-    renderizarFacturasEnergia();
-
-  }
-);
-
-// ======================================================
-// PÁGINA 3 - BOTONES DE NAVEGACIÓN
-// ======================================================
-
-const btnFacturacionContinuar =
-  document.getElementById("btnFacturacionContinuar");
-
-if(btnFacturacionContinuar){
-
-  btnFacturacionContinuar.addEventListener(
-    "click",
-    function(){
-
-      console.log(
-        "Facturas registradas:",
-        facturasEnergia
-      );
-
-      mostrarVista("usos");
-
-    }
-  );
-
-}
-
-
-const btnFacturacionAnterior =
-  document.getElementById("btnFacturacionAnterior");
-
-if(btnFacturacionAnterior){
-
-  btnFacturacionAnterior.addEventListener(
-    "click",
-    function(){
-
-      mostrarVista("energia");
-
-    }
-  );
-
-}
-// Página 1 usa envío nativo del formulario (type="submit").
-// ======================================================
   // INICIALIZACIÓN
   // ======================================================
   // Carga las listas de años.
