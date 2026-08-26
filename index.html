@@ -2336,6 +2336,67 @@
   </div>
 </div>
 <!-- =========================================
+     AYUDA - PÁGINA 3
+========================================== -->
+
+<div id="ayudaPagina3" class="hidden">
+
+  <div class="right-card green">
+
+    <h3>💡 ¿Por qué es importante?</h3>
+
+    <p>
+      La información de las facturas permite conocer el consumo real
+      de energía del establecimiento y relacionarlo con sus características
+      de operación y equipamiento.
+    </p>
+
+  </div>
+
+
+  <div class="right-card blue">
+
+    <h3>📄 Información útil</h3>
+
+    <ul>
+
+      <li>
+        Registre los periodos disponibles de cada energético.
+      </li>
+
+      <li>
+        Capture el consumo y el costo total reportados en la factura.
+      </li>
+
+      <li>
+        En electricidad, registre también la tarifa, demanda máxima
+        y factor de potencia cuando estén disponibles.
+      </li>
+
+      <li>
+        Puede agregar más de una factura para cada energético.
+      </li>
+
+    </ul>
+
+  </div>
+
+
+  <div class="right-card yellow">
+
+    <h3>☆ Importante</h3>
+
+    <p>
+      Si algún dato no aparece en la factura, puede dejarlo vacío
+      cuando el campo no sea obligatorio.
+    </p>
+
+  </div>
+
+</div>
+
+  
+<!-- =========================================
      MODAL - AGREGAR ÁREA
 ========================================== -->
 
@@ -3758,66 +3819,115 @@ function calcularEdad(){
       return;
     }
 
-    guardarLocal(false);
-    cerrarModal("modalParcial");
-  });
+function mostrarVista(nombre){
+state.vista = nombre;
 
-  document.getElementById("giro").addEventListener("change",actualizarOtroGiro);
-  document.getElementById("anioInicio").addEventListener("change", calcularEdad);
-  document.getElementById("anioConstruccion").addEventListener("change",calcularEdad);
+  document
+    .querySelectorAll(".survey-view")
+    .forEach(v => v.classList.add("hidden"));
 
-  function mostrarVista(nombre){
-    state.vista = nombre;
+  const target =
+    document.getElementById("view-" + nombre);
 
-    document.querySelectorAll(".survey-view").forEach(v=>v.classList.add("hidden"));
-    const target = document.getElementById("view-"+nombre);
-    if(target) target.classList.remove("hidden");
+  if(target){
+    target.classList.remove("hidden");
+  }
 
-    document.querySelectorAll(".menu-item").forEach(item=>{
-      item.classList.toggle("active",item.dataset.view===nombre);
-    });
 
-    const orden = ["datos","energia","facturacion","usos","practicas","revision","finalizar"];
-    const idx = Math.max(0,orden.indexOf(nombre));
-    const porcentaje = Math.round(((idx+1)/7)*100);
+  document
+    .querySelectorAll(".menu-item")
+    .forEach(item => {
 
-    document.getElementById("textoProgreso").textContent = `${idx+1} de 7 secciones`;
-    document.getElementById("porcentajeProgreso").textContent = `${porcentaje}%`;
-    document.getElementById("barraProgreso").style.width = `${porcentaje}%`;
-
-    guardarLocal(false);
-    if(nombre === "energia"){
-
-  cargarListasPagina2DesdeSupabase()
-    .catch(function(error){
-
-      console.error(
-        "No se pudo recuperar Página 2:",
-        error
+      item.classList.toggle(
+        "active",
+        item.dataset.view === nombre
       );
 
     });
 
-}
-    window.scrollTo({top:0,behavior:"smooth"});
+
+  const orden = [
+    "datos",
+    "energia",
+    "facturacion",
+    "usos",
+    "practicas",
+    "revision",
+    "finalizar"
+  ];
+
+  const idx =
+    Math.max(
+      0,
+      orden.indexOf(nombre)
+    );
+
+  const porcentaje =
+    Math.round(
+      ((idx + 1) / 7) * 100
+    );
+
+
+  document.getElementById(
+    "textoProgreso"
+  ).textContent =
+    `${idx + 1} de 7 secciones`;
+
+  document.getElementById(
+    "porcentajeProgreso"
+  ).textContent =
+    `${porcentaje}%`;
+
+  document.getElementById(
+    "barraProgreso"
+  ).style.width =
+    `${porcentaje}%`;
+
+
+  guardarLocal(false);
+
+
+  // ======================================================
+  // AYUDA LATERAL SEGÚN PÁGINA
+  // ======================================================
+
+  // Página 1
+  if(nombre === "datos"){
+    mostrarAyudaPagina(1);
   }
 
-  document.querySelectorAll(".menu-item").forEach(item=>{
-    item.addEventListener("click",()=>mostrarVista(item.dataset.view));
+
+  // Página 2
+  if(nombre === "energia"){
+
+    mostrarAyudaPagina(2);
+
+    cargarListasPagina2DesdeSupabase()
+      .catch(function(error){
+
+        console.error(
+          "No se pudo recuperar Página 2:",
+          error
+        );
+
+      });
+
+  }
+
+
+  // Página 3
+  if(nombre === "facturacion"){
+    mostrarAyudaPagina(3);
+  }
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
   });
 
-  document.getElementById("btnIniciar").addEventListener("click",()=>{
-    document.getElementById("vistaInicio").classList.add("hidden");
-    document.getElementById("vistaEncuesta").classList.remove("hidden");
-    mostrarVista("datos");
-  });
-
-  document.getElementById("btnVolverInicio").addEventListener("click",()=>{
-    guardarLocal(false);
-    document.getElementById("vistaEncuesta").classList.add("hidden");
-    document.getElementById("vistaInicio").classList.remove("hidden");
-    window.scrollTo({top:0,behavior:"smooth"});
-  });
+}
+ 
 
 // ======================================================
 // GUARDAR O ACTUALIZAR ENCUESTA EN SUPABASE
@@ -6365,9 +6475,8 @@ function actualizarSeccionFacturacionElectrica(){
 
 }
 // ======================================================
-// AYUDA DERECHA - CAMBIO ENTRE PÁGINA 1 Y PÁGINA 2
+// AYUDA DERECHA - CAMBIO ENTRE PÁGINA 1, PÁGINA 2 y 3
 // ======================================================
-
 function mostrarAyudaPagina(numero){
 
   const ayuda1 =
@@ -6376,23 +6485,32 @@ function mostrarAyudaPagina(numero){
   const ayuda2 =
     document.getElementById("ayudaPagina2");
 
-  if(!ayuda1 || !ayuda2){
+  const ayuda3 =
+    document.getElementById("ayudaPagina3");
+
+  if(!ayuda1 || !ayuda2 || !ayuda3){
     return;
   }
 
-  if(numero === 2){
+  ayuda1.classList.add("hidden");
+  ayuda2.classList.add("hidden");
+  ayuda3.classList.add("hidden");
 
-    ayuda1.classList.add("hidden");
-    ayuda2.classList.remove("hidden");
 
-  }else{
-
-    ayuda2.classList.add("hidden");
+  if(numero === 1){
     ayuda1.classList.remove("hidden");
+  }
 
+  if(numero === 2){
+    ayuda2.classList.remove("hidden");
+  }
+
+  if(numero === 3){
+    ayuda3.classList.remove("hidden");
   }
 
 }
+
 
 // ======================================================
 // PÁGINA 2 - BOTÓN ANTERIOR
