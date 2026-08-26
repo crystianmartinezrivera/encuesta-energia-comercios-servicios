@@ -3827,6 +3827,13 @@ function calcularEdad(){
 function mostrarVista(nombre){
 state.vista = nombre;
 
+  const vistaEncuesta =
+    document.getElementById("vistaEncuesta");
+
+  if(vistaEncuesta){
+    vistaEncuesta.classList.remove("hidden");
+  }
+
   document
     .querySelectorAll(".survey-view")
     .forEach(v => v.classList.add("hidden"));
