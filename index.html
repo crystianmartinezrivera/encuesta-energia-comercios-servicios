@@ -7858,6 +7858,432 @@ document.addEventListener(
 
   }
 ); 
+// ======================================================
+// PÁGINA 3 - FACTURAS REGISTRADAS EN MEMORIA
+// ======================================================
+
+let facturasEnergia = [];
+
+
+// ======================================================
+// GUARDAR FACTURA DESDE MODAL
+// ======================================================
+
+const btnGuardarFacturaEnergia =
+  document.getElementById("guardarFacturaEnergia");
+
+if(btnGuardarFacturaEnergia){
+
+  btnGuardarFacturaEnergia.addEventListener(
+    "click",
+    function(){
+
+      if(!energeticoFacturaActual){
+        return;
+      }
+
+
+      const fechaInicio =
+        document.getElementById("facturaFechaInicio").value;
+
+      const fechaFin =
+        document.getElementById("facturaFechaFin").value;
+
+      const consumo =
+        document.getElementById("facturaConsumo").value;
+
+      const unidad =
+        document.getElementById("facturaUnidad").value;
+
+      const costo =
+        document.getElementById("facturaCosto").value;
+
+
+      // ----------------------------------------------
+      // VALIDACIONES MÍNIMAS
+      // ----------------------------------------------
+
+      if(
+        !fechaInicio ||
+        !fechaFin ||
+        !consumo ||
+        !unidad
+      ){
+
+        alert(
+          "Complete el periodo, el consumo y la unidad."
+        );
+
+        return;
+      }
+
+
+      if(
+        new Date(fechaFin) <
+        new Date(fechaInicio)
+      ){
+
+        alert(
+          "La fecha final no puede ser anterior a la fecha inicial."
+        );
+
+        return;
+      }
+
+
+      const factura = {
+
+        codigo:
+          energeticoFacturaActual.codigo,
+
+        nombre:
+          energeticoFacturaActual.nombre,
+
+        fecha_inicio:
+          fechaInicio,
+
+        fecha_fin:
+          fechaFin,
+
+        consumo:
+          Number(consumo),
+
+        unidad:
+          unidad,
+
+        costo:
+          costo
+            ? Number(costo)
+            : null,
+
+
+        // --------------------------------------------
+        // SOLO ELECTRICIDAD
+        // --------------------------------------------
+
+        tarifa:
+          energeticoFacturaActual.codigo === "electricidad"
+            ? document.getElementById("facturaTarifa").value || null
+            : null,
+
+        potencia_contratada:
+          energeticoFacturaActual.codigo === "electricidad" &&
+          document.getElementById("facturaPotenciaContratada").value
+            ? Number(
+                document.getElementById(
+                  "facturaPotenciaContratada"
+                ).value
+              )
+            : null,
+
+        demanda:
+          energeticoFacturaActual.codigo === "electricidad" &&
+          document.getElementById("facturaDemanda").value
+            ? Number(
+                document.getElementById(
+                  "facturaDemanda"
+                ).value
+              )
+            : null,
+
+        factor_potencia:
+          energeticoFacturaActual.codigo === "electricidad" &&
+          document.getElementById("facturaFactorPotencia").value
+            ? Number(
+                document.getElementById(
+                  "facturaFactorPotencia"
+                ).value
+              )
+            : null,
+
+        cargo_demanda:
+          energeticoFacturaActual.codigo === "electricidad" &&
+          document.getElementById("facturaCargoDemanda").value
+            ? Number(
+                document.getElementById(
+                  "facturaCargoDemanda"
+                ).value
+              )
+            : null
+
+      };
+
+
+      facturasEnergia.push(factura);
+
+
+      renderizarFacturasEnergia();
+
+
+      const modal =
+        document.getElementById(
+          "modalFacturaEnergia"
+        );
+
+      if(modal){
+        modal.classList.add("hidden");
+      }
+
+
+      limpiarModalFactura();
+
+      energeticoFacturaActual = null;
+
+    }
+  );
+
+}
+
+// ======================================================
+// PÁGINA 3 - RENDERIZAR FACTURAS EN SUS TABLAS
+// ======================================================
+
+function renderizarFacturasEnergia(){
+
+  const tarjetas =
+    document.querySelectorAll(
+      "#contenedorFacturacionEnergeticos .energy-card"
+    );
+
+
+  tarjetas.forEach(function(card){
+
+    const codigo =
+      card.dataset.codigo;
+
+    const tbody =
+      card.querySelector("tbody");
+
+    const mensaje =
+      card.querySelector(".empty-message");
+
+    const facturas =
+      facturasEnergia.filter(
+        function(factura){
+
+          return factura.codigo === codigo;
+
+        }
+      );
+
+
+    if(!tbody){
+      return;
+    }
+
+
+    tbody.innerHTML = "";
+
+
+    if(facturas.length === 0){
+
+      if(mensaje){
+        mensaje.style.display = "block";
+      }
+
+      return;
+    }
+
+
+    if(mensaje){
+      mensaje.style.display = "none";
+    }
+
+
+    facturas.forEach(
+      function(factura, index){
+
+        const tr =
+          document.createElement("tr");
+
+
+        const periodo =
+          factura.fecha_inicio +
+          " a " +
+          factura.fecha_fin;
+
+
+        // ============================================
+        // ELECTRICIDAD
+        // ============================================
+
+        if(codigo === "electricidad"){
+
+          tr.innerHTML = `
+
+            <td style="text-align:left;">
+              ${periodo}
+            </td>
+
+            <td>
+              ${factura.tarifa || "-"}
+            </td>
+
+            <td>
+              ${factura.consumo.toLocaleString()} ${factura.unidad}
+            </td>
+
+            <td>
+              ${
+                factura.demanda !== null
+                  ? factura.demanda.toLocaleString() + " kW"
+                  : "-"
+              }
+            </td>
+
+            <td>
+              ${
+                factura.factor_potencia !== null
+                  ? factura.factor_potencia + "%"
+                  : "-"
+              }
+            </td>
+
+            <td>
+              ${
+                factura.costo !== null
+                  ? "$" + factura.costo.toLocaleString()
+                  : "-"
+              }
+            </td>
+
+            <td>
+              <button
+                type="button"
+                class="secondary btn-eliminar-factura"
+                data-codigo="${codigo}"
+                data-index="${index}"
+                style="padding:6px 10px;"
+              >
+                🗑
+              </button>
+            </td>
+
+          `;
+
+
+        // ============================================
+        // OTROS ENERGÉTICOS
+        // ============================================
+
+        }else{
+
+          tr.innerHTML = `
+
+            <td style="text-align:left;">
+              ${periodo}
+            </td>
+
+            <td>
+              ${factura.consumo.toLocaleString()}
+            </td>
+
+            <td>
+              ${factura.unidad}
+            </td>
+
+            <td>
+              ${
+                factura.costo !== null
+                  ? "$" + factura.costo.toLocaleString()
+                  : "-"
+              }
+            </td>
+
+            <td>
+              <button
+                type="button"
+                class="secondary btn-eliminar-factura"
+                data-codigo="${codigo}"
+                data-index="${index}"
+                style="padding:6px 10px;"
+              >
+                🗑
+              </button>
+            </td>
+
+          `;
+
+        }
+
+
+        tbody.appendChild(tr);
+
+      }
+    );
+
+  });
+
+}  
+  // ======================================================
+// ELIMINAR FACTURA
+// ======================================================
+
+document.addEventListener(
+  "click",
+  function(event){
+
+    const boton =
+      event.target.closest(
+        ".btn-eliminar-factura"
+      );
+
+    if(!boton){
+      return;
+    }
+
+
+    const codigo =
+      boton.dataset.codigo;
+
+    const indexVisible =
+      Number(boton.dataset.index);
+
+
+    const indicesReales = [];
+
+    facturasEnergia.forEach(
+      function(factura, indexReal){
+
+        if(factura.codigo === codigo){
+          indicesReales.push(indexReal);
+        }
+
+      }
+    );
+
+
+    const indexReal =
+      indicesReales[indexVisible];
+
+
+    if(indexReal === undefined){
+      return;
+    }
+
+
+    const confirmar =
+      confirm(
+        "¿Desea eliminar esta factura?"
+      );
+
+    if(!confirmar){
+      return;
+    }
+
+
+    facturasEnergia.splice(
+      indexReal,
+      1
+    );
+
+
+    renderizarFacturasEnergia();
+
+  }
+);
+
+  
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
