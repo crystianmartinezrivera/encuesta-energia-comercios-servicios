@@ -8549,6 +8549,167 @@ function renderizarFacturasEnergia(){
 
 }  
 // ======================================================
+// EDITAR FACTURA
+// ======================================================
+
+document.addEventListener(
+  "click",
+  function(event){
+
+    const boton =
+      event.target.closest(
+        ".btn-editar-factura"
+      );
+
+    if(!boton){
+      return;
+    }
+
+    const codigo =
+      boton.dataset.codigo;
+
+    const indexVisible =
+      Number(boton.dataset.index);
+
+    const indicesReales = [];
+
+    facturasEnergia.forEach(
+      function(factura, indexReal){
+
+        if(factura.codigo === codigo){
+          indicesReales.push(indexReal);
+        }
+
+      }
+    );
+
+    const indexReal =
+      indicesReales[indexVisible];
+
+    if(indexReal === undefined){
+      return;
+    }
+
+    const factura =
+      facturasEnergia[indexReal];
+
+    facturaEditandoIndex =
+      indexReal;
+
+    energeticoFacturaActual = {
+      codigo: factura.codigo,
+      nombre: factura.nombre
+    };
+
+    limpiarModalFactura();
+
+    cargarUnidadesFactura(
+      factura.codigo
+    );
+
+    document.getElementById(
+      "facturaFechaInicio"
+    ).value =
+      factura.fecha_inicio || "";
+
+    document.getElementById(
+      "facturaFechaFin"
+    ).value =
+      factura.fecha_fin || "";
+
+    document.getElementById(
+      "facturaConsumo"
+    ).value =
+      factura.consumo ?? "";
+
+    document.getElementById(
+      "facturaUnidad"
+    ).value =
+      factura.unidad || "";
+
+    document.getElementById(
+      "facturaCosto"
+    ).value =
+      factura.costo ?? "";
+
+    const camposElectricos =
+      document.getElementById(
+        "camposFacturaElectrica"
+      );
+
+    if(factura.codigo === "electricidad"){
+
+      if(camposElectricos){
+        camposElectricos.classList.remove("hidden");
+      }
+
+      document.getElementById(
+        "facturaTarifa"
+      ).value =
+        factura.tarifa || "";
+
+      document.getElementById(
+        "facturaPotenciaContratada"
+      ).value =
+        factura.potencia_contratada ?? "";
+
+      document.getElementById(
+        "facturaDemanda"
+      ).value =
+        factura.demanda ?? "";
+
+      document.getElementById(
+        "facturaFactorPotencia"
+      ).value =
+        factura.factor_potencia ?? "";
+
+      document.getElementById(
+        "facturaCargoDemanda"
+      ).value =
+        factura.cargo_demanda ?? "";
+
+    }else{
+
+      if(camposElectricos){
+        camposElectricos.classList.add("hidden");
+      }
+
+    }
+
+    const titulo =
+      document.getElementById(
+        "tituloModalFactura"
+      );
+
+    if(titulo){
+      titulo.textContent =
+        "Editar factura - " +
+        factura.nombre;
+    }
+
+    const botonGuardar =
+      document.getElementById(
+        "guardarFacturaEnergia"
+      );
+
+    if(botonGuardar){
+      botonGuardar.textContent =
+        "Guardar cambios";
+    }
+
+    const modal =
+      document.getElementById(
+        "modalFacturaEnergia"
+      );
+
+    if(modal){
+      modal.classList.remove("hidden");
+    }
+
+  }
+);
+  
+// ======================================================
 // ELIMINAR FACTURA
 // ======================================================
 
