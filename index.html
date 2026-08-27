@@ -3862,6 +3862,16 @@ if(nombre === "energia"){
 // Página 3
 if(nombre === "facturacion"){
   mostrarAyudaPagina(3);
+   cargarFacturasEnergiaDesdeSupabase()
+    .catch(function(error){
+
+      console.error(
+        "No se pudieron recuperar las facturas:",
+        error
+      );
+
+    });
+
 }
     
     window.scrollTo({top:0,behavior:"smooth"});
@@ -8108,7 +8118,231 @@ if(btnGuardarFacturaEnergia){
   );
 
 }
+// ======================================================
+// PÁGINA 3 - GUARDAR FACTURAS EN SUPABASE
+// ======================================================
 
+async function guardarFacturasEnergiaSupabase(){
+
+  const encuestaId =
+    localStorage.getItem("encuesta_id");
+
+  if(!encuestaId){
+    throw new Error(
+      "No se encontró el identificador de la encuesta."
+    );
+  }
+
+
+  // Borra los registros anteriores de esta encuesta
+  // para evitar duplicados al volver a guardar.
+  const {
+    error: errorBorrar
+  } =
+    await supabaseClient
+      .from("facturas_energia")
+      .delete()
+      .eq(
+        "encuesta_id",
+        Number(encuestaId)
+      );
+
+
+  if(errorBorrar){
+    throw errorBorrar;
+  }
+
+
+  // Si no se capturaron facturas, termina aquí.
+  if(facturasEnergia.length === 0){
+
+    console.log(
+      "Página 3 guardada sin facturas."
+    );
+
+    return;
+  }
+
+
+  const filas =
+    facturasEnergia.map(
+      function(factura){
+
+        return {
+
+          encuesta_id:
+            Number(encuestaId),
+
+          codigo:
+            factura.codigo,
+
+          nombre:
+            factura.nombre || null,
+
+          fecha_inicio:
+            factura.fecha_inicio,
+
+          fecha_fin:
+            factura.fecha_fin,
+
+          consumo:
+            factura.consumo,
+
+          unidad:
+            factura.unidad,
+
+          costo:
+            factura.costo,
+
+          tarifa:
+            factura.tarifa,
+
+          potencia_contratada:
+            factura.potencia_contratada,
+
+          demanda:
+            factura.demanda,
+
+          factor_potencia:
+            factura.factor_potencia,
+
+          cargo_demanda:
+            factura.cargo_demanda
+
+        };
+
+      }
+    );
+
+
+  const {
+    error: errorInsertar
+  } =
+    await supabaseClient
+      .from("facturas_energia")
+      .insert(filas);
+
+
+  if(errorInsertar){
+    throw errorInsertar;
+  }
+
+
+  console.log(
+    "Facturas de Página 3 guardadas correctamente."
+  );
+
+}
+
+// ======================================================
+// PÁGINA 3 - RECUPERAR FACTURAS DESDE SUPABASE
+// ======================================================
+
+async function cargarFacturasEnergiaDesdeSupabase(){
+
+  const encuestaId =
+    localStorage.getItem("encuesta_id");
+
+  if(!encuestaId){
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("facturas_energia")
+      .select("*")
+      .eq(
+        "encuesta_id",
+        Number(encuestaId)
+      )
+      .order(
+        "id",
+        {
+          ascending:true
+        }
+      );
+
+
+  if(error){
+    throw error;
+  }
+
+
+  facturasEnergia =
+    (data || []).map(
+      function(factura){
+
+        return {
+
+          codigo:
+            factura.codigo,
+
+          nombre:
+            factura.nombre,
+
+          fecha_inicio:
+            factura.fecha_inicio,
+
+          fecha_fin:
+            factura.fecha_fin,
+
+          consumo:
+            factura.consumo !== null
+              ? Number(factura.consumo)
+              : null,
+
+          unidad:
+            factura.unidad,
+
+          costo:
+            factura.costo !== null
+              ? Number(factura.costo)
+              : null,
+
+          tarifa:
+            factura.tarifa,
+
+          potencia_contratada:
+            factura.potencia_contratada !== null
+              ? Number(factura.potencia_contratada)
+              : null,
+
+          demanda:
+            factura.demanda !== null
+              ? Number(factura.demanda)
+              : null,
+
+          factor_potencia:
+            factura.factor_potencia !== null
+              ? Number(factura.factor_potencia)
+              : null,
+
+          cargo_demanda:
+            factura.cargo_demanda !== null
+              ? Number(factura.cargo_demanda)
+              : null
+
+        };
+
+      }
+    );
+
+
+  renderizarFacturasEnergia();
+
+
+  console.log(
+    "Facturas de Página 3 recuperadas desde Supabase:",
+    facturasEnergia.length
+  );
+
+}
+  
+  
 // ======================================================
 // PÁGINA 3 - RENDERIZAR FACTURAS EN SUS TABLAS
 // ======================================================
@@ -8357,6 +8591,106 @@ document.addEventListener(
 
   }
 );
+// ======================================================
+// PÁGINA 3 - BOTÓN ANTERIOR
+// ======================================================
+
+const btnFacturacionAnterior =
+  document.getElementById(
+    "btnFacturacionAnterior"
+  );
+
+if(btnFacturacionAnterior){
+
+  btnFacturacionAnterior.addEventListener(
+    "click",
+    async function(){
+
+      try {
+
+        await cargarListasPagina2DesdeSupabase();
+
+        mostrarVista("energia");
+
+        mostrarAyudaPagina(2);
+
+      }catch(error){
+
+        console.error(
+          "Error al regresar a Página 2:",
+          error
+        );
+
+        alert(
+          "No fue posible recuperar la información de la Página 2."
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+// ======================================================
+// PÁGINA 3 - BOTÓN GUARDAR Y CONTINUAR
+// ======================================================
+
+const btnFacturacionContinuar =
+  document.getElementById(
+    "btnFacturacionContinuar"
+  );
+
+if(btnFacturacionContinuar){
+
+  btnFacturacionContinuar.addEventListener(
+    "click",
+    async function(){
+
+      try {
+
+        btnFacturacionContinuar.disabled = true;
+
+        btnFacturacionContinuar.textContent =
+          "Guardando...";
+
+
+        await guardarFacturasEnergiaSupabase();
+
+
+        alert(
+          "La información de facturación se guardó correctamente."
+        );
+
+
+        mostrarVista("usos");
+
+
+      }catch(error){
+
+        console.error(
+          "Error al guardar Página 3:",
+          error
+        );
+
+        alert(
+          "No fue posible guardar la información de facturación. " +
+          "Revise la consola para identificar el error."
+        );
+
+
+      }finally{
+
+        btnFacturacionContinuar.disabled = false;
+
+        btnFacturacionContinuar.textContent =
+          "Guardar y continuar →";
+
+      }
+
+    }
+  );
 
 
   // ======================================================
