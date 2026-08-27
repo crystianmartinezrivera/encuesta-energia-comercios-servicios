@@ -8523,17 +8523,31 @@ function renderizarFacturasEnergia(){
               }
             </td>
 
-            <td>
-              <button
-                type="button"
-                class="secondary btn-eliminar-factura"
-                data-codigo="${codigo}"
-                data-index="${index}"
-                style="padding:6px 10px;"
-              >
-                🗑
-              </button>
-            </td>
+          <td style="white-space:nowrap;">
+
+  <button
+    type="button"
+    class="secondary btn-editar-factura"
+    data-codigo="${codigo}"
+    data-index="${index}"
+    style="padding:6px 10px;"
+    title="Editar factura"
+  >
+    ✏️
+  </button>
+
+  <button
+    type="button"
+    class="secondary btn-eliminar-factura"
+    data-codigo="${codigo}"
+    data-index="${index}"
+    style="padding:6px 10px;"
+    title="Eliminar factura"
+  >
+    🗑
+  </button>
+
+</td>
 
           `;
 
