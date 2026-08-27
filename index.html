@@ -3786,7 +3786,16 @@ function calcularEdad(){
     document.getElementById("barraProgreso").style.width = `${porcentaje}%`;
 
     guardarLocal(false);
-    if(nombre === "energia"){
+// Página 1
+if(nombre === "datos"){
+  mostrarAyudaPagina(1);
+}
+
+
+// Página 2
+if(nombre === "energia"){
+
+  mostrarAyudaPagina(2);
 
   cargarListasPagina2DesdeSupabase()
     .catch(function(error){
@@ -3799,6 +3808,13 @@ function calcularEdad(){
     });
 
 }
+
+
+// Página 3
+if(nombre === "facturacion"){
+  mostrarAyudaPagina(3);
+}
+    
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
@@ -6369,30 +6385,40 @@ function actualizarSeccionFacturacionElectrica(){
 // ======================================================
 
 function mostrarAyudaPagina(numero){
-
-  const ayuda1 =
+const ayuda1 =
     document.getElementById("ayudaPagina1");
 
   const ayuda2 =
     document.getElementById("ayudaPagina2");
 
-  if(!ayuda1 || !ayuda2){
+  const ayuda3 =
+    document.getElementById("ayudaPagina3");
+
+
+  if(!ayuda1 || !ayuda2 || !ayuda3){
     return;
   }
 
-  if(numero === 2){
 
-    ayuda1.classList.add("hidden");
-    ayuda2.classList.remove("hidden");
+  ayuda1.classList.add("hidden");
+  ayuda2.classList.add("hidden");
+  ayuda3.classList.add("hidden");
 
-  }else{
 
-    ayuda2.classList.add("hidden");
+  if(numero === 1){
     ayuda1.classList.remove("hidden");
+  }
 
+  if(numero === 2){
+    ayuda2.classList.remove("hidden");
+  }
+
+  if(numero === 3){
+    ayuda3.classList.remove("hidden");
   }
 
 }
+  
 
 // ======================================================
 // PÁGINA 2 - BOTÓN ANTERIOR
@@ -8283,7 +8309,53 @@ document.addEventListener(
   }
 );
 
-  
+ <!-- =========================================
+     AYUDA - PÁGINA 3
+========================================== -->
+
+<div id="ayudaPagina3" class="hidden">
+
+  <div class="right-card green">
+
+    <h3>💡 ¿Por qué es importante?</h3>
+
+    <p>
+      La información de facturación permite conocer el consumo real
+      de energía del establecimiento y analizar su comportamiento
+      a lo largo del tiempo.
+    </p>
+
+  </div>
+
+
+  <div class="right-card blue">
+
+    <h3>▣ Tenga a la mano</h3>
+
+    <ul>
+      <li>⚡ Recibos o facturas de electricidad</li>
+      <li>🔥 Facturas de combustibles utilizados</li>
+      <li>📅 Periodos de facturación</li>
+      <li>📊 Consumos registrados</li>
+      <li>💲 Costos de energía</li>
+      <li>⚙️ Para electricidad: tarifa, demanda y factor de potencia, si están disponibles</li>
+    </ul>
+
+  </div>
+
+
+  <div class="right-card yellow">
+
+    <h3>☆ Importante</h3>
+
+    <p>
+      Registre únicamente la información disponible en sus facturas.
+      Los campos técnicos que no aparezcan pueden dejarse vacíos.
+    </p>
+
+  </div>
+
+</div>
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
