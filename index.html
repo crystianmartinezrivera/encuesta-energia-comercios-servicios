@@ -4059,7 +4059,9 @@
 
 
   
-        
+  // ======================================================
+  // Inicio de JAVA
+  // ======================================================
         
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -9486,6 +9488,1407 @@ if(btnFacturacionContinuar){
   );
 
 }
+
+// =====================================================
+// SECCIÓN 4 - USOS FINALES DE ENERGÍA
+// MÓDULO A. ILUMINACIÓN
+// =====================================================
+
+// Arreglo principal de registros de iluminación
+let gruposIluminacion = [];
+
+// Índice usado cuando se edita un registro existente
+let indiceIluminacionEdicion = null;
+
+
+// -----------------------------------------------------
+// ELEMENTOS PRINCIPALES
+// -----------------------------------------------------
+
+const radiosUsaIluminacion =
+  document.querySelectorAll('input[name="usaIluminacion"]');
+
+const iluminacionContenido =
+  document.getElementById("iluminacionContenido");
+
+const btnAgregarIluminacion =
+  document.getElementById("btnAgregarIluminacion");
+
+const modalIluminacion =
+  document.getElementById("modalIluminacion");
+
+const cerrarModalIluminacion =
+  document.getElementById("cerrarModalIluminacion");
+
+const cancelarIluminacion =
+  document.getElementById("cancelarIluminacion");
+
+const guardarIluminacion =
+  document.getElementById("guardarIluminacion");
+
+const tituloModalIluminacion =
+  document.getElementById("tituloModalIluminacion");
+
+
+// -----------------------------------------------------
+// 1. ACTIVAR / DESACTIVAR MÓDULO
+// -----------------------------------------------------
+
+radiosUsaIluminacion.forEach(radio => {
+
+  radio.addEventListener("change", () => {
+
+    if (radio.value === "si" && radio.checked) {
+
+      iluminacionContenido.classList.remove("hidden");
+
+    }
+
+    if (radio.value === "no" && radio.checked) {
+
+      iluminacionContenido.classList.add("hidden");
+
+    }
+
+  });
+
+});
+
+
+// -----------------------------------------------------
+// 2. ABRIR MODAL
+// -----------------------------------------------------
+
+if (btnAgregarIluminacion) {
+
+  btnAgregarIluminacion.addEventListener("click", () => {
+
+    indiceIluminacionEdicion = null;
+
+    tituloModalIluminacion.textContent =
+      "Agregar grupo de iluminación";
+
+    limpiarFormularioIluminacion();
+
+    cargarAreasIluminacion();
+
+    modalIluminacion.classList.remove("hidden");
+
+  });
+
+}
+
+
+// -----------------------------------------------------
+// 3. CERRAR MODAL
+// -----------------------------------------------------
+
+function cerrarModalGrupoIluminacion() {
+
+  modalIluminacion.classList.add("hidden");
+
+  indiceIluminacionEdicion = null;
+
+}
+
+
+if (cerrarModalIluminacion) {
+
+  cerrarModalIluminacion.addEventListener(
+    "click",
+    cerrarModalGrupoIluminacion
+  );
+
+}
+
+
+if (cancelarIluminacion) {
+
+  cancelarIluminacion.addEventListener(
+    "click",
+    cerrarModalGrupoIluminacion
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 4. CARGAR ÁREAS DE LA SECCIÓN 2
+// -----------------------------------------------------
+
+function cargarAreasIluminacion() {
+
+  const selectArea =
+    document.getElementById("ilumArea");
+
+  if (!selectArea) return;
+
+  selectArea.innerHTML =
+    '<option value="">Seleccione...</option>';
+
+  /*
+    Se intenta utilizar el arreglo de áreas
+    que ya existe en la sección 2.
+  */
+
+  if (
+    typeof areasEstablecimiento !== "undefined" &&
+    Array.isArray(areasEstablecimiento)
+  ) {
+
+    areasEstablecimiento.forEach((area, index) => {
+
+      const option =
+        document.createElement("option");
+
+      /*
+        Adaptamos el nombre dependiendo
+        de cómo esté estructurado el objeto.
+      */
+
+      const nombreArea =
+        area.nombre ||
+        area.area ||
+        area.tipo ||
+        area.descripcion ||
+        `Área ${index + 1}`;
+
+      option.value = nombreArea;
+      option.textContent = nombreArea;
+
+      selectArea.appendChild(option);
+
+    });
+
+  }
+
+  /*
+    Siempre dejamos una opción adicional.
+  */
+
+  const optionOtro =
+    document.createElement("option");
+
+  optionOtro.value = "Otra área";
+  optionOtro.textContent = "Otra área";
+
+  selectArea.appendChild(optionOtro);
+
+}
+
+
+// -----------------------------------------------------
+// 5. TIPO "OTRO"
+// -----------------------------------------------------
+
+const ilumTipo =
+  document.getElementById("ilumTipo");
+
+const grupoIlumTipoOtro =
+  document.getElementById("grupoIlumTipoOtro");
+
+
+if (ilumTipo) {
+
+  ilumTipo.addEventListener("change", () => {
+
+    if (ilumTipo.value === "otro") {
+
+      grupoIlumTipoOtro.classList.remove("hidden");
+
+    } else {
+
+      grupoIlumTipoOtro.classList.add("hidden");
+
+      document.getElementById(
+        "ilumTipoOtro"
+      ).value = "";
+
+    }
+
+  });
+
+}
+
+
+// -----------------------------------------------------
+// 6. POTENCIA DESCONOCIDA
+// -----------------------------------------------------
+
+const ilumPotenciaDesconocida =
+  document.getElementById(
+    "ilumPotenciaDesconocida"
+  );
+
+const ilumPotencia =
+  document.getElementById("ilumPotencia");
+
+
+if (ilumPotenciaDesconocida) {
+
+  ilumPotenciaDesconocida.addEventListener(
+    "change",
+    () => {
+
+      if (ilumPotenciaDesconocida.checked) {
+
+        ilumPotencia.value = "";
+
+        ilumPotencia.disabled = true;
+
+      } else {
+
+        ilumPotencia.disabled = false;
+
+      }
+
+    }
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 7. HORARIO NORMAL / ESTACIONAL
+// -----------------------------------------------------
+
+const radiosHorarioIluminacion =
+  document.querySelectorAll(
+    'input[name="ilumHorarioEstacional"]'
+  );
+
+const ilumHorarioNormal =
+  document.getElementById(
+    "ilumHorarioNormal"
+  );
+
+const ilumHorarioTemporadas =
+  document.getElementById(
+    "ilumHorarioTemporadas"
+  );
+
+
+radiosHorarioIluminacion.forEach(radio => {
+
+  radio.addEventListener("change", () => {
+
+    if (radio.value === "no" && radio.checked) {
+
+      ilumHorarioNormal.classList.remove("hidden");
+
+      ilumHorarioTemporadas.classList.add("hidden");
+
+    }
+
+    else if (
+      radio.value === "si" &&
+      radio.checked
+    ) {
+
+      ilumHorarioNormal.classList.add("hidden");
+
+      ilumHorarioTemporadas.classList.remove("hidden");
+
+    }
+
+    else if (
+      radio.value === "no_sabe" &&
+      radio.checked
+    ) {
+
+      ilumHorarioNormal.classList.add("hidden");
+
+      ilumHorarioTemporadas.classList.add("hidden");
+
+    }
+
+  });
+
+});
+
+
+// -----------------------------------------------------
+// 8. LIMPIAR FORMULARIO
+// -----------------------------------------------------
+
+function limpiarFormularioIluminacion() {
+
+  const campos = [
+    "ilumArea",
+    "ilumTipo",
+    "ilumTipoOtro",
+    "ilumCantidad",
+    "ilumPotencia",
+    "ilumMarca",
+    "ilumModelo",
+    "ilumFlujo",
+    "ilumOrigenPotencia",
+    "ilumDatosPlaca",
+
+    "ilumHorasLV",
+    "ilumHorasSab",
+    "ilumHorasDom",
+
+    "ilumCalidaInicio",
+    "ilumCalidaFin",
+    "ilumCalidaLV",
+    "ilumCalidaSab",
+    "ilumCalidaDom",
+
+    "ilumFriaLV",
+    "ilumFriaSab",
+    "ilumFriaDom"
+  ];
+
+  campos.forEach(id => {
+
+    const elemento =
+      document.getElementById(id);
+
+    if (elemento) {
+      elemento.value = "";
+    }
+
+  });
+
+
+  document
+    .querySelectorAll(
+      'input[name="ilumHorarioEstacional"]'
+    )
+    .forEach(radio => {
+
+      radio.checked = false;
+
+    });
+
+
+  if (ilumPotenciaDesconocida) {
+
+    ilumPotenciaDesconocida.checked = false;
+
+  }
+
+
+  if (ilumPotencia) {
+
+    ilumPotencia.disabled = false;
+
+  }
+
+
+  if (grupoIlumTipoOtro) {
+
+    grupoIlumTipoOtro.classList.add("hidden");
+
+  }
+
+
+  if (ilumHorarioNormal) {
+
+    ilumHorarioNormal.classList.add("hidden");
+
+  }
+
+
+  if (ilumHorarioTemporadas) {
+
+    ilumHorarioTemporadas.classList.add("hidden");
+
+  }
+
+}
+
+
+// -----------------------------------------------------
+// 9. GUARDAR GRUPO
+// -----------------------------------------------------
+
+if (guardarIluminacion) {
+
+  guardarIluminacion.addEventListener(
+    "click",
+    guardarGrupoIluminacion
+  );
+
+}
+
+
+function guardarGrupoIluminacion() {
+
+  const area =
+    document.getElementById("ilumArea").value;
+
+  const tipo =
+    document.getElementById("ilumTipo").value;
+
+  const tipoOtro =
+    document.getElementById(
+      "ilumTipoOtro"
+    ).value.trim();
+
+  const cantidad =
+    Number(
+      document.getElementById(
+        "ilumCantidad"
+      ).value
+    );
+
+  const potenciaDesconocida =
+    document.getElementById(
+      "ilumPotenciaDesconocida"
+    ).checked;
+
+  const potencia =
+    potenciaDesconocida
+      ? null
+      : Number(
+          document.getElementById(
+            "ilumPotencia"
+          ).value
+        ) || null;
+
+
+  // Validaciones principales
+
+  if (!area) {
+
+    alert(
+      "Seleccione el área donde se encuentra el grupo de iluminación."
+    );
+
+    return;
+
+  }
+
+
+  if (!tipo) {
+
+    alert(
+      "Seleccione el tipo de lámpara o luminario."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    tipo === "otro" &&
+    !tipoOtro
+  ) {
+
+    alert(
+      "Especifique el tipo de lámpara o luminario."
+    );
+
+    return;
+
+  }
+
+
+  if (!cantidad || cantidad <= 0) {
+
+    alert(
+      "Capture una cantidad válida de lámparas o luminarios."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !potenciaDesconocida &&
+    (!potencia || potencia <= 0)
+  ) {
+
+    alert(
+      'Capture la potencia o seleccione "No conozco la potencia".'
+    );
+
+    return;
+
+  }
+
+
+  const horarioEstacionalSeleccionado =
+    document.querySelector(
+      'input[name="ilumHorarioEstacional"]:checked'
+    );
+
+  const horarioEstacional =
+    horarioEstacionalSeleccionado
+      ? horarioEstacionalSeleccionado.value
+      : "";
+
+
+  const registro = {
+
+    area,
+
+    tipo,
+
+    tipoOtro,
+
+    cantidad,
+
+    potencia,
+
+    potenciaDesconocida,
+
+    marca:
+      document.getElementById(
+        "ilumMarca"
+      ).value.trim(),
+
+    modelo:
+      document.getElementById(
+        "ilumModelo"
+      ).value.trim(),
+
+    flujoLuminoso:
+      Number(
+        document.getElementById(
+          "ilumFlujo"
+        ).value
+      ) || null,
+
+    origenPotencia:
+      document.getElementById(
+        "ilumOrigenPotencia"
+      ).value,
+
+    datosPlaca:
+      document.getElementById(
+        "ilumDatosPlaca"
+      ).value.trim(),
+
+    horarioEstacional,
+
+    horarioNormal: {
+
+      lv:
+        obtenerNumeroOValorNulo(
+          "ilumHorasLV"
+        ),
+
+      sab:
+        obtenerNumeroOValorNulo(
+          "ilumHorasSab"
+        ),
+
+      dom:
+        obtenerNumeroOValorNulo(
+          "ilumHorasDom"
+        )
+
+    },
+
+    temporadaCalida: {
+
+      inicio:
+        obtenerNumeroOValorNulo(
+          "ilumCalidaInicio"
+        ),
+
+      fin:
+        obtenerNumeroOValorNulo(
+          "ilumCalidaFin"
+        ),
+
+      lv:
+        obtenerNumeroOValorNulo(
+          "ilumCalidaLV"
+        ),
+
+      sab:
+        obtenerNumeroOValorNulo(
+          "ilumCalidaSab"
+        ),
+
+      dom:
+        obtenerNumeroOValorNulo(
+          "ilumCalidaDom"
+        )
+
+    },
+
+    temporadaFria: {
+
+      lv:
+        obtenerNumeroOValorNulo(
+          "ilumFriaLV"
+        ),
+
+      sab:
+        obtenerNumeroOValorNulo(
+          "ilumFriaSab"
+        ),
+
+      dom:
+        obtenerNumeroOValorNulo(
+          "ilumFriaDom"
+        )
+
+    }
+
+  };
+
+
+  registro.consumoAnualKWh =
+    calcularConsumoAnualIluminacion(
+      registro
+    );
+
+
+  if (
+    indiceIluminacionEdicion === null
+  ) {
+
+    gruposIluminacion.push(registro);
+
+  } else {
+
+    gruposIluminacion[
+      indiceIluminacionEdicion
+    ] = registro;
+
+  }
+
+
+  renderTablaIluminacion();
+
+  cerrarModalGrupoIluminacion();
+
+}
+
+
+// -----------------------------------------------------
+// 10. OBTENER NÚMERO O NULL
+// -----------------------------------------------------
+
+function obtenerNumeroOValorNulo(id) {
+
+  const valor =
+    document.getElementById(id)?.value;
+
+  if (
+    valor === "" ||
+    valor === undefined ||
+    valor === null
+  ) {
+
+    return null;
+
+  }
+
+  const numero = Number(valor);
+
+  return Number.isFinite(numero)
+    ? numero
+    : null;
+
+}
+
+
+// -----------------------------------------------------
+// 11. CÁLCULO DE CONSUMO ANUAL
+// -----------------------------------------------------
+
+function calcularConsumoAnualIluminacion(
+  registro
+) {
+
+  if (
+    !registro.potencia ||
+    !registro.cantidad
+  ) {
+
+    return null;
+
+  }
+
+
+  let horasAnuales = null;
+
+
+  // ------------------------------
+  // HORARIO ÚNICO
+  // ------------------------------
+
+  if (
+    registro.horarioEstacional === "no"
+  ) {
+
+    const lv =
+      registro.horarioNormal.lv;
+
+    const sab =
+      registro.horarioNormal.sab;
+
+    const dom =
+      registro.horarioNormal.dom;
+
+
+    if (
+      lv === null &&
+      sab === null &&
+      dom === null
+    ) {
+
+      return null;
+
+    }
+
+
+    /*
+      52 semanas al año:
+
+      lunes-viernes = 5 días
+      sábado        = 1 día
+      domingo       = 1 día
+    */
+
+    horasAnuales =
+      (
+        (lv || 0) * 5 +
+        (sab || 0) +
+        (dom || 0)
+      ) * 52;
+
+  }
+
+
+  // ------------------------------
+  // HORARIO ESTACIONAL
+  // ------------------------------
+
+  else if (
+    registro.horarioEstacional === "si"
+  ) {
+
+    const inicio =
+      registro.temporadaCalida.inicio;
+
+    const fin =
+      registro.temporadaCalida.fin;
+
+
+    if (!inicio || !fin) {
+
+      return null;
+
+    }
+
+
+    const mesesCalidos =
+      calcularNumeroMesesPeriodo(
+        inicio,
+        fin
+      );
+
+    const mesesFrios =
+      12 - mesesCalidos;
+
+
+    const semanasCalidas =
+      mesesCalidos *
+      52 /
+      12;
+
+    const semanasFrias =
+      mesesFrios *
+      52 /
+      12;
+
+
+    const horasSemanaCalida =
+      (
+        (
+          registro.temporadaCalida.lv || 0
+        ) * 5
+      ) +
+      (
+        registro.temporadaCalida.sab || 0
+      ) +
+      (
+        registro.temporadaCalida.dom || 0
+      );
+
+
+    const horasSemanaFria =
+      (
+        (
+          registro.temporadaFria.lv || 0
+        ) * 5
+      ) +
+      (
+        registro.temporadaFria.sab || 0
+      ) +
+      (
+        registro.temporadaFria.dom || 0
+      );
+
+
+    horasAnuales =
+      horasSemanaCalida *
+      semanasCalidas +
+      horasSemanaFria *
+      semanasFrias;
+
+  }
+
+
+  else {
+
+    return null;
+
+  }
+
+
+  if (
+    horasAnuales === null ||
+    horasAnuales <= 0
+  ) {
+
+    return null;
+
+  }
+
+
+  return (
+    registro.cantidad *
+    registro.potencia *
+    horasAnuales /
+    1000
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 12. NÚMERO DE MESES DE UNA TEMPORADA
+// -----------------------------------------------------
+
+function calcularNumeroMesesPeriodo(
+  inicio,
+  fin
+) {
+
+  if (fin >= inicio) {
+
+    return fin - inicio + 1;
+
+  }
+
+  return (
+    12 - inicio + 1
+  ) + fin;
+
+}
+
+
+// -----------------------------------------------------
+// 13. NOMBRE LEGIBLE DEL TIPO
+// -----------------------------------------------------
+
+function obtenerNombreTipoIluminacion(
+  registro
+) {
+
+  if (
+    registro.tipo === "otro"
+  ) {
+
+    return registro.tipoOtro || "Otro";
+
+  }
+
+
+  const tipos = {
+
+    led_integrada:
+      "LED integrada",
+
+    tubo_led:
+      "Tubo LED",
+
+    fluorescente_lineal:
+      "Fluorescente lineal",
+
+    fluorescente_compacta:
+      "Fluorescente compacta",
+
+    incandescente:
+      "Incandescente",
+
+    halogena:
+      "Halógena",
+
+    hid:
+      "Descarga / HID",
+
+    no_sabe:
+      "No sabe"
+
+  };
+
+
+  return (
+    tipos[registro.tipo] ||
+    registro.tipo
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 14. TEXTO DEL HORARIO
+// -----------------------------------------------------
+
+function obtenerResumenHorarioIluminacion(
+  registro
+) {
+
+  if (
+    registro.horarioEstacional === "no"
+  ) {
+
+    const h = registro.horarioNormal;
+
+    return (
+      "Habitual: " +
+      `${h.lv ?? "—"} h L-V, ` +
+      `${h.sab ?? "—"} h sáb., ` +
+      `${h.dom ?? "—"} h dom.`
+    );
+
+  }
+
+
+  if (
+    registro.horarioEstacional === "si"
+  ) {
+
+    return "Horario estacional";
+
+  }
+
+
+  if (
+    registro.horarioEstacional ===
+    "no_sabe"
+  ) {
+
+    return "No sabe";
+
+  }
+
+
+  return "Sin horario";
+
+}
+
+
+// -----------------------------------------------------
+// 15. RENDERIZAR TABLA
+// -----------------------------------------------------
+
+function renderTablaIluminacion() {
+
+  const tbody =
+    document.getElementById(
+      "tablaIluminacionBody"
+    );
+
+  const contenedor =
+    document.getElementById(
+      "tablaIluminacionContenedor"
+    );
+
+  const vacio =
+    document.getElementById(
+      "sinIluminacion"
+    );
+
+  const resumen =
+    document.getElementById(
+      "resumenIluminacion"
+    );
+
+
+  if (!tbody) return;
+
+
+  tbody.innerHTML = "";
+
+
+  if (
+    gruposIluminacion.length === 0
+  ) {
+
+    contenedor.style.display = "none";
+
+    vacio.style.display = "block";
+
+    if (resumen) {
+      resumen.textContent = "";
+    }
+
+    return;
+
+  }
+
+
+  contenedor.style.display = "block";
+
+  vacio.style.display = "none";
+
+
+  gruposIluminacion.forEach(
+    (registro, index) => {
+
+      const tr =
+        document.createElement("tr");
+
+
+      const consumoTexto =
+        registro.consumoAnualKWh !== null
+          ? `${registro.consumoAnualKWh.toLocaleString(
+              "es-MX",
+              {
+                maximumFractionDigits: 0
+              }
+            )} kWh/año`
+          : "Sin datos suficientes";
+
+
+      const potenciaTexto =
+        registro.potencia !== null
+          ? `${registro.potencia} W`
+          : "No disponible";
+
+
+      tr.innerHTML = `
+
+        <td>${registro.area}</td>
+
+        <td>
+          ${obtenerNombreTipoIluminacion(
+            registro
+          )}
+        </td>
+
+        <td class="num">
+          ${registro.cantidad}
+        </td>
+
+        <td class="num">
+          ${potenciaTexto}
+        </td>
+
+        <td>
+          ${obtenerResumenHorarioIluminacion(
+            registro
+          )}
+        </td>
+
+        <td class="num">
+          ${consumoTexto}
+        </td>
+
+        <td class="acciones">
+
+          <button
+            type="button"
+            class="table-action"
+            onclick="editarGrupoIluminacion(${index})">
+            Editar
+          </button>
+
+          <button
+            type="button"
+            class="table-action danger"
+            onclick="eliminarGrupoIluminacion(${index})">
+            Eliminar
+          </button>
+
+        </td>
+
+      `;
+
+
+      tbody.appendChild(tr);
+
+    }
+  );
+
+
+  const totalLuminarios =
+    gruposIluminacion.reduce(
+      (total, item) =>
+        total + Number(item.cantidad || 0),
+      0
+    );
+
+
+  const consumosCalculados =
+    gruposIluminacion.filter(
+      item =>
+        item.consumoAnualKWh !== null
+    );
+
+
+  const consumoTotal =
+    consumosCalculados.reduce(
+      (total, item) =>
+        total +
+        Number(
+          item.consumoAnualKWh || 0
+        ),
+      0
+    );
+
+
+  if (resumen) {
+
+    resumen.textContent =
+      `${gruposIluminacion.length} grupo(s) · ` +
+      `${totalLuminarios} luminario(s)` +
+      (
+        consumosCalculados.length > 0
+          ? ` · ${consumoTotal.toLocaleString(
+              "es-MX",
+              {
+                maximumFractionDigits: 0
+              }
+            )} kWh/año estimados`
+          : ""
+      );
+
+  }
+
+}
+
+
+// -----------------------------------------------------
+// 16. EDITAR
+// -----------------------------------------------------
+
+window.editarGrupoIluminacion =
+function(index) {
+
+  const r =
+    gruposIluminacion[index];
+
+  if (!r) return;
+
+
+  indiceIluminacionEdicion = index;
+
+  tituloModalIluminacion.textContent =
+    "Editar grupo de iluminación";
+
+
+  cargarAreasIluminacion();
+
+
+  document.getElementById(
+    "ilumArea"
+  ).value = r.area;
+
+
+  document.getElementById(
+    "ilumTipo"
+  ).value = r.tipo;
+
+
+  if (r.tipo === "otro") {
+
+    grupoIlumTipoOtro.classList.remove(
+      "hidden"
+    );
+
+    document.getElementById(
+      "ilumTipoOtro"
+    ).value =
+      r.tipoOtro || "";
+
+  }
+
+
+  document.getElementById(
+    "ilumCantidad"
+  ).value =
+    r.cantidad ?? "";
+
+
+  document.getElementById(
+    "ilumPotenciaDesconocida"
+  ).checked =
+    r.potenciaDesconocida;
+
+
+  document.getElementById(
+    "ilumPotencia"
+  ).disabled =
+    r.potenciaDesconocida;
+
+
+  document.getElementById(
+    "ilumPotencia"
+  ).value =
+    r.potencia ?? "";
+
+
+  document.getElementById(
+    "ilumMarca"
+  ).value =
+    r.marca || "";
+
+
+  document.getElementById(
+    "ilumModelo"
+  ).value =
+    r.modelo || "";
+
+
+  document.getElementById(
+    "ilumFlujo"
+  ).value =
+    r.flujoLuminoso ?? "";
+
+
+  document.getElementById(
+    "ilumOrigenPotencia"
+  ).value =
+    r.origenPotencia || "";
+
+
+  document.getElementById(
+    "ilumDatosPlaca"
+  ).value =
+    r.datosPlaca || "";
+
+
+  // Horarios
+
+  const radio =
+    document.querySelector(
+      `input[name="ilumHorarioEstacional"][value="${r.horarioEstacional}"]`
+    );
+
+  if (radio) {
+
+    radio.checked = true;
+
+    radio.dispatchEvent(
+      new Event("change")
+    );
+
+  }
+
+
+  document.getElementById(
+    "ilumHorasLV"
+  ).value =
+    r.horarioNormal.lv ?? "";
+
+
+  document.getElementById(
+    "ilumHorasSab"
+  ).value =
+    r.horarioNormal.sab ?? "";
+
+
+  document.getElementById(
+    "ilumHorasDom"
+  ).value =
+    r.horarioNormal.dom ?? "";
+
+
+  document.getElementById(
+    "ilumCalidaInicio"
+  ).value =
+    r.temporadaCalida.inicio ?? "";
+
+
+  document.getElementById(
+    "ilumCalidaFin"
+  ).value =
+    r.temporadaCalida.fin ?? "";
+
+
+  document.getElementById(
+    "ilumCalidaLV"
+  ).value =
+    r.temporadaCalida.lv ?? "";
+
+
+  document.getElementById(
+    "ilumCalidaSab"
+  ).value =
+    r.temporadaCalida.sab ?? "";
+
+
+  document.getElementById(
+    "ilumCalidaDom"
+  ).value =
+    r.temporadaCalida.dom ?? "";
+
+
+  document.getElementById(
+    "ilumFriaLV"
+  ).value =
+    r.temporadaFria.lv ?? "";
+
+
+  document.getElementById(
+    "ilumFriaSab"
+  ).value =
+    r.temporadaFria.sab ?? "";
+
+
+  document.getElementById(
+    "ilumFriaDom"
+  ).value =
+    r.temporadaFria.dom ?? "";
+
+
+  modalIluminacion.classList.remove(
+    "hidden"
+  );
+
+};
+
+
+// -----------------------------------------------------
+// 17. ELIMINAR
+// -----------------------------------------------------
+
+window.eliminarGrupoIluminacion =
+function(index) {
+
+  const confirmar =
+    confirm(
+      "¿Desea eliminar este grupo de iluminación?"
+    );
+
+  if (!confirmar) return;
+
+
+  gruposIluminacion.splice(
+    index,
+    1
+  );
+
+
+  renderTablaIluminacion();
+
+};
+  
+ 
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
