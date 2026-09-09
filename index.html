@@ -9930,37 +9930,40 @@ if (ilumTipo) {
 // -----------------------------------------------------
 
 const ilumPotenciaDesconocida =
-  document.getElementById(
-    "ilumPotenciaDesconocida"
-  );
+  document.getElementById("ilumPotenciaDesconocida");
 
 const ilumPotencia =
   document.getElementById("ilumPotencia");
 
+const detallesTecnicosIluminacion =
+  document.getElementById("detallesTecnicosIluminacion");
+
 
 if (ilumPotenciaDesconocida) {
 
-  ilumPotenciaDesconocida.addEventListener(
-    "change",
-    () => {
+  ilumPotenciaDesconocida.addEventListener("change", () => {
 
-      if (ilumPotenciaDesconocida.checked) {
+    if (ilumPotenciaDesconocida.checked) {
 
-        ilumPotencia.value = "";
+      // Vacía y desactiva el campo de potencia
+      ilumPotencia.value = "";
+      ilumPotencia.disabled = true;
 
-        ilumPotencia.disabled = true;
-
-      } else {
-
-        ilumPotencia.disabled = false;
-
+      // Abre automáticamente los datos técnicos
+      if (detallesTecnicosIluminacion) {
+        detallesTecnicosIluminacion.open = true;
       }
 
+    } else {
+
+      // Reactiva el campo de potencia
+      ilumPotencia.disabled = false;
+
     }
-  );
+
+  });
 
 }
-
 
 // -----------------------------------------------------
 // 7. HORARIO NORMAL / ESTACIONAL
