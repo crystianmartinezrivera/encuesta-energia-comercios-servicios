@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Encuesta de Consumo y Usos de Energía</title>
 
-/* =====================================================
+<!-- =====================================================
    inicio de CSS
-===================================================== */
+===================================================== -->
   
   <style>
     :root{
@@ -1238,9 +1238,9 @@
 
     
 </style>
-/* =====================================================
+<!-- =====================================================
    Fin de CSS
-===================================================== */  
+===================================================== -->
 </head>
 
 <body>
@@ -3896,26 +3896,39 @@
             <span>W</span>
           </div>
         </div>
+<div class="form-group">
 
-        <div class="form-group">
-          <label>
-            ¿No conoce la potencia?
-          </label>
+  <label>
+    Potencia no disponible
+  </label>
 
-          <label style="font-weight:normal">
-            <input
-              type="checkbox"
-              id="ilumPotenciaDesconocida">
+  <label
+    style="
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+      gap:8px;
+      font-weight:normal;
+      cursor:pointer;
+    "
+  >
 
-            No conozco la potencia
-          </label>
+    <input
+      type="checkbox"
+      id="ilumPotenciaDesconocida"
+      style="width:auto; margin:0;">
 
-          <small>
-            Puede proporcionar marca, modelo o datos de placa.
-          </small>
-        </div>
+    No conozco la potencia
 
-      </div>
+  </label>
+
+  <small>
+    Si no conoce la potencia, puede proporcionar marca,
+    modelo o datos de placa.
+  </small>
+
+</div>
+        
 
 
       <!-- =========================
