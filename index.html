@@ -10097,54 +10097,6 @@ const radiosHorarioIluminacion =
   );
 
 const ilumHorarioNormal =
-  document.getElementById("ilumHorarioNormal");
-
-const ilumHorarioTemporadas =
-  document.getElementById("ilumHorarioTemporadas");
-
-
-radiosHorarioIluminacion.forEach(radio => {
-
-  radio.addEventListener("change", () => {
-
-    if (radio.value === "no" && radio.checked) {
-
-      ilumHorarioNormal.classList.remove("hidden");
-      ilumHorarioTemporadas.classList.add("hidden");
-
-    }
-
-    else if (radio.value === "si" && radio.checked) {
-
-      ilumHorarioNormal.classList.add("hidden");
-      ilumHorarioTemporadas.classList.remove("hidden");
-
-    }
-
-    else if (
-      radio.value === "no_sabe" &&
-      radio.checked
-    ) {
-
-      ilumHorarioNormal.classList.add("hidden");
-      ilumHorarioTemporadas.classList.add("hidden");
-
-    }
-
-  });
-
-});
-
-// -----------------------------------------------------
-// 7. HORARIO NORMAL / ESTACIONAL
-// -----------------------------------------------------
-
-const radiosHorarioIluminacion =
-  document.querySelectorAll(
-    'input[name="ilumHorarioEstacional"]'
-  );
-
-const ilumHorarioNormal =
   document.getElementById(
     "ilumHorarioNormal"
   );
