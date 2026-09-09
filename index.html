@@ -3295,7 +3295,6 @@
         >
       </div>
 
-
       <div class="field">
         <label>
           Fin del periodo
@@ -3574,6 +3573,492 @@
 
 </div>
 
+ <!-- =====================================================
+     MODAL: AGREGAR GRUPO DE ILUMINACIÓN
+====================================================== -->
+<div id="modalIluminacion" class="modal hidden">
+  <div class="modal-content" style="max-width:850px">
+
+    <div class="modal-header">
+      <h2 id="tituloModalIluminacion">
+        Agregar grupo de iluminación
+      </h2>
+
+      <button
+        type="button"
+        class="modal-close"
+        id="cerrarModalIluminacion">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="info-note" style="margin-bottom:20px">
+        Registre conjuntamente las lámparas o luminarios que tengan
+        características y horarios de operación similares.
+      </div>
+
+      <!-- =========================
+           1. UBICACIÓN Y TIPO
+      ========================== -->
+      <h3>Características del grupo</h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="ilumArea">
+            Área donde se encuentran *
+          </label>
+
+          <select id="ilumArea">
+            <option value="">Seleccione...</option>
+          </select>
+
+          <small>
+            Se mostrarán las áreas registradas anteriormente.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="ilumTipo">
+            Tipo de lámpara o luminario *
+          </label>
+
+          <select id="ilumTipo">
+            <option value="">Seleccione...</option>
+            <option value="led_integrada">LED integrada</option>
+            <option value="tubo_led">Tubo LED</option>
+            <option value="fluorescente_lineal">Fluorescente lineal</option>
+            <option value="fluorescente_compacta">Fluorescente compacta</option>
+            <option value="incandescente">Incandescente</option>
+            <option value="halogena">Halógena</option>
+            <option value="hid">Descarga / HID</option>
+            <option value="otro">Otro</option>
+            <option value="no_sabe">No sabe</option>
+          </select>
+        </div>
+
+        <div
+          class="form-group hidden"
+          id="grupoIlumTipoOtro">
+
+          <label for="ilumTipoOtro">
+            Especifique el tipo
+          </label>
+
+          <input
+            type="text"
+            id="ilumTipoOtro"
+            placeholder="Ej. lámpara de inducción">
+        </div>
+
+        <div class="form-group">
+          <label for="ilumCantidad">
+            Cantidad de lámparas o luminarios *
+          </label>
+
+          <input
+            type="number"
+            id="ilumCantidad"
+            min="1"
+            step="1"
+            placeholder="Ej. 25">
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           2. POTENCIA
+      ========================== -->
+
+      <h3 style="margin-top:25px">
+        Potencia
+      </h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="ilumPotencia">
+            Potencia por lámpara o luminario
+          </label>
+
+          <div style="display:flex; gap:8px; align-items:center">
+            <input
+              type="number"
+              id="ilumPotencia"
+              min="0"
+              step="0.1"
+              placeholder="Ej. 18">
+
+            <span>W</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>
+            ¿No conoce la potencia?
+          </label>
+
+          <label style="font-weight:normal">
+            <input
+              type="checkbox"
+              id="ilumPotenciaDesconocida">
+
+            No conozco la potencia
+          </label>
+
+          <small>
+            Puede proporcionar marca, modelo o datos de placa.
+          </small>
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           3. DATOS TÉCNICOS
+      ========================== -->
+
+      <details
+        id="detallesTecnicosIluminacion"
+        style="margin-top:22px">
+
+        <summary style="cursor:pointer; font-weight:600">
+          Datos técnicos adicionales (opcional)
+        </summary>
+
+        <div
+          class="form-grid"
+          style="margin-top:16px">
+
+          <div class="form-group">
+            <label for="ilumMarca">
+              Marca
+            </label>
+
+            <input
+              type="text"
+              id="ilumMarca"
+              placeholder="Ej. Philips, LEDVANCE, Tecnolite">
+          </div>
+
+          <div class="form-group">
+            <label for="ilumModelo">
+              Modelo
+            </label>
+
+            <input
+              type="text"
+              id="ilumModelo"
+              placeholder="Modelo o clave del producto">
+          </div>
+
+          <div class="form-group">
+            <label for="ilumFlujo">
+              Flujo luminoso
+            </label>
+
+            <div style="display:flex; gap:8px; align-items:center">
+              <input
+                type="number"
+                id="ilumFlujo"
+                min="0"
+                step="1"
+                placeholder="Ej. 1800">
+
+              <span>lm</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="ilumOrigenPotencia">
+              Origen del dato de potencia
+            </label>
+
+            <select id="ilumOrigenPotencia">
+              <option value="">Seleccione...</option>
+              <option value="placa">Dato de placa</option>
+              <option value="ficha">Ficha técnica</option>
+              <option value="usuario">Dato proporcionado por el usuario</option>
+              <option value="estimado">Valor estimado</option>
+              <option value="no_disponible">No disponible</option>
+            </select>
+          </div>
+
+          <div
+            class="form-group"
+            style="grid-column:1 / -1">
+
+            <label for="ilumDatosPlaca">
+              Información adicional de placa o empaque
+            </label>
+
+            <textarea
+              id="ilumDatosPlaca"
+              rows="3"
+              placeholder="Registre cualquier información técnica adicional que aparezca en la placa, etiqueta o empaque."></textarea>
+
+          </div>
+
+        </div>
+      </details>
+
+
+      <!-- =========================
+           4. OPERACIÓN
+      ========================== -->
+
+      <h3 style="margin-top:28px">
+        Horario de operación
+      </h3>
+
+      <div class="form-group">
+
+        <label>
+          ¿El horario de uso de este grupo cambia
+          significativamente según la época del año?
+        </label>
+
+        <div class="radio-group">
+
+          <label>
+            <input
+              type="radio"
+              name="ilumHorarioEstacional"
+              value="no">
+            No
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="ilumHorarioEstacional"
+              value="si">
+            Sí
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="ilumHorarioEstacional"
+              value="no_sabe">
+            No sabe
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- HORARIO ÚNICO -->
+      <div
+        id="ilumHorarioNormal"
+        class="hidden">
+
+        <h4>Horario habitual</h4>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="ilumHorasLV">
+              Horas de uso al día — lunes a viernes
+            </label>
+
+            <input
+              type="number"
+              id="ilumHorasLV"
+              min="0"
+              max="24"
+              step="0.5"
+              placeholder="Ej. 10">
+          </div>
+
+          <div class="form-group">
+            <label for="ilumHorasSab">
+              Horas de uso — sábado
+            </label>
+
+            <input
+              type="number"
+              id="ilumHorasSab"
+              min="0"
+              max="24"
+              step="0.5"
+              placeholder="Ej. 8">
+          </div>
+
+          <div class="form-group">
+            <label for="ilumHorasDom">
+              Horas de uso — domingo
+            </label>
+
+            <input
+              type="number"
+              id="ilumHorasDom"
+              min="0"
+              max="24"
+              step="0.5"
+              placeholder="Ej. 0">
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- HORARIO ESTACIONAL -->
+      <div
+        id="ilumHorarioTemporadas"
+        class="hidden">
+
+        <div class="season-box">
+
+          <h4>Temporada cálida / verano</h4>
+
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="ilumCalidaInicio">
+                Mes de inicio
+              </label>
+
+              <select id="ilumCalidaInicio">
+                <option value="">Seleccione...</option>
+                <option value="1">Enero</option>
+                <option value="2">Febrero</option>
+                <option value="3">Marzo</option>
+                <option value="4">Abril</option>
+                <option value="5">Mayo</option>
+                <option value="6">Junio</option>
+                <option value="7">Julio</option>
+                <option value="8">Agosto</option>
+                <option value="9">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="ilumCalidaFin">
+                Mes de término
+              </label>
+
+              <select id="ilumCalidaFin">
+                <option value="">Seleccione...</option>
+                <option value="1">Enero</option>
+                <option value="2">Febrero</option>
+                <option value="3">Marzo</option>
+                <option value="4">Abril</option>
+                <option value="5">Mayo</option>
+                <option value="6">Junio</option>
+                <option value="7">Julio</option>
+                <option value="8">Agosto</option>
+                <option value="9">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="ilumCalidaLV">
+                Horas/día — lunes a viernes
+              </label>
+              <input type="number" id="ilumCalidaLV"
+                     min="0" max="24" step="0.5">
+            </div>
+
+            <div class="form-group">
+              <label for="ilumCalidaSab">
+                Horas — sábado
+              </label>
+              <input type="number" id="ilumCalidaSab"
+                     min="0" max="24" step="0.5">
+            </div>
+
+            <div class="form-group">
+              <label for="ilumCalidaDom">
+                Horas — domingo
+              </label>
+              <input type="number" id="ilumCalidaDom"
+                     min="0" max="24" step="0.5">
+            </div>
+
+          </div>
+        </div>
+
+
+        <div
+          class="season-box"
+          style="margin-top:18px">
+
+          <h4>Temporada fría / invierno</h4>
+
+          <p class="subtle">
+            Corresponde a los meses restantes del año.
+          </p>
+
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="ilumFriaLV">
+                Horas/día — lunes a viernes
+              </label>
+              <input type="number" id="ilumFriaLV"
+                     min="0" max="24" step="0.5">
+            </div>
+
+            <div class="form-group">
+              <label for="ilumFriaSab">
+                Horas — sábado
+              </label>
+              <input type="number" id="ilumFriaSab"
+                     min="0" max="24" step="0.5">
+            </div>
+
+            <div class="form-group">
+              <label for="ilumFriaDom">
+                Horas — domingo
+              </label>
+              <input type="number" id="ilumFriaDom"
+                     min="0" max="24" step="0.5">
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- BOTONES -->
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="secondary"
+        id="cancelarIluminacion">
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarIluminacion">
+        Guardar grupo
+      </button>
+
+    </div>
+
+  </div>
+</div> 
+
+
+  
         
         
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
