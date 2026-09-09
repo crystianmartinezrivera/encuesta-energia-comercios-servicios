@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Encuesta de Consumo y Usos de Energía</title>
 
+/* =====================================================
+   inicio de CSS
+===================================================== */
+  
   <style>
     :root{
       --azul:#003b70;
@@ -1038,8 +1042,205 @@
     white-space:nowrap;
     text-align:center;
 }
-   
+
+/* =====================================================
+   MODAL - ILUMINACIÓN
+===================================================== */
+
+#modalIluminacion {
+  position: fixed;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 35, 70, 0.45);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  z-index: 9999;
+}
+
+
+/* MUY IMPORTANTE:
+   cuando tenga la clase hidden debe desaparecer */
+#modalIluminacion.hidden {
+  display: none;
+}
+
+
+#modalIluminacion .modal-content {
+  background: #ffffff;
+
+  width: min(900px, 96vw);
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.25);
+
+  position: relative;
+}
+
+
+#modalIluminacion .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 20px 24px;
+
+  border-bottom: 1px solid #d9e2ec;
+
+  position: sticky;
+  top: 0;
+
+  background: #ffffff;
+
+  z-index: 2;
+}
+
+
+#modalIluminacion .modal-header h2 {
+  margin: 0;
+
+  color: #063b72;
+
+  font-size: 1.45rem;
+}
+
+
+#modalIluminacion .modal-close {
+  width: 38px;
+  height: 38px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #eef3f7;
+
+  font-size: 26px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  color: #25364a;
+}
+
+
+#modalIluminacion .modal-close:hover {
+  background: #dfe8ef;
+}
+
+
+#modalIluminacion .modal-body {
+  padding: 24px;
+}
+
+
+#modalIluminacion .modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  padding: 18px 24px;
+
+  border-top: 1px solid #d9e2ec;
+
+  position: sticky;
+  bottom: 0;
+
+  background: #ffffff;
+}
+
+
+#modalIluminacion .form-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 16px 20px;
+}
+
+
+#modalIluminacion .form-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+
+#modalIluminacion .form-group label {
+  font-weight: 600;
+
+  color: #25364a;
+}
+
+
+#modalIluminacion .form-group input,
+#modalIluminacion .form-group select,
+#modalIluminacion .form-group textarea {
+  width: 100%;
+
+  box-sizing: border-box;
+}
+
+
+#modalIluminacion .info-note {
+  background: #f2f7fb;
+
+  border-left: 4px solid #0a4c86;
+
+  padding: 12px 14px;
+
+  border-radius: 6px;
+
+  color: #334a5f;
+}
+
+
+#modalIluminacion .season-box {
+  border: 1px solid #d7e1e9;
+
+  border-radius: 10px;
+
+  padding: 16px;
+
+  background: #fafcfd;
+}
+
+
+@media (max-width: 700px) {
+
+  #modalIluminacion {
+    padding: 10px;
+  }
+
+  #modalIluminacion .modal-content {
+    width: 100%;
+    max-height: 96vh;
+  }
+
+  #modalIluminacion .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+    
 </style>
+/* =====================================================
+   Fin de CSS
+===================================================== */  
 </head>
 
 <body>
@@ -4059,10 +4260,10 @@
 
 
   
-  // ======================================================
-  // Inicio de JAVA
-  // ======================================================
-        
+<!-- =====================================================
+     Inicio de JAVA
+====================================================== -->
+  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const STORAGE_KEY = "encuestaEnergiaComerciosServicios_v1";
