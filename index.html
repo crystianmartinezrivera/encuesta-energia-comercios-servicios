@@ -9924,7 +9924,6 @@ if (ilumTipo) {
 
 }
 
-
 // -----------------------------------------------------
 // 6. POTENCIA DESCONOCIDA
 // -----------------------------------------------------
@@ -9939,31 +9938,82 @@ const detallesTecnicosIluminacion =
   document.getElementById("detallesTecnicosIluminacion");
 
 
+function limpiarDatosTecnicosIluminacion() {
+
+  const camposTecnicos = [
+    "ilumMarca",
+    "ilumModelo",
+    "ilumFlujo",
+    "ilumOrigenPotencia",
+    "ilumDatosPlaca"
+  ];
+
+  camposTecnicos.forEach(id => {
+
+    const campo = document.getElementById(id);
+
+    if (campo) {
+      campo.value = "";
+    }
+
+  });
+
+}
+
+
 if (ilumPotenciaDesconocida) {
 
   ilumPotenciaDesconocida.addEventListener("change", () => {
 
+    // =========================================
+    // NO CONOCE LA POTENCIA
+    // =========================================
     if (ilumPotenciaDesconocida.checked) {
 
-      // Vacía y desactiva el campo de potencia
+      // Borra la potencia capturada
       ilumPotencia.value = "";
+
+      // Bloquea el campo
       ilumPotencia.disabled = true;
 
-      // Abre automáticamente los datos técnicos
+      // Muestra el módulo de datos técnicos
       if (detallesTecnicosIluminacion) {
+
+        detallesTecnicosIluminacion.classList.remove("hidden");
+
+        // Lo abre automáticamente
         detallesTecnicosIluminacion.open = true;
+
       }
 
-    } else {
+    }
 
-      // Reactiva el campo de potencia
+    // =========================================
+    // SÍ CONOCE LA POTENCIA
+    // =========================================
+    else {
+
+      // Reactiva potencia
       ilumPotencia.disabled = false;
+
+      // Oculta datos técnicos
+      if (detallesTecnicosIluminacion) {
+
+        detallesTecnicosIluminacion.open = false;
+
+        detallesTecnicosIluminacion.classList.add("hidden");
+
+      }
+
+      // Borra cualquier dato técnico anterior
+      limpiarDatosTecnicosIluminacion();
 
     }
 
   });
 
 }
+
 
 // -----------------------------------------------------
 // 7. HORARIO NORMAL / ESTACIONAL
