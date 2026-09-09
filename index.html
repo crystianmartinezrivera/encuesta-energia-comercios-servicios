@@ -1236,7 +1236,50 @@
 
 }
 
-    
+/* =====================================================
+   ILUMINACIÓN - DATOS TÉCNICOS + HORARIO
+===================================================== */
+
+.zona-tecnicos-horario {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-top: 26px;
+}
+
+/* Cuando no se conoce la potencia:
+   datos técnicos + horario en dos columnas */
+.zona-tecnicos-horario.con-datos-tecnicos {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.col-datos-tecnicos,
+.col-horario-iluminacion {
+  min-width: 0;
+  align-self: start;
+}
+
+/* Alinear ambos bloques en la parte superior */
+.zona-tecnicos-horario.con-datos-tecnicos
+#detallesTecnicosIluminacion {
+  margin-top: 0 !important;
+}
+
+.zona-tecnicos-horario.con-datos-tecnicos
+.col-horario-iluminacion > h3 {
+  margin-top: 0 !important;
+}
+
+/* Pantallas pequeñas */
+@media (max-width: 800px) {
+
+  .zona-tecnicos-horario.con-datos-tecnicos {
+    grid-template-columns: 1fr;
+  }
+
+}
+
 </style>
 <!-- =====================================================
    Fin de CSS
@@ -4017,9 +4060,22 @@
           </div>
 
         </div>
-      </details>
+      
+        <div
+  id="zonaTecnicosHorario"
+  class="zona-tecnicos-horario"
+>
 
-
+  <div
+    id="colDatosTecnicosIluminacion"
+    class="col-datos-tecnicos hidden"
+  >   
+  </details>
+</div>
+    <div
+  id="colHorarioIluminacion"
+  class="col-horario-iluminacion"
+>
       <!-- =========================
            4. OPERACIÓN
       ========================== -->
@@ -4248,7 +4304,8 @@
 
     </div>
 
-
+ </div>
+</div>
     <!-- BOTONES -->
     <div class="modal-footer">
 
@@ -9937,6 +9994,12 @@ const ilumPotencia =
 const detallesTecnicosIluminacion =
   document.getElementById("detallesTecnicosIluminacion");
 
+const zonaTecnicosHorario =
+  document.getElementById("zonaTecnicosHorario");
+
+const colDatosTecnicosIluminacion =
+  document.getElementById("colDatosTecnicosIluminacion");
+
 
 function limpiarDatosTecnicosIluminacion() {
 
@@ -9970,20 +10033,23 @@ if (ilumPotenciaDesconocida) {
     // =========================================
     if (ilumPotenciaDesconocida.checked) {
 
-      // Borra la potencia capturada
+      // Borra y bloquea potencia
       ilumPotencia.value = "";
-
-      // Bloquea el campo
       ilumPotencia.disabled = true;
 
-      // Muestra el módulo de datos técnicos
+      // Muestra columna de datos técnicos
+      if (colDatosTecnicosIluminacion) {
+        colDatosTecnicosIluminacion.classList.remove("hidden");
+      }
+
+      // Cambia la zona a dos columnas
+      if (zonaTecnicosHorario) {
+        zonaTecnicosHorario.classList.add("con-datos-tecnicos");
+      }
+
+      // Abre datos técnicos
       if (detallesTecnicosIluminacion) {
-
-        detallesTecnicosIluminacion.classList.remove("hidden");
-
-        // Lo abre automáticamente
         detallesTecnicosIluminacion.open = true;
-
       }
 
     }
@@ -9996,16 +10062,22 @@ if (ilumPotenciaDesconocida) {
       // Reactiva potencia
       ilumPotencia.disabled = false;
 
-      // Oculta datos técnicos
-      if (detallesTecnicosIluminacion) {
-
-        detallesTecnicosIluminacion.open = false;
-
-        detallesTecnicosIluminacion.classList.add("hidden");
-
+      // Oculta columna técnica
+      if (colDatosTecnicosIluminacion) {
+        colDatosTecnicosIluminacion.classList.add("hidden");
       }
 
-      // Borra cualquier dato técnico anterior
+      // Horario vuelve a ocupar todo el ancho
+      if (zonaTecnicosHorario) {
+        zonaTecnicosHorario.classList.remove("con-datos-tecnicos");
+      }
+
+      // Cierra datos técnicos
+      if (detallesTecnicosIluminacion) {
+        detallesTecnicosIluminacion.open = false;
+      }
+
+      // Borra datos técnicos anteriores
       limpiarDatosTecnicosIluminacion();
 
     }
@@ -10025,16 +10097,68 @@ const radiosHorarioIluminacion =
   );
 
 const ilumHorarioNormal =
+  document.getElementById("ilumHorarioNormal");
+
+const ilumHorarioTemporadas =
+  document.getElementById("ilumHorarioTemporadas");
+
+
+radiosHorarioIluminacion.forEach(radio => {
+
+  radio.addEventListener("change", () => {
+
+    if (radio.value === "no" && radio.checked) {
+
+      ilumHorarioNormal.classList.remove("hidden");
+      ilumHorarioTemporadas.classList.add("hidden");
+
+    }
+
+    else if (radio.value === "si" && radio.checked) {
+
+      ilumHorarioNormal.classList.add("hidden");
+      ilumHorarioTemporadas.classList.remove("hidden");
+
+    }
+
+    else if (
+      radio.value === "no_sabe" &&
+      radio.checked
+    ) {
+
+      ilumHorarioNormal.classList.add("hidden");
+      ilumHorarioTemporadas.classList.add("hidden");
+
+    }
+
+  });
+
+});
+
+// -----------------------------------------------------
+// 7. HORARIO NORMAL / ESTACIONAL
+// -----------------------------------------------------
+
+const radiosHorarioIluminacion =
+  document.querySelectorAll(
+    'input[name="ilumHorarioEstacional"]'
+  );
+
+const ilumHorarioNormal =
   document.getElementById(
     "ilumHorarioNormal"
   );
+ </div>
 
+</div>
 const ilumHorarioTemporadas =
   document.getElementById(
     "ilumHorarioTemporadas"
   );
 
+ </div>
 
+</div>
 radiosHorarioIluminacion.forEach(radio => {
 
   radio.addEventListener("change", () => {
