@@ -2099,15 +2099,116 @@
   </div>
 
 </div>
-        
+     <div id="view-usos" class="survey-view hidden">
+  <h1 class="section-title">4. Usos finales de energía</h1>
 
-      <div id="view-usos" class="survey-view hidden">
-        <h1 class="section-title">4. Usos finales de energía</h1>
-        <div class="placeholder">
-          Aquí construiremos los módulos dinámicos de iluminación, aire acondicionado,
-          refrigeración, bombeo, motores y demás usos finales.
-        </div>
+  <div class="info-banner usos-intro">
+    ⓘ Registre los principales equipos consumidores de energía. La encuesta utiliza
+    la información capturada en las secciones anteriores para facilitar el registro
+    y evitar preguntas innecesarias.
+  </div>
+
+  <!-- =====================================================
+       A. ILUMINACIÓN
+  ====================================================== -->
+  <section class="uso-card" id="moduloIluminacion">
+
+    <div class="uso-card-head">
+      <div>
+        <h3>A. Iluminación</h3>
+        <p class="subtle" style="margin-top:5px">
+          Registre grupos de lámparas o luminarios con características
+          y horarios similares.
+        </p>
       </div>
+
+      <div class="radio-group" style="min-height:auto">
+        <label>
+          <input type="radio" name="usaIluminacion" value="si">
+          Sí
+        </label>
+
+        <label>
+          <input type="radio" name="usaIluminacion" value="no">
+          No
+        </label>
+      </div>
+    </div>
+
+    <div class="uso-card-body hidden" id="iluminacionContenido">
+
+      <div class="uso-actions">
+        <button
+          type="button"
+          class="secondary"
+          id="btnAgregarIluminacion">
+          + Agregar grupo de iluminación
+        </button>
+
+        <span
+          class="uso-summary"
+          id="resumenIluminacion">
+        </span>
+      </div>
+
+      <div
+        id="sinIluminacion"
+        class="empty-module">
+        Aún no se han agregado grupos de iluminación.
+      </div>
+
+      <div
+        id="tablaIluminacionContenedor"
+        class="table-responsive"
+        style="display:none">
+
+        <table class="energy-table ilum-table">
+          <thead>
+            <tr>
+              <th>Área</th>
+              <th>Tipo</th>
+              <th class="num">Cantidad</th>
+              <th class="num">Potencia</th>
+              <th>Operación</th>
+              <th class="num">Consumo estimado</th>
+              <th class="acciones">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody id="tablaIluminacionBody"></tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- Aquí irán después:
+       B. Acondicionamiento de espacios
+       C. Refrigeración y conservación
+       D. Equipos de oficina...
+       etc.
+  -->
+
+  <div class="page-actions">
+    <button
+      type="button"
+      class="secondary"
+      id="btnUsosAnterior">
+      ← Anterior
+    </button>
+
+    <button
+      type="button"
+      class="primary"
+      id="btnUsosContinuar">
+      Guardar y continuar →
+    </button>
+  </div>
+
+</div>   
+
+     
 
       <div id="view-practicas" class="survey-view hidden">
         <h1 class="section-title">5. Prácticas de eficiencia energética</h1>
