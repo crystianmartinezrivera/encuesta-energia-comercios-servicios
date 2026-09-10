@@ -1333,6 +1333,223 @@
   margin: 0;
   flex-shrink: 0;
 }
+
+/* =====================================================
+   MODAL - AIRE ACONDICIONADO
+===================================================== */
+
+#modalAireAcondicionado {
+  position: fixed;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 35, 70, 0.45);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  z-index: 9999;
+}
+
+#modalAireAcondicionado.hidden {
+  display: none;
+}
+
+#modalAireAcondicionado .modal-content {
+  background: #ffffff;
+
+  width: min(1100px, 96vw);
+  max-height: 92vh;
+
+  overflow-y: auto;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.25);
+
+  position: relative;
+}
+
+#modalAireAcondicionado .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 20px 24px;
+
+  border-bottom: 1px solid #d9e2ec;
+
+  position: sticky;
+  top: 0;
+
+  background: #ffffff;
+
+  z-index: 2;
+}
+
+#modalAireAcondicionado .modal-header h2 {
+  margin: 0;
+  color: #063b72;
+  font-size: 1.45rem;
+}
+
+#modalAireAcondicionado .modal-close {
+  width: 38px;
+  height: 38px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #eef3f7;
+
+  font-size: 26px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  color: #25364a;
+}
+
+#modalAireAcondicionado .modal-close:hover {
+  background: #dfe8ef;
+}
+
+#modalAireAcondicionado .modal-body {
+  padding: 24px;
+}
+
+#modalAireAcondicionado .modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  padding: 18px 24px;
+
+  border-top: 1px solid #d9e2ec;
+
+  position: sticky;
+  bottom: 0;
+
+  background: #ffffff;
+
+  z-index: 2;
+}
+
+#modalAireAcondicionado .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
+}
+
+#modalAireAcondicionado .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+#modalAireAcondicionado .form-group label {
+  font-weight: 600;
+  color: #25364a;
+}
+
+#modalAireAcondicionado .form-group input,
+#modalAireAcondicionado .form-group select,
+#modalAireAcondicionado .form-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#modalAireAcondicionado .info-note {
+  background: #f2f7fb;
+
+  border-left: 4px solid #0a4c86;
+
+  padding: 12px 14px;
+
+  border-radius: 6px;
+
+  color: #334a5f;
+}
+
+#modalAireAcondicionado .season-box {
+  border: 1px solid #d7e1e9;
+
+  border-radius: 10px;
+
+  padding: 16px;
+
+  background: #fafcfd;
+}
+
+#modalAireAcondicionado h3 {
+  color: #0b3770;
+}
+
+#modalAireAcondicionado h4 {
+  margin-bottom: 10px;
+  color: #203348;
+}
+
+
+/* =====================================================
+   AIRE ACONDICIONADO - DATOS TÉCNICOS
+===================================================== */
+
+#acDatosTecnicosBox {
+  border-top: 1px solid #e1e8ee;
+  padding-top: 18px;
+}
+
+#acDatosTecnicosBox.hidden {
+  display: none;
+}
+
+#acDetallesTecnicos summary {
+  color: #0b3770;
+  font-size: 16px;
+}
+
+
+/* =====================================================
+   CAMPOS BLOQUEADOS
+===================================================== */
+
+#modalAireAcondicionado input:disabled,
+#modalAireAcondicionado select:disabled {
+  background: #f1f3f5;
+  color: #7b8792;
+  cursor: not-allowed;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 800px) {
+
+  #modalAireAcondicionado {
+    padding: 10px;
+  }
+
+  #modalAireAcondicionado .modal-content {
+    width: 100%;
+    max-height: 96vh;
+  }
+
+  #modalAireAcondicionado .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
     
 </style>
 <!-- =====================================================
@@ -4498,8 +4715,1069 @@
   </div>
 </div> 
 
+<!-- =====================================================
+     MODAL: AGREGAR EQUIPO DE AIRE ACONDICIONADO
+====================================================== -->
 
+<div id="modalAireAcondicionado" class="modal hidden">
+
+  <div class="modal-content" style="max-width:1100px">
+
+    <!-- =================================================
+         ENCABEZADO
+    ================================================== -->
+    <div class="modal-header">
+
+      <h2 id="tituloModalAireAcondicionado">
+        Agregar equipo de aire acondicionado
+      </h2>
+
+      <button
+        type="button"
+        class="modal-close"
+        id="cerrarModalAireAcondicionado">
+        ×
+      </button>
+
+    </div>
+
+
+    <!-- =================================================
+         CUERPO DEL MODAL
+    ================================================== -->
+    <div class="modal-body">
+
+      <div class="info-note" style="margin-bottom:20px">
+        Registre conjuntamente los equipos de aire acondicionado que tengan
+        características, capacidad y patrones de operación similares.
+      </div>
+
+
+      <!-- =================================================
+           1. CARACTERÍSTICAS DEL EQUIPO
+      ================================================== -->
+
+      <h3>Características del equipo</h3>
+
+      <div class="form-grid">
+
+        <!-- ÁREA -->
+        <div class="form-group">
+
+          <label for="acArea">
+            Área atendida <span class="req">*</span>
+          </label>
+
+          <select id="acArea">
+            <option value="">Seleccione...</option>
+          </select>
+
+          <small>
+            Se mostrarán las áreas registradas anteriormente.
+          </small>
+
+        </div>
+
+
+        <!-- TIPO -->
+        <div class="form-group">
+
+          <label for="acTipo">
+            Tipo de equipo <span class="req">*</span>
+          </label>
+
+          <select id="acTipo">
+
+            <option value="">Seleccione...</option>
+
+            <option value="minisplit_convencional">
+              Minisplit convencional
+            </option>
+
+            <option value="minisplit_inverter">
+              Minisplit inverter
+            </option>
+
+            <option value="ventana">
+              Equipo tipo ventana / cuarto
+            </option>
+
+            <option value="portatil">
+              Aire acondicionado portátil
+            </option>
+
+            <option value="dividido_central">
+              Sistema dividido central
+            </option>
+
+            <option value="paquete">
+              Unidad paquete
+            </option>
+
+            <option value="vrf">
+              Sistema VRF / VRV
+            </option>
+
+            <option value="chiller">
+              Chiller / enfriadora
+            </option>
+
+            <option value="fan_coil">
+              Fan & Coil
+            </option>
+
+            <option value="evaporativo">
+              Enfriador evaporativo
+            </option>
+
+            <option value="bomba_calor">
+              Bomba de calor
+            </option>
+
+            <option value="otro">
+              Otro
+            </option>
+
+            <option value="no_sabe">
+              No sabe
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- OTRO TIPO -->
+        <div
+          class="form-group hidden"
+          id="acTipoOtroBox">
+
+          <label for="acTipoOtro">
+            Especifique el tipo de equipo
+          </label>
+
+          <input
+            type="text"
+            id="acTipoOtro"
+            placeholder="Especifique el equipo">
+
+        </div>
+
+
+        <!-- CANTIDAD -->
+        <div class="form-group">
+
+          <label for="acCantidad">
+            Cantidad de equipos <span class="req">*</span>
+          </label>
+
+          <input
+            type="number"
+            id="acCantidad"
+            min="1"
+            step="1"
+            placeholder="Ej. 12">
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           2. EDAD DEL EQUIPO
+      ================================================== -->
+
+      <h3 style="margin-top:26px">
+        Antigüedad del equipo
+      </h3>
+
+      <div class="form-grid">
+
+        <!-- AÑO -->
+        <div class="form-group">
+
+          <label for="acAnioAdquisicion">
+            Año de adquisición o instalación
+          </label>
+
+          <select id="acAnioAdquisicion">
+            <option value="">Seleccione...</option>
+          </select>
+
+        </div>
+
+
+        <!-- EDAD -->
+        <div class="form-group">
+
+          <label for="acAntiguedad">
+            Antigüedad aproximada
+          </label>
+
+          <div class="input-unit">
+
+            <input
+              type="number"
+              id="acAntiguedad"
+              min="0"
+              step="1"
+              placeholder="Se puede calcular automáticamente">
+
+            <span class="unit">
+              años
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           3. CAPACIDAD
+      ================================================== -->
+
+      <h3 style="margin-top:26px">
+        Capacidad de enfriamiento
+      </h3>
+
+      <div class="form-grid">
+
+        <!-- CAPACIDAD -->
+        <div class="form-group">
+
+          <label for="acCapacidad">
+            Capacidad por equipo
+          </label>
+
+          <input
+            type="number"
+            id="acCapacidad"
+            min="0"
+            step="0.01"
+            placeholder="Ej. 12000">
+
+        </div>
+
+
+        <!-- UNIDAD -->
+        <div class="form-group">
+
+          <label for="acUnidadCapacidad">
+            Unidad de capacidad
+          </label>
+
+          <select id="acUnidadCapacidad">
+
+            <option value="">
+              Seleccione...
+            </option>
+
+            <option value="btu_h">
+              BTU/h
+            </option>
+
+            <option value="tr">
+              Toneladas de refrigeración (TR)
+            </option>
+
+            <option value="kw_termicos">
+              kW térmicos
+            </option>
+
+            <option value="kcal_h">
+              kcal/h
+            </option>
+
+            <option value="no_sabe">
+              No sabe
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           4. POTENCIA ELÉCTRICA
+      ================================================== -->
+
+      <h3 style="margin-top:26px">
+        Potencia eléctrica
+      </h3>
+
+      <div class="form-grid">
+
+        <!-- POTENCIA -->
+        <div class="form-group">
+
+          <label for="acPotencia">
+            Potencia eléctrica por equipo
+          </label>
+
+          <div class="input-unit">
+
+            <input
+              type="number"
+              id="acPotencia"
+              min="0"
+              step="0.01"
+              placeholder="Ej. 1.2">
+
+            <select
+              id="acUnidadPotencia"
+              class="unidad-select">
+
+              <option value="kw">
+                kW
+              </option>
+
+              <option value="w">
+                W
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- POTENCIA DESCONOCIDA -->
+        <div class="form-group">
+
+          <label>
+            Potencia no disponible
+          </label>
+
+          <label
+            style="
+              display:flex;
+              flex-direction:row;
+              align-items:center;
+              gap:8px;
+              font-weight:normal;
+              cursor:pointer;
+            "
+          >
+
+            <input
+              type="checkbox"
+              id="acPotenciaDesconocida"
+              style="width:auto; margin:0;">
+
+            No conozco la potencia
+
+          </label>
+
+          <small>
+            Si no conoce la potencia, puede proporcionar la capacidad,
+            eficiencia, marca, modelo o datos de placa.
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           5. EFICIENCIA
+      ================================================== -->
+
+      <h3 style="margin-top:26px">
+        Eficiencia del equipo
+      </h3>
+
+      <div class="form-grid">
+
+        <!-- INDICADOR -->
+        <div class="form-group">
+
+          <label for="acIndicadorEficiencia">
+            Indicador de eficiencia
+          </label>
+
+          <select id="acIndicadorEficiencia">
+
+            <option value="">
+              Seleccione...
+            </option>
+
+            <option value="seer">
+              SEER / REEE
+            </option>
+
+            <option value="eer">
+              EER / REE
+            </option>
+
+            <option value="cop">
+              COP
+            </option>
+
+            <option value="cspF">
+              CSPF
+            </option>
+
+            <option value="otro">
+              Otro
+            </option>
+
+            <option value="no_sabe">
+              No sabe
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- VALOR -->
+        <div class="form-group">
+
+          <label for="acValorEficiencia">
+            Valor de eficiencia
+          </label>
+
+          <input
+            type="number"
+            id="acValorEficiencia"
+            min="0"
+            step="0.01"
+            placeholder="Capture el valor indicado">
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           6. DATOS TÉCNICOS
+           INICIALMENTE OCULTOS
+      ================================================== -->
+
+      <div
+        id="acDatosTecnicosBox"
+        class="hidden"
+        style="margin-top:26px">
+
+        <details
+          id="acDetallesTecnicos"
+          open>
+
+          <summary
+            style="
+              cursor:pointer;
+              font-weight:700;
+              margin-bottom:14px;
+            ">
+            Datos técnicos adicionales
+          </summary>
+
+
+          <div class="form-grid">
+
+            <!-- MARCA -->
+            <div class="form-group">
+
+              <label for="acMarca">
+                Marca
+              </label>
+
+              <input
+                type="text"
+                id="acMarca"
+                placeholder="Ej. Daikin, Carrier, Trane">
+
+            </div>
+
+
+            <!-- MODELO -->
+            <div class="form-group">
+
+              <label for="acModelo">
+                Modelo
+              </label>
+
+              <input
+                type="text"
+                id="acModelo"
+                placeholder="Modelo o clave del equipo">
+
+            </div>
+
+
+            <!-- VOLTAJE -->
+            <div class="form-group">
+
+              <label for="acVoltaje">
+                Tensión eléctrica
+              </label>
+
+              <div class="input-unit">
+
+                <input
+                  type="number"
+                  id="acVoltaje"
+                  min="0"
+                  step="1"
+                  placeholder="Ej. 220">
+
+                <span class="unit">
+                  V
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- CORRIENTE -->
+            <div class="form-group">
+
+              <label for="acCorriente">
+                Corriente eléctrica
+              </label>
+
+              <div class="input-unit">
+
+                <input
+                  type="number"
+                  id="acCorriente"
+                  min="0"
+                  step="0.01"
+                  placeholder="Ej. 6.5">
+
+                <span class="unit">
+                  A
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- DATOS DE PLACA -->
+            <div
+              class="form-group"
+              style="grid-column:1 / -1">
+
+              <label for="acDatosPlaca">
+                Información adicional de placa
+              </label>
+
+              <textarea
+                id="acDatosPlaca"
+                rows="3"
+                placeholder="Registre cualquier información adicional visible en la placa o etiqueta del equipo."></textarea>
+
+            </div>
+
+          </div>
+
+        </details>
+
+      </div>
+
+
+      <!-- =================================================
+           7. ÁREA ACONDICIONADA Y TEMPERATURA
+      ================================================== -->
+
+      <h3 style="margin-top:28px">
+        Condiciones de operación
+      </h3>
+
+      <div class="form-grid">
+
+        <!-- PROPORCIÓN -->
+        <div class="form-group">
+
+          <label for="acProporcionArea">
+            Proporción aproximada del área que recibe acondicionamiento
+          </label>
+
+          <select id="acProporcionArea">
+
+            <option value="">
+              Seleccione...
+            </option>
+
+            <option value="25">
+              Menos de 25 %
+            </option>
+
+            <option value="50">
+              25 % a 50 %
+            </option>
+
+            <option value="75">
+              51 % a 75 %
+            </option>
+
+            <option value="99">
+              Más de 75 %
+            </option>
+
+            <option value="100">
+              100 %
+            </option>
+
+            <option value="no_sabe">
+              No sabe
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- TEMPERATURA -->
+        <div class="form-group">
+
+          <label for="acTemperaturaConsigna">
+            Temperatura habitual de consigna
+          </label>
+
+          <div class="input-unit">
+
+            <input
+              type="number"
+              id="acTemperaturaConsigna"
+              min="10"
+              max="35"
+              step="0.5"
+              placeholder="Ej. 23">
+
+            <span class="unit">
+              °C
+            </span>
+
+          </div>
+
+          <label
+            style="
+              display:flex;
+              align-items:center;
+              gap:8px;
+              font-weight:normal;
+              margin-top:5px;
+            "
+          >
+
+            <input
+              type="checkbox"
+              id="acTemperaturaDesconocida"
+              style="width:auto; margin:0;">
+
+            No conoce la temperatura
+
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           8. HORARIO DE OPERACIÓN
+      ================================================== -->
+
+      <h3 style="margin-top:28px">
+        Horario de operación
+      </h3>
+
+
+      <!-- ¿COINCIDE CON ESTABLECIMIENTO? -->
+      <div class="form-group">
+
+        <label>
+          ¿El horario de uso del equipo coincide con el horario
+          general de operación del establecimiento?
+        </label>
+
+        <div class="radio-group">
+
+          <label>
+            <input
+              type="radio"
+              name="acHorarioCoincide"
+              value="si">
+            Sí
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="acHorarioCoincide"
+              value="no">
+            No
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="acHorarioCoincide"
+              value="no_sabe">
+            No sabe
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           HORARIO ESPECÍFICO
+           APARECE SI NO COINCIDE
+      ================================================== -->
+
+      <div
+        id="acHorarioEspecificoBox"
+        class="hidden"
+        style="margin-top:18px">
+
+
+        <!-- ¿CAMBIA POR TEMPORADA? -->
+        <div class="form-group">
+
+          <label>
+            ¿El horario de uso cambia significativamente según
+            la época del año?
+          </label>
+
+          <div class="radio-group">
+
+            <label>
+              <input
+                type="radio"
+                name="acHorarioEstacional"
+                value="no">
+              No
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                name="acHorarioEstacional"
+                value="si">
+              Sí
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                name="acHorarioEstacional"
+                value="no_sabe">
+              No sabe
+            </label>
+
+          </div>
+
+        </div>
+
+
+        <!-- HORARIO HABITUAL -->
+        <div
+          id="acHorarioNormal"
+          class="hidden"
+          style="margin-top:18px">
+
+          <h4>
+            Horario habitual
+          </h4>
+
+          <div class="form-grid">
+
+            <div class="form-group">
+
+              <label for="acHorasLV">
+                Horas de uso al día — lunes a viernes
+              </label>
+
+              <input
+                type="number"
+                id="acHorasLV"
+                min="0"
+                max="24"
+                step="0.5"
+                placeholder="Ej. 10">
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="acHorasSab">
+                Horas de uso — sábado
+              </label>
+
+              <input
+                type="number"
+                id="acHorasSab"
+                min="0"
+                max="24"
+                step="0.5"
+                placeholder="Ej. 8">
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="acHorasDom">
+                Horas de uso — domingo
+              </label>
+
+              <input
+                type="number"
+                id="acHorasDom"
+                min="0"
+                max="24"
+                step="0.5"
+                placeholder="Ej. 0">
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =================================================
+             HORARIO ESTACIONAL
+        ================================================== -->
+
+        <div
+          id="acHorarioTemporadas"
+          class="hidden"
+          style="margin-top:18px">
+
+
+          <!-- TEMPORADA CÁLIDA -->
+          <div class="season-box">
+
+            <h4>
+              Temporada cálida / verano
+            </h4>
+
+            <div class="form-grid">
+
+              <div class="form-group">
+
+                <label for="acCalidaInicio">
+                  Mes de inicio
+                </label>
+
+                <select id="acCalidaInicio">
+
+                  <option value="">Seleccione...</option>
+                  <option value="1">Enero</option>
+                  <option value="2">Febrero</option>
+                  <option value="3">Marzo</option>
+                  <option value="4">Abril</option>
+                  <option value="5">Mayo</option>
+                  <option value="6">Junio</option>
+                  <option value="7">Julio</option>
+                  <option value="8">Agosto</option>
+                  <option value="9">Septiembre</option>
+                  <option value="10">Octubre</option>
+                  <option value="11">Noviembre</option>
+                  <option value="12">Diciembre</option>
+
+                </select>
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label for="acCalidaFin">
+                  Mes de término
+                </label>
+
+                <select id="acCalidaFin">
+
+                  <option value="">Seleccione...</option>
+                  <option value="1">Enero</option>
+                  <option value="2">Febrero</option>
+                  <option value="3">Marzo</option>
+                  <option value="4">Abril</option>
+                  <option value="5">Mayo</option>
+                  <option value="6">Junio</option>
+                  <option value="7">Julio</option>
+                  <option value="8">Agosto</option>
+                  <option value="9">Septiembre</option>
+                  <option value="10">Octubre</option>
+                  <option value="11">Noviembre</option>
+                  <option value="12">Diciembre</option>
+
+                </select>
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label for="acCalidaLV">
+                  Horas/día — lunes a viernes
+                </label>
+
+                <input
+                  type="number"
+                  id="acCalidaLV"
+                  min="0"
+                  max="24"
+                  step="0.5">
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label for="acCalidaSab">
+                  Horas — sábado
+                </label>
+
+                <input
+                  type="number"
+                  id="acCalidaSab"
+                  min="0"
+                  max="24"
+                  step="0.5">
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label for="acCalidaDom">
+                  Horas — domingo
+                </label>
+
+                <input
+                  type="number"
+                  id="acCalidaDom"
+                  min="0"
+                  max="24"
+                  step="0.5">
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- TEMPORADA FRÍA -->
+          <div
+            class="season-box"
+            style="margin-top:18px">
+
+            <h4>
+              Temporada fría / invierno
+            </h4>
+
+            <p class="subtle">
+              Corresponde a los meses restantes del año.
+            </p>
+
+            <div class="form-grid">
+
+              <div class="form-group">
+
+                <label for="acFriaLV">
+                  Horas/día — lunes a viernes
+                </label>
+
+                <input
+                  type="number"
+                  id="acFriaLV"
+                  min="0"
+                  max="24"
+                  step="0.5">
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label for="acFriaSab">
+                  Horas — sábado
+                </label>
+
+                <input
+                  type="number"
+                  id="acFriaSab"
+                  min="0"
+                  max="24"
+                  step="0.5">
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label for="acFriaDom">
+                  Horas — domingo
+                </label>
+
+                <input
+                  type="number"
+                  id="acFriaDom"
+                  min="0"
+                  max="24"
+                  step="0.5">
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+        <!-- FIN HORARIO ESTACIONAL -->
+
+      </div>
+      <!-- FIN HORARIO ESPECÍFICO -->
+
+    </div>
+    <!-- FIN modal-body -->
+
+
+    <!-- =================================================
+         BOTONES
+    ================================================== -->
+
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="secondary"
+        id="cancelarAireAcondicionado">
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarAireAcondicionado">
+        Guardar equipo
+      </button>
+
+    </div>
+
+
+  </div>
+  <!-- FIN modal-content -->
+
+</div>
+<!-- FIN modalAireAcondicionado -->
   
+ 
 <!-- =====================================================
      Inicio de JAVA
 ====================================================== -->
