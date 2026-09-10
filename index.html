@@ -6366,7 +6366,647 @@ if (acondNinguno) {
 
 }
 
+// =====================================================
+// SECCIÓN 4 - USOS FINALES DE ENERGÍA
+// B. ACONDICIONAMIENTO DE ESPACIOS
+// MODAL: AIRE ACONDICIONADO
+// =====================================================
 
+let equiposAireAcondicionado = [];
+let indiceAireAcondicionadoEdicion = null;
+
+
+// -----------------------------------------------------
+// ELEMENTOS PRINCIPALES
+// -----------------------------------------------------
+
+const btnAgregarAireAcondicionado =
+  document.getElementById("btnAgregarAireAcondicionado");
+
+const modalAireAcondicionado =
+  document.getElementById("modalAireAcondicionado");
+
+const cerrarModalAireAcondicionado =
+  document.getElementById("cerrarModalAireAcondicionado");
+
+const cancelarAireAcondicionado =
+  document.getElementById("cancelarAireAcondicionado");
+
+const guardarAireAcondicionado =
+  document.getElementById("guardarAireAcondicionado");
+
+const tituloModalAireAcondicionado =
+  document.getElementById("tituloModalAireAcondicionado");
+
+
+// -----------------------------------------------------
+// 1. ABRIR MODAL
+// -----------------------------------------------------
+
+if (btnAgregarAireAcondicionado) {
+
+  btnAgregarAireAcondicionado.addEventListener("click", () => {
+
+    indiceAireAcondicionadoEdicion = null;
+
+    tituloModalAireAcondicionado.textContent =
+      "Agregar equipo de aire acondicionado";
+
+    limpiarFormularioAireAcondicionado();
+
+    cargarAreasAireAcondicionado();
+    cargarAniosAireAcondicionado();
+
+    modalAireAcondicionado.classList.remove("hidden");
+
+  });
+
+}
+
+
+// -----------------------------------------------------
+// 2. CERRAR MODAL
+// -----------------------------------------------------
+
+function cerrarModalEquipoAireAcondicionado() {
+
+  modalAireAcondicionado.classList.add("hidden");
+
+  indiceAireAcondicionadoEdicion = null;
+
+}
+
+
+if (cerrarModalAireAcondicionado) {
+
+  cerrarModalAireAcondicionado.addEventListener(
+    "click",
+    cerrarModalEquipoAireAcondicionado
+  );
+
+}
+
+
+if (cancelarAireAcondicionado) {
+
+  cancelarAireAcondicionado.addEventListener(
+    "click",
+    cerrarModalEquipoAireAcondicionado
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 3. CARGAR ÁREAS
+// -----------------------------------------------------
+
+function cargarAreasAireAcondicionado() {
+
+  const selectArea =
+    document.getElementById("acArea");
+
+  if (!selectArea) return;
+
+  selectArea.innerHTML =
+    '<option value="">Seleccione...</option>';
+
+
+  if (
+    typeof areasEstablecimiento !== "undefined" &&
+    Array.isArray(areasEstablecimiento)
+  ) {
+
+    areasEstablecimiento.forEach((area, index) => {
+
+      const option =
+        document.createElement("option");
+
+      const nombreArea =
+        area.nombre ||
+        area.area ||
+        area.tipo ||
+        area.descripcion ||
+        `Área ${index + 1}`;
+
+      option.value = nombreArea;
+      option.textContent = nombreArea;
+
+      selectArea.appendChild(option);
+
+    });
+
+  }
+
+
+  const optionOtro =
+    document.createElement("option");
+
+  optionOtro.value = "Otra área";
+  optionOtro.textContent = "Otra área";
+
+  selectArea.appendChild(optionOtro);
+
+}
+
+
+// -----------------------------------------------------
+// 4. CARGAR AÑOS
+// -----------------------------------------------------
+
+function cargarAniosAireAcondicionado() {
+
+  const selectAnio =
+    document.getElementById("acAnioAdquisicion");
+
+  if (!selectAnio) return;
+
+  selectAnio.innerHTML =
+    '<option value="">Seleccione...</option>';
+
+  const anioActual =
+    new Date().getFullYear();
+
+  for (
+    let anio = anioActual;
+    anio >= 1950;
+    anio--
+  ) {
+
+    const option =
+      document.createElement("option");
+
+    option.value = anio;
+    option.textContent = anio;
+
+    selectAnio.appendChild(option);
+
+  }
+
+}
+
+
+// -----------------------------------------------------
+// 5. CALCULAR ANTIGÜEDAD AUTOMÁTICAMENTE
+// -----------------------------------------------------
+
+const acAnioAdquisicion =
+  document.getElementById("acAnioAdquisicion");
+
+const acAntiguedad =
+  document.getElementById("acAntiguedad");
+
+
+if (acAnioAdquisicion && acAntiguedad) {
+
+  acAnioAdquisicion.addEventListener("change", () => {
+
+    const anio =
+      Number(acAnioAdquisicion.value);
+
+    if (!anio) {
+
+      acAntiguedad.value = "";
+      return;
+
+    }
+
+    const anioActual =
+      new Date().getFullYear();
+
+    acAntiguedad.value =
+      Math.max(0, anioActual - anio);
+
+  });
+
+}
+
+
+// -----------------------------------------------------
+// 6. TIPO "OTRO"
+// -----------------------------------------------------
+
+const acTipo =
+  document.getElementById("acTipo");
+
+const acTipoOtroBox =
+  document.getElementById("acTipoOtroBox");
+
+
+if (acTipo) {
+
+  acTipo.addEventListener("change", () => {
+
+    if (acTipo.value === "otro") {
+
+      acTipoOtroBox.classList.remove("hidden");
+
+    } else {
+
+      acTipoOtroBox.classList.add("hidden");
+
+      const acTipoOtro =
+        document.getElementById("acTipoOtro");
+
+      if (acTipoOtro) {
+        acTipoOtro.value = "";
+      }
+
+    }
+
+  });
+
+}
+
+
+// -----------------------------------------------------
+// 7. POTENCIA DESCONOCIDA
+// -----------------------------------------------------
+
+const acPotenciaDesconocida =
+  document.getElementById("acPotenciaDesconocida");
+
+const acPotencia =
+  document.getElementById("acPotencia");
+
+const acUnidadPotencia =
+  document.getElementById("acUnidadPotencia");
+
+const acDatosTecnicosBox =
+  document.getElementById("acDatosTecnicosBox");
+
+
+function limpiarDatosTecnicosAireAcondicionado() {
+
+  const campos = [
+    "acMarca",
+    "acModelo",
+    "acVoltaje",
+    "acCorriente",
+    "acDatosPlaca"
+  ];
+
+  campos.forEach(id => {
+
+    const elemento =
+      document.getElementById(id);
+
+    if (elemento) {
+      elemento.value = "";
+    }
+
+  });
+
+}
+
+
+if (acPotenciaDesconocida) {
+
+  acPotenciaDesconocida.addEventListener("change", () => {
+
+    if (acPotenciaDesconocida.checked) {
+
+      if (acPotencia) {
+
+        acPotencia.value = "";
+        acPotencia.disabled = true;
+
+      }
+
+      if (acUnidadPotencia) {
+        acUnidadPotencia.disabled = true;
+      }
+
+      if (acDatosTecnicosBox) {
+        acDatosTecnicosBox.classList.remove("hidden");
+      }
+
+    } else {
+
+      if (acPotencia) {
+        acPotencia.disabled = false;
+      }
+
+      if (acUnidadPotencia) {
+        acUnidadPotencia.disabled = false;
+      }
+
+      if (acDatosTecnicosBox) {
+        acDatosTecnicosBox.classList.add("hidden");
+      }
+
+      limpiarDatosTecnicosAireAcondicionado();
+
+    }
+
+  });
+
+}
+
+
+// -----------------------------------------------------
+// 8. TEMPERATURA DESCONOCIDA
+// -----------------------------------------------------
+
+const acTemperaturaDesconocida =
+  document.getElementById("acTemperaturaDesconocida");
+
+const acTemperaturaConsigna =
+  document.getElementById("acTemperaturaConsigna");
+
+
+if (acTemperaturaDesconocida) {
+
+  acTemperaturaDesconocida.addEventListener("change", () => {
+
+    if (acTemperaturaDesconocida.checked) {
+
+      acTemperaturaConsigna.value = "";
+      acTemperaturaConsigna.disabled = true;
+
+    } else {
+
+      acTemperaturaConsigna.disabled = false;
+
+    }
+
+  });
+
+}
+
+
+// -----------------------------------------------------
+// 9. HORARIO GENERAL / ESPECÍFICO
+// -----------------------------------------------------
+
+const radiosAcHorarioCoincide =
+  document.querySelectorAll(
+    'input[name="acHorarioCoincide"]'
+  );
+
+const acHorarioEspecificoBox =
+  document.getElementById("acHorarioEspecificoBox");
+
+
+radiosAcHorarioCoincide.forEach(radio => {
+
+  radio.addEventListener("change", () => {
+
+    if (radio.value === "no" && radio.checked) {
+
+      acHorarioEspecificoBox.classList.remove("hidden");
+
+    } else {
+
+      acHorarioEspecificoBox.classList.add("hidden");
+
+      limpiarHorarioEspecificoAireAcondicionado();
+
+    }
+
+  });
+
+});
+
+
+// -----------------------------------------------------
+// 10. HORARIO NORMAL / ESTACIONAL
+// -----------------------------------------------------
+
+const radiosAcHorarioEstacional =
+  document.querySelectorAll(
+    'input[name="acHorarioEstacional"]'
+  );
+
+const acHorarioNormal =
+  document.getElementById("acHorarioNormal");
+
+const acHorarioTemporadas =
+  document.getElementById("acHorarioTemporadas");
+
+
+radiosAcHorarioEstacional.forEach(radio => {
+
+  radio.addEventListener("change", () => {
+
+    if (radio.value === "no" && radio.checked) {
+
+      acHorarioNormal.classList.remove("hidden");
+
+      acHorarioTemporadas.classList.add("hidden");
+
+    }
+
+    else if (radio.value === "si" && radio.checked) {
+
+      acHorarioNormal.classList.add("hidden");
+
+      acHorarioTemporadas.classList.remove("hidden");
+
+    }
+
+    else {
+
+      acHorarioNormal.classList.add("hidden");
+
+      acHorarioTemporadas.classList.add("hidden");
+
+    }
+
+  });
+
+});
+
+
+// -----------------------------------------------------
+// 11. LIMPIAR HORARIO ESPECÍFICO
+// -----------------------------------------------------
+
+function limpiarHorarioEspecificoAireAcondicionado() {
+
+  document
+    .querySelectorAll(
+      'input[name="acHorarioEstacional"]'
+    )
+    .forEach(radio => {
+      radio.checked = false;
+    });
+
+
+  const camposHorario = [
+
+    "acHorasLV",
+    "acHorasSab",
+    "acHorasDom",
+
+    "acCalidaInicio",
+    "acCalidaFin",
+    "acCalidaLV",
+    "acCalidaSab",
+    "acCalidaDom",
+
+    "acFriaLV",
+    "acFriaSab",
+    "acFriaDom"
+
+  ];
+
+
+  camposHorario.forEach(id => {
+
+    const elemento =
+      document.getElementById(id);
+
+    if (elemento) {
+      elemento.value = "";
+    }
+
+  });
+
+
+  if (acHorarioNormal) {
+    acHorarioNormal.classList.add("hidden");
+  }
+
+  if (acHorarioTemporadas) {
+    acHorarioTemporadas.classList.add("hidden");
+  }
+
+}
+
+
+// -----------------------------------------------------
+// 12. LIMPIAR FORMULARIO COMPLETO
+// -----------------------------------------------------
+
+function limpiarFormularioAireAcondicionado() {
+
+  const campos = [
+
+    "acArea",
+    "acTipo",
+    "acTipoOtro",
+    "acCantidad",
+
+    "acAnioAdquisicion",
+    "acAntiguedad",
+
+    "acCapacidad",
+    "acUnidadCapacidad",
+
+    "acPotencia",
+    "acUnidadPotencia",
+
+    "acIndicadorEficiencia",
+    "acValorEficiencia",
+
+    "acMarca",
+    "acModelo",
+    "acVoltaje",
+    "acCorriente",
+    "acDatosPlaca",
+
+    "acProporcionArea",
+    "acTemperaturaConsigna"
+
+  ];
+
+
+  campos.forEach(id => {
+
+    const elemento =
+      document.getElementById(id);
+
+    if (!elemento) return;
+
+
+    if (
+      elemento.tagName === "SELECT"
+    ) {
+
+      elemento.selectedIndex = 0;
+
+    } else {
+
+      elemento.value = "";
+
+    }
+
+  });
+
+
+  if (acPotenciaDesconocida) {
+
+    acPotenciaDesconocida.checked = false;
+
+  }
+
+
+  if (acPotencia) {
+
+    acPotencia.disabled = false;
+
+  }
+
+
+  if (acUnidadPotencia) {
+
+    acUnidadPotencia.disabled = false;
+
+    acUnidadPotencia.value = "kw";
+
+  }
+
+
+  if (acDatosTecnicosBox) {
+
+    acDatosTecnicosBox.classList.add("hidden");
+
+  }
+
+
+  if (acTemperaturaDesconocida) {
+
+    acTemperaturaDesconocida.checked = false;
+
+  }
+
+
+  if (acTemperaturaConsigna) {
+
+    acTemperaturaConsigna.disabled = false;
+
+  }
+
+
+  if (acTipoOtroBox) {
+
+    acTipoOtroBox.classList.add("hidden");
+
+  }
+
+
+  document
+    .querySelectorAll(
+      'input[name="acHorarioCoincide"]'
+    )
+    .forEach(radio => {
+
+      radio.checked = false;
+
+    });
+
+
+  if (acHorarioEspecificoBox) {
+
+    acHorarioEspecificoBox.classList.add("hidden");
+
+  }
+
+
+  limpiarHorarioEspecificoAireAcondicionado();
+
+}
   
 
 // ======================================================
