@@ -2766,189 +2766,109 @@
 
   </div>
 
-
-  <div
-    id="contenidoAcondicionamiento"
-    class="uso-card-body hidden">
-
-    <div
-      id="accionesAireAcondicionado"
-      class="hidden"
-      style="margin-bottom:12px">
-
-      <button
-        type="button"
-        class="secondary"
-        id="btnAgregarAireAcondicionado">
-        + Agregar equipo de aire acondicionado
-      </button>
-
-    </div>
-
-    <div
-      id="accionesVentilacion"
-      class="hidden"
-      style="margin-bottom:12px">
-
-      <button
-        type="button"
-        class="secondary"
-        id="btnAgregarVentilacion">
-        + Agregar equipo de ventilación / extracción
-      </button>
-
-    </div>
-
-    <div
-      id="accionesCalefaccion"
-      class="hidden"
-      style="margin-bottom:12px">
-
-      <button
-        type="button"
-        class="secondary"
-        id="btnAgregarCalefaccion">
-        + Agregar equipo de calefacción
-      </button>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- AQUÍ CIERRA view-usos -->
-
-
-
-       
-       
-       <!-- Aquí irán después:
-       B. Acondicionamiento de espacios
-       C. Refrigeración y conservación
-       D. Equipos de oficina...
-       etc.
-  -->
-
- 
-</div>   
-
-     
-
-      <div id="view-practicas" class="survey-view hidden">
-        <h1 class="section-title">5. Prácticas de eficiencia energética</h1>
-        <div class="placeholder">
-          Esta sección se programará posteriormente.
-        </div>
-      </div>
-
-      <div id="view-revision" class="survey-view hidden">
-        <h1 class="section-title">6. Revisión de la información</h1>
-        <div class="placeholder">
-          Aquí mostraremos un resumen de las respuestas antes de finalizar.
-        </div>
-      </div>
-
-      <div id="view-finalizar" class="survey-view hidden">
-        <h1 class="section-title">7. Finalizar encuesta</h1>
-        <div class="placeholder">
-          Aquí estará la confirmación final y la descarga o envío de la información.
-        </div>
-      </div>
-
 <!-- =====================================================
-     TABLA DE EQUIPOS DE AIRE ACONDICIONADO
+     AIRE ACONDICIONADO
 ====================================================== -->
 
 <div
-  id="sinAireAcondicionado"
-  class="empty-module hidden"
-  style="margin-top:12px">
-  Aún no se han agregado equipos de aire acondicionado.
-</div>
-
-<div
-  id="tablaAireAcondicionadoContenedor"
-  class="table-responsive"
-  style="display:none; margin-top:14px">
-
-  <table class="energy-table">
-
-    <thead>
-      <tr>
-
-        <th>
-          Área
-        </th>
-
-        <th>
-          Tipo
-        </th>
-
-        <th class="num">
-          Cantidad
-        </th>
-
-        <th class="num">
-          Capacidad
-        </th>
-
-        <th class="num">
-          Potencia
-        </th>
-
-        <th class="num">
-          Temperatura
-        </th>
-
-        <th>
-          Operación
-        </th>
-
-        <th class="num">
-          Consumo estimado
-        </th>
-
-        <th class="acciones">
-          Acciones
-        </th>
-
-      </tr>
-    </thead>
-
-    <tbody id="tablaAireAcondicionadoBody"></tbody>
-
-  </table>
-
-</div>
-
-<div
-  id="resumenAireAcondicionado"
-  class="uso-summary"
-  style="margin-top:10px">
-</div>
-
-<!-- BOTONES DE LA SECCIÓN 4 -->
-<div class="page-actions">
+  id="accionesAireAcondicionado"
+  class="hidden"
+  style="margin-bottom:12px">
 
   <button
     type="button"
     class="secondary"
-    id="btnUsosAnterior">
-    ← Anterior
+    id="btnAgregarAireAcondicionado">
+    + Agregar equipo de aire acondicionado
   </button>
+
+
+  <!-- =====================================================
+       TABLA DE EQUIPOS DE AIRE ACONDICIONADO
+  ====================================================== -->
+
+  <div
+    id="sinAireAcondicionado"
+    class="empty-module hidden"
+    style="margin-top:12px">
+    Aún no se han agregado equipos de aire acondicionado.
+  </div>
+
+  <div
+    id="tablaAireAcondicionadoContenedor"
+    class="table-responsive"
+    style="display:none; margin-top:14px">
+
+    <table class="energy-table">
+
+      <thead>
+        <tr>
+          <th>Área</th>
+          <th>Tipo</th>
+          <th class="num">Cantidad</th>
+          <th class="num">Capacidad</th>
+          <th class="num">Potencia</th>
+          <th class="num">Temperatura</th>
+          <th>Operación</th>
+          <th class="num">Consumo estimado</th>
+          <th class="acciones">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody id="tablaAireAcondicionadoBody"></tbody>
+
+    </table>
+
+  </div>
+
+  <div
+    id="resumenAireAcondicionado"
+    class="uso-summary"
+    style="margin-top:10px">
+  </div>
+
+</div>
+<!-- FIN accionesAireAcondicionado -->
+
+
+<!-- =====================================================
+     VENTILACIÓN / EXTRACCIÓN
+====================================================== -->
+
+<div
+  id="accionesVentilacion"
+  class="hidden"
+  style="margin-bottom:12px">
 
   <button
     type="button"
-    class="primary"
-    id="btnUsosContinuar">
-    Guardar y continuar →
+    class="secondary"
+    id="btnAgregarVentilacion">
+    + Agregar equipo de ventilación / extracción
   </button>
 
 </div>
+<!-- FIN accionesVentilacion -->
 
+
+<!-- =====================================================
+     CALEFACCIÓN
+====================================================== -->
+
+<div
+  id="accionesCalefaccion"
+  class="hidden"
+  style="margin-bottom:12px">
+
+  <button
+    type="button"
+    class="secondary"
+    id="btnAgregarCalefaccion">
+    + Agregar equipo de calefacción
+  </button>
+
+</div>
+<!-- FIN accionesCalefaccion -->
 
 
       
