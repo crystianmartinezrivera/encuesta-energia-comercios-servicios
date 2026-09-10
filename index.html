@@ -4904,6 +4904,168 @@ if(nombre === "facturacion"){
     window.scrollTo({top:0,behavior:"smooth"});
   });
 
+// =====================================================
+// SECCIÓN 4 - USOS FINALES DE ENERGÍA
+// B. ACONDICIONAMIENTO DE ESPACIOS
+// =====================================================
+
+const acondAire =
+  document.getElementById("acondAire");
+
+const acondVentilacion =
+  document.getElementById("acondVentilacion");
+
+const acondCalefaccion =
+  document.getElementById("acondCalefaccion");
+
+const acondNinguno =
+  document.getElementById("acondNinguno");
+
+const contenidoAcondicionamiento =
+  document.getElementById("contenidoAcondicionamiento");
+
+const accionesAireAcondicionado =
+  document.getElementById("accionesAireAcondicionado");
+
+const accionesVentilacion =
+  document.getElementById("accionesVentilacion");
+
+const accionesCalefaccion =
+  document.getElementById("accionesCalefaccion");
+
+
+function actualizarAcondicionamiento() {
+
+  const hayAire =
+    acondAire && acondAire.checked;
+
+  const hayVentilacion =
+    acondVentilacion && acondVentilacion.checked;
+
+  const hayCalefaccion =
+    acondCalefaccion && acondCalefaccion.checked;
+
+  const ninguno =
+    acondNinguno && acondNinguno.checked;
+
+
+  // Si selecciona "Ninguno"
+  if (ninguno) {
+
+    if (acondAire) {
+      acondAire.checked = false;
+    }
+
+    if (acondVentilacion) {
+      acondVentilacion.checked = false;
+    }
+
+    if (acondCalefaccion) {
+      acondCalefaccion.checked = false;
+    }
+
+    contenidoAcondicionamiento.classList.add("hidden");
+
+    accionesAireAcondicionado.classList.add("hidden");
+    accionesVentilacion.classList.add("hidden");
+    accionesCalefaccion.classList.add("hidden");
+
+    return;
+
+  }
+
+
+  // Si hay al menos un sistema seleccionado
+  if (
+    hayAire ||
+    hayVentilacion ||
+    hayCalefaccion
+  ) {
+
+    contenidoAcondicionamiento.classList.remove("hidden");
+
+  } else {
+
+    contenidoAcondicionamiento.classList.add("hidden");
+
+  }
+
+
+  // Mostrar u ocultar botones según selección
+  if (hayAire) {
+
+    accionesAireAcondicionado.classList.remove("hidden");
+
+  } else {
+
+    accionesAireAcondicionado.classList.add("hidden");
+
+  }
+
+
+  if (hayVentilacion) {
+
+    accionesVentilacion.classList.remove("hidden");
+
+  } else {
+
+    accionesVentilacion.classList.add("hidden");
+
+  }
+
+
+  if (hayCalefaccion) {
+
+    accionesCalefaccion.classList.remove("hidden");
+
+  } else {
+
+    accionesCalefaccion.classList.add("hidden");
+
+  }
+
+}
+
+
+// Si selecciona cualquiera de los equipos,
+// desmarca "Ninguno"
+[
+  acondAire,
+  acondVentilacion,
+  acondCalefaccion
+].forEach(control => {
+
+  if (!control) return;
+
+  control.addEventListener("change", () => {
+
+    if (control.checked && acondNinguno) {
+
+      acondNinguno.checked = false;
+
+    }
+
+    actualizarAcondicionamiento();
+
+  });
+
+});
+
+
+// "Ninguno" excluye las demás opciones
+if (acondNinguno) {
+
+  acondNinguno.addEventListener("change", () => {
+
+    actualizarAcondicionamiento();
+
+  });
+
+}
+
+
+  
+
 // ======================================================
 // GUARDAR O ACTUALIZAR ENCUESTA EN SUPABASE
 // ======================================================
