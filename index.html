@@ -1076,7 +1076,7 @@
 #modalIluminacion .modal-content {
   background: #ffffff;
 
-  width: min(900px, 96vw);
+  width: min(1100px, 96vw);
   max-height: 90vh;
 
   overflow-y: auto;
@@ -1243,20 +1243,23 @@
 .zona-tecnicos-horario {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: 28px;
   align-items: start;
   margin-top: 26px;
+  width: 100%;
 }
 
 /* Cuando no se conoce la potencia:
    datos técnicos + horario en dos columnas */
 .zona-tecnicos-horario.con-datos-tecnicos {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  width: 100%;
 }
 
 .col-datos-tecnicos,
 .col-horario-iluminacion {
   min-width: 0;
+  width: 100%;
   align-self: start;
 }
 
@@ -1271,10 +1274,36 @@
   margin-top: 0 !important;
 }
 
+/* Los formularios internos usan todo el ancho disponible */
+#colDatosTecnicosIluminacion .form-grid,
+#colHorarioIluminacion .form-grid {
+  width: 100%;
+}
+
+/* Dos columnas internas */
+#colDatosTecnicosIluminacion .form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#colHorarioIluminacion .form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Temporadas ocupan toda la columna de horario */
+#colHorarioIluminacion .season-box {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 /* Pantallas pequeñas */
 @media (max-width: 800px) {
 
   .zona-tecnicos-horario.con-datos-tecnicos {
+    grid-template-columns: 1fr;
+  }
+
+  #colDatosTecnicosIluminacion .form-grid,
+  #colHorarioIluminacion .form-grid {
     grid-template-columns: 1fr;
   }
 
