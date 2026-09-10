@@ -6495,6 +6495,1202 @@ if (btnAgregarAireAcondicionado) {
 
 }
 
+// =====================================================
+// AIRE ACONDICIONADO
+// GUARDADO, CÁLCULO Y TABLA
+// =====================================================
+
+
+// -----------------------------------------------------
+// 13. FUNCIONES AUXILIARES
+// -----------------------------------------------------
+
+function valorCampoAC(id) {
+
+  const elemento = document.getElementById(id);
+
+  return elemento ? elemento.value : "";
+
+}
+
+
+function numeroCampoAC(id) {
+
+  const valor = Number(valorCampoAC(id));
+
+  return Number.isFinite(valor) && valor > 0
+    ? valor
+    : null;
+
+}
+
+
+// -----------------------------------------------------
+// 14. CONVERTIR POTENCIA A kW
+// -----------------------------------------------------
+
+function potenciaACKW(potencia, unidad) {
+
+  if (!potencia) return null;
+
+  if (unidad === "w") {
+    return potencia / 1000;
+  }
+
+  if (unidad === "kw") {
+    return potencia;
+  }
+
+  return null;
+
+}
+
+
+// -----------------------------------------------------
+// 15. CONVERTIR CAPACIDAD A kW TÉRMICOS
+// -----------------------------------------------------
+
+function capacidadACKWTermicos(capacidad, unidad) {
+
+  if (!capacidad) return null;
+
+  switch (unidad) {
+
+    case "btu_h":
+      return capacidad * 0.000293071;
+
+    case "tr":
+      return capacidad * 3.51685;
+
+    case "kw_termicos":
+      return capacidad;
+
+    case "kcal_h":
+      return capacidad * 0.001163;
+
+    default:
+      return null;
+
+  }
+
+}
+
+
+// -----------------------------------------------------
+// 16. ESTIMAR POTENCIA A PARTIR DE CAPACIDAD
+//     Y EFICIENCIA
+// -----------------------------------------------------
+
+function estimarPotenciaAC(
+  capacidad,
+  unidadCapacidad,
+  indicador,
+  eficiencia
+) {
+
+  if (
+    !capacidad ||
+    !unidadCapacidad ||
+    !indicador ||
+    !eficiencia
+  ) {
+    return null;
+  }
+
+
+  const capacidadKW =
+    capacidadACKWTermicos(
+      capacidad,
+      unidadCapacidad
+    );
+
+  if (!capacidadKW) return null;
+
+
+  // COP puede utilizarse directamente:
+  // COP = capacidad térmica / potencia eléctrica
+
+  if (indicador === "cop") {
+
+    return capacidadKW / eficiencia;
+
+  }
+
+
+  // EER normalmente se expresa en
+  // BTU/h por W.
+  if (indicador === "eer") {
+
+    let capacidadBTU;
+
+    switch (unidadCapacidad) {
+
+      case "btu_h":
+        capacidadBTU = capacidad;
+        break;
+
+      case "tr":
+        capacidadBTU = capacidad * 12000;
+        break;
+
+      case "kw_termicos":
+        capacidadBTU = capacidad * 3412.142;
+        break;
+
+      case "kcal_h":
+        capacidadBTU = capacidad * 3.96832;
+        break;
+
+      default:
+        return null;
+
+    }
+
+    const potenciaW =
+      capacidadBTU / eficiencia;
+
+    return potenciaW / 1000;
+
+  }
+
+
+  /*
+    SEER / REEE y CSPF son indicadores estacionales.
+
+    Por ahora NO los convertimos automáticamente
+    a potencia nominal porque no son equivalentes
+    directamente a una potencia instantánea.
+
+    Se conservan para análisis posterior.
+  */
+
+  return null;
+
+}
+
+
+// -----------------------------------------------------
+// 17. CALCULAR HORAS ANUALES DEL HORARIO ESPECÍFICO
+// -----------------------------------------------------
+
+function calcularHorasAnualesAC() {
+
+  const horarioEstacional =
+    document.querySelector(
+      'input[name="acHorarioEstacional"]:checked'
+    );
+
+  if (!horarioEstacional) {
+    return null;
+  }
+
+
+  // -------------------------------------------
+  // HORARIO ÚNICO
+  // -------------------------------------------
+
+  if (horarioEstacional.value === "no") {
+
+    const lv =
+      Number(valorCampoAC("acHorasLV"));
+
+    const sab =
+      Number(valorCampoAC("acHorasSab"));
+
+    const dom =
+      Number(valorCampoAC("acHorasDom"));
+
+
+    if (
+      !Number.isFinite(lv) ||
+      !Number.isFinite(sab) ||
+      !Number.isFinite(dom)
+    ) {
+      return null;
+    }
+
+
+    /*
+      Aproximación anual:
+      52 semanas ×
+      (5 días laborales + sábado + domingo)
+    */
+
+    return 52 * (
+      (lv * 5) +
+      sab +
+      dom
+    );
+
+  }
+
+
+  // -------------------------------------------
+  // HORARIO ESTACIONAL
+  // -------------------------------------------
+
+  if (horarioEstacional.value === "si") {
+
+    const inicio =
+      Number(valorCampoAC("acCalidaInicio"));
+
+    const fin =
+      Number(valorCampoAC("acCalidaFin"));
+
+
+    if (!inicio || !fin) {
+      return null;
+    }
+
+
+    let mesesCalidos;
+
+    if (fin >= inicio) {
+
+      mesesCalidos =
+        fin - inicio + 1;
+
+    } else {
+
+      // Ejemplo:
+      // noviembre → marzo
+
+      mesesCalidos =
+        (12 - inicio + 1) + fin;
+
+    }
+
+
+    const mesesFrios =
+      12 - mesesCalidos;
+
+
+    const calidaLV =
+      Number(valorCampoAC("acCalidaLV"));
+
+    const calidaSab =
+      Number(valorCampoAC("acCalidaSab"));
+
+    const calidaDom =
+      Number(valorCampoAC("acCalidaDom"));
+
+    const friaLV =
+      Number(valorCampoAC("acFriaLV"));
+
+    const friaSab =
+      Number(valorCampoAC("acFriaSab"));
+
+    const friaDom =
+      Number(valorCampoAC("acFriaDom"));
+
+
+    const valores = [
+      calidaLV,
+      calidaSab,
+      calidaDom,
+      friaLV,
+      friaSab,
+      friaDom
+    ];
+
+
+    if (
+      valores.some(
+        valor => !Number.isFinite(valor)
+      )
+    ) {
+      return null;
+    }
+
+
+    /*
+      52 semanas / 12 meses
+      ≈ 4.333 semanas por mes
+    */
+
+    const semanasPorMes =
+      52 / 12;
+
+
+    const horasSemanaCalida =
+      (calidaLV * 5) +
+      calidaSab +
+      calidaDom;
+
+
+    const horasSemanaFria =
+      (friaLV * 5) +
+      friaSab +
+      friaDom;
+
+
+    return (
+      mesesCalidos *
+      semanasPorMes *
+      horasSemanaCalida
+    ) +
+    (
+      mesesFrios *
+      semanasPorMes *
+      horasSemanaFria
+    );
+
+  }
+
+
+  return null;
+
+}
+
+
+// -----------------------------------------------------
+// 18. OBTENER HORAS ANUALES
+// -----------------------------------------------------
+
+function obtenerHorasAnualesAC() {
+
+  const coincide =
+    document.querySelector(
+      'input[name="acHorarioCoincide"]:checked'
+    );
+
+
+  if (!coincide) {
+
+    return {
+      horas: null,
+      origen: "Sin horario"
+    };
+
+  }
+
+
+  // -------------------------------------------
+  // HORARIO PROPIO DEL EQUIPO
+  // -------------------------------------------
+
+  if (coincide.value === "no") {
+
+    return {
+      horas: calcularHorasAnualesAC(),
+      origen: "Horario específico"
+    };
+
+  }
+
+
+  // -------------------------------------------
+  // NO SABE
+  // -------------------------------------------
+
+  if (coincide.value === "no_sabe") {
+
+    return {
+      horas: null,
+      origen: "No sabe"
+    };
+
+  }
+
+
+  /*
+    Si coincide con el establecimiento,
+    posteriormente conectaremos aquí
+    directamente el horario general ya
+    capturado en las secciones anteriores.
+
+    Por ahora NO inventamos las horas.
+  */
+
+  if (coincide.value === "si") {
+
+    return {
+      horas: null,
+      origen: "Horario general"
+    };
+
+  }
+
+
+  return {
+    horas: null,
+    origen: "Sin horario"
+  };
+
+}
+
+
+// -----------------------------------------------------
+// 19. CALCULAR CONSUMO
+// -----------------------------------------------------
+
+function calcularConsumoAC(datos) {
+
+  let potenciaKW = null;
+
+  let metodoPotencia = null;
+
+
+  // -------------------------------------------
+  // PRIORIDAD 1:
+  // POTENCIA DECLARADA
+  // -------------------------------------------
+
+  if (datos.potencia) {
+
+    potenciaKW =
+      potenciaACKW(
+        datos.potencia,
+        datos.unidadPotencia
+      );
+
+    metodoPotencia =
+      "Potencia declarada";
+
+  }
+
+
+  // -------------------------------------------
+  // PRIORIDAD 2:
+  // CAPACIDAD + EFICIENCIA
+  // -------------------------------------------
+
+  else {
+
+    potenciaKW =
+      estimarPotenciaAC(
+        datos.capacidad,
+        datos.unidadCapacidad,
+        datos.indicadorEficiencia,
+        datos.valorEficiencia
+      );
+
+
+    if (potenciaKW) {
+
+      metodoPotencia =
+        "Estimada por capacidad y eficiencia";
+
+    }
+
+  }
+
+
+  // -------------------------------------------
+  // DATOS INSUFICIENTES
+  // -------------------------------------------
+
+  if (
+    !potenciaKW ||
+    !datos.horasAnuales ||
+    !datos.cantidad
+  ) {
+
+    return {
+
+      consumoKWh: null,
+
+      potenciaCalculoKW:
+        potenciaKW,
+
+      metodoPotencia:
+        metodoPotencia || "Sin datos suficientes"
+
+    };
+
+  }
+
+
+  // -------------------------------------------
+  // CONSUMO ANUAL
+  // -------------------------------------------
+
+  const consumoKWh =
+    potenciaKW *
+    datos.cantidad *
+    datos.horasAnuales;
+
+
+  return {
+
+    consumoKWh:
+      consumoKWh,
+
+    potenciaCalculoKW:
+      potenciaKW,
+
+    metodoPotencia:
+      metodoPotencia
+
+  };
+
+}
+
+
+// -----------------------------------------------------
+// 20. GUARDAR EQUIPO
+// -----------------------------------------------------
+
+if (guardarAireAcondicionado) {
+
+  guardarAireAcondicionado.addEventListener(
+    "click",
+    () => {
+
+
+      // -----------------------------------------
+      // CAMPOS MÍNIMOS
+      // -----------------------------------------
+
+      const area =
+        valorCampoAC("acArea");
+
+      const tipo =
+        valorCampoAC("acTipo");
+
+      const cantidad =
+        numeroCampoAC("acCantidad");
+
+
+      if (!area) {
+
+        alert(
+          "Seleccione el área atendida."
+        );
+
+        return;
+
+      }
+
+
+      if (!tipo) {
+
+        alert(
+          "Seleccione el tipo de equipo."
+        );
+
+        return;
+
+      }
+
+
+      if (!cantidad) {
+
+        alert(
+          "Capture una cantidad válida de equipos."
+        );
+
+        return;
+
+      }
+
+
+      // -----------------------------------------
+      // HORARIO
+      // -----------------------------------------
+
+      const resultadoHorario =
+        obtenerHorasAnualesAC();
+
+
+      // -----------------------------------------
+      // DATOS DEL EQUIPO
+      // -----------------------------------------
+
+      const datos = {
+
+        area: area,
+
+        tipo: tipo,
+
+        tipoOtro:
+          valorCampoAC("acTipoOtro"),
+
+        cantidad: cantidad,
+
+
+        anioAdquisicion:
+          valorCampoAC("acAnioAdquisicion"),
+
+        antiguedad:
+          valorCampoAC("acAntiguedad"),
+
+
+        capacidad:
+          numeroCampoAC("acCapacidad"),
+
+        unidadCapacidad:
+          valorCampoAC("acUnidadCapacidad"),
+
+
+        potencia:
+          numeroCampoAC("acPotencia"),
+
+        unidadPotencia:
+          valorCampoAC("acUnidadPotencia"),
+
+
+        potenciaDesconocida:
+          acPotenciaDesconocida
+            ? acPotenciaDesconocida.checked
+            : false,
+
+
+        indicadorEficiencia:
+          valorCampoAC("acIndicadorEficiencia"),
+
+        valorEficiencia:
+          numeroCampoAC("acValorEficiencia"),
+
+
+        marca:
+          valorCampoAC("acMarca"),
+
+        modelo:
+          valorCampoAC("acModelo"),
+
+        voltaje:
+          numeroCampoAC("acVoltaje"),
+
+        corriente:
+          numeroCampoAC("acCorriente"),
+
+        datosPlaca:
+          valorCampoAC("acDatosPlaca"),
+
+
+        proporcionArea:
+          valorCampoAC("acProporcionArea"),
+
+        temperaturaConsigna:
+          numeroCampoAC(
+            "acTemperaturaConsigna"
+          ),
+
+        temperaturaDesconocida:
+          acTemperaturaDesconocida
+            ? acTemperaturaDesconocida.checked
+            : false,
+
+
+        horarioCoincide:
+          document.querySelector(
+            'input[name="acHorarioCoincide"]:checked'
+          )?.value || "",
+
+
+        horarioEstacional:
+          document.querySelector(
+            'input[name="acHorarioEstacional"]:checked'
+          )?.value || "",
+
+
+        horasAnuales:
+          resultadoHorario.horas,
+
+        origenHorario:
+          resultadoHorario.origen,
+
+
+        // Horario habitual
+        horasLV:
+          valorCampoAC("acHorasLV"),
+
+        horasSab:
+          valorCampoAC("acHorasSab"),
+
+        horasDom:
+          valorCampoAC("acHorasDom"),
+
+
+        // Temporada cálida
+        calidaInicio:
+          valorCampoAC("acCalidaInicio"),
+
+        calidaFin:
+          valorCampoAC("acCalidaFin"),
+
+        calidaLV:
+          valorCampoAC("acCalidaLV"),
+
+        calidaSab:
+          valorCampoAC("acCalidaSab"),
+
+        calidaDom:
+          valorCampoAC("acCalidaDom"),
+
+
+        // Temporada fría
+        friaLV:
+          valorCampoAC("acFriaLV"),
+
+        friaSab:
+          valorCampoAC("acFriaSab"),
+
+        friaDom:
+          valorCampoAC("acFriaDom")
+
+      };
+
+
+      // -----------------------------------------
+      // CÁLCULO
+      // -----------------------------------------
+
+      const resultadoConsumo =
+        calcularConsumoAC(datos);
+
+
+      datos.consumoKWh =
+        resultadoConsumo.consumoKWh;
+
+      datos.potenciaCalculoKW =
+        resultadoConsumo.potenciaCalculoKW;
+
+      datos.metodoPotencia =
+        resultadoConsumo.metodoPotencia;
+
+
+      // -----------------------------------------
+      // GUARDAR / ACTUALIZAR
+      // -----------------------------------------
+
+      if (
+        indiceAireAcondicionadoEdicion !== null
+      ) {
+
+        equiposAireAcondicionado[
+          indiceAireAcondicionadoEdicion
+        ] = datos;
+
+      } else {
+
+        equiposAireAcondicionado.push(datos);
+
+      }
+
+
+      renderizarTablaAireAcondicionado();
+
+      cerrarModalEquipoAireAcondicionado();
+
+    }
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 21. NOMBRES LEGIBLES DE TIPO
+// -----------------------------------------------------
+
+function nombreTipoAC(tipo, otro) {
+
+  const nombres = {
+
+    minisplit_convencional:
+      "Minisplit convencional",
+
+    minisplit_inverter:
+      "Minisplit inverter",
+
+    ventana:
+      "Ventana / cuarto",
+
+    portatil:
+      "Portátil",
+
+    dividido_central:
+      "Sistema dividido central",
+
+    paquete:
+      "Unidad paquete",
+
+    vrf:
+      "VRF / VRV",
+
+    chiller:
+      "Chiller",
+
+    fan_coil:
+      "Fan & Coil",
+
+    evaporativo:
+      "Evaporativo",
+
+    bomba_calor:
+      "Bomba de calor",
+
+    no_sabe:
+      "No sabe"
+
+  };
+
+
+  if (tipo === "otro") {
+
+    return otro || "Otro";
+
+  }
+
+
+  return nombres[tipo] || tipo;
+
+}
+
+
+// -----------------------------------------------------
+// 22. MOSTRAR CAPACIDAD
+// -----------------------------------------------------
+
+function textoCapacidadAC(equipo) {
+
+  if (!equipo.capacidad) {
+
+    return "No disponible";
+
+  }
+
+
+  const unidades = {
+
+    btu_h: "BTU/h",
+    tr: "TR",
+    kw_termicos: "kW térm.",
+    kcal_h: "kcal/h"
+
+  };
+
+
+  return (
+    equipo.capacidad.toLocaleString("es-MX") +
+    " " +
+    (unidades[equipo.unidadCapacidad] || "")
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 23. MOSTRAR POTENCIA
+// -----------------------------------------------------
+
+function textoPotenciaAC(equipo) {
+
+  if (equipo.potencia) {
+
+    return (
+      equipo.potencia.toLocaleString("es-MX") +
+      " " +
+      (
+        equipo.unidadPotencia === "w"
+          ? "W"
+          : "kW"
+      )
+    );
+
+  }
+
+
+  if (equipo.potenciaCalculoKW) {
+
+    return (
+      equipo.potenciaCalculoKW.toFixed(2) +
+      " kW estim."
+    );
+
+  }
+
+
+  return "No disponible";
+
+}
+
+
+// -----------------------------------------------------
+// 24. MOSTRAR OPERACIÓN
+// -----------------------------------------------------
+
+function textoOperacionAC(equipo) {
+
+  if (equipo.horarioCoincide === "si") {
+
+    return "Horario general";
+
+  }
+
+
+  if (equipo.horarioCoincide === "no_sabe") {
+
+    return "No sabe";
+
+  }
+
+
+  if (
+    equipo.horarioCoincide === "no" &&
+    equipo.horasAnuales !== null
+  ) {
+
+    return (
+      Math.round(
+        equipo.horasAnuales
+      ).toLocaleString("es-MX") +
+      " h/año"
+    );
+
+  }
+
+
+  return "Sin datos suficientes";
+
+}
+
+
+// -----------------------------------------------------
+// 25. RENDERIZAR TABLA
+// -----------------------------------------------------
+
+function renderizarTablaAireAcondicionado() {
+
+  const tbody =
+    document.getElementById(
+      "tablaAireAcondicionadoBody"
+    );
+
+  const contenedor =
+    document.getElementById(
+      "tablaAireAcondicionadoContenedor"
+    );
+
+  const vacio =
+    document.getElementById(
+      "sinAireAcondicionado"
+    );
+
+  const resumen =
+    document.getElementById(
+      "resumenAireAcondicionado"
+    );
+
+
+  if (
+    !tbody ||
+    !contenedor ||
+    !vacio
+  ) {
+    return;
+  }
+
+
+  tbody.innerHTML = "";
+
+
+  // -----------------------------------------
+  // SIN EQUIPOS
+  // -----------------------------------------
+
+  if (
+    equiposAireAcondicionado.length === 0
+  ) {
+
+    contenedor.style.display = "none";
+
+    vacio.classList.remove("hidden");
+
+    if (resumen) {
+      resumen.textContent = "";
+    }
+
+    return;
+
+  }
+
+
+  // -----------------------------------------
+  // CON EQUIPOS
+  // -----------------------------------------
+
+  vacio.classList.add("hidden");
+
+  contenedor.style.display = "block";
+
+
+  let consumoTotal = 0;
+
+  let equiposConConsumo = 0;
+
+
+  equiposAireAcondicionado.forEach(
+    (equipo, index) => {
+
+
+      const fila =
+        document.createElement("tr");
+
+
+      const temperatura =
+        equipo.temperaturaConsigna
+          ? `${equipo.temperaturaConsigna} °C`
+          : "No disponible";
+
+
+      const consumo =
+        equipo.consumoKWh !== null
+          ? (
+              Math.round(
+                equipo.consumoKWh
+              ).toLocaleString("es-MX") +
+              " kWh/año"
+            )
+          : "Sin datos suficientes";
+
+
+      if (equipo.consumoKWh !== null) {
+
+        consumoTotal +=
+          equipo.consumoKWh;
+
+        equiposConConsumo++;
+
+      }
+
+
+      fila.innerHTML = `
+
+        <td>
+          ${equipo.area}
+        </td>
+
+        <td>
+          ${nombreTipoAC(
+            equipo.tipo,
+            equipo.tipoOtro
+          )}
+        </td>
+
+        <td class="num">
+          ${equipo.cantidad}
+        </td>
+
+        <td class="num">
+          ${textoCapacidadAC(equipo)}
+        </td>
+
+        <td class="num">
+          ${textoPotenciaAC(equipo)}
+        </td>
+
+        <td class="num">
+          ${temperatura}
+        </td>
+
+        <td>
+          ${textoOperacionAC(equipo)}
+        </td>
+
+        <td class="num">
+          ${consumo}
+        </td>
+
+        <td class="acciones">
+
+          <button
+            type="button"
+            class="table-action"
+            onclick="editarAireAcondicionado(${index})">
+            Editar
+          </button>
+
+          <button
+            type="button"
+            class="table-action danger"
+            onclick="eliminarAireAcondicionado(${index})">
+            Eliminar
+          </button>
+
+        </td>
+
+      `;
+
+
+      tbody.appendChild(fila);
+
+    }
+  );
+
+
+  // -----------------------------------------
+  // RESUMEN
+  // -----------------------------------------
+
+  if (resumen) {
+
+    const cantidadTotal =
+      equiposAireAcondicionado.reduce(
+        (total, equipo) =>
+          total + equipo.cantidad,
+        0
+      );
+
+
+    let texto =
+      `${cantidadTotal} equipo`;
+
+    if (cantidadTotal !== 1) {
+      texto += "s";
+    }
+
+
+    if (equiposConConsumo > 0) {
+
+      texto +=
+        ` · Consumo estimado: ` +
+        `${Math.round(consumoTotal)
+          .toLocaleString("es-MX")} kWh/año`;
+
+    }
+
+
+    resumen.textContent = texto;
+
+  }
+
+}
+
+
+// -----------------------------------------------------
+// 26. ELIMINAR
+// -----------------------------------------------------
+
+function eliminarAireAcondicionado(index) {
+
+  const equipo =
+    equiposAireAcondicionado[index];
+
+  if (!equipo) return;
+
+
+  const confirmar =
+    confirm(
+      "¿Desea eliminar este equipo de aire acondicionado?"
+    );
+
+
+  if (!confirmar) return;
+
+
+  equiposAireAcondicionado.splice(
+    index,
+    1
+  );
+
+
+  renderizarTablaAireAcondicionado();
+
+}
+
+  
 
 // -----------------------------------------------------
 // 2. CERRAR MODAL
