@@ -15304,7 +15304,6 @@ function(index) {
 
 };
 
-
 // -----------------------------------------------------
 // 17. ELIMINAR
 // -----------------------------------------------------
@@ -15329,6 +15328,284 @@ function(index) {
   renderTablaIluminacion();
 
 };
+
+// =====================================================
+// SECCIÓN 4 - USOS FINALES DE ENERGÍA
+// B. VENTILACIÓN / EXTRACCIÓN
+// =====================================================
+
+let equiposVentilacion = [];
+let indiceVentilacionEdicion = null;
+
+
+// -----------------------------------------------------
+// ELEMENTOS PRINCIPALES
+// -----------------------------------------------------
+
+const btnAgregarVentilacion =
+  document.getElementById("btnAgregarVentilacion");
+
+const modalVentilacion =
+  document.getElementById("modalVentilacion");
+
+const cerrarModalVentilacion =
+  document.getElementById("cerrarModalVentilacion");
+
+const cancelarVentilacion =
+  document.getElementById("cancelarVentilacion");
+
+const guardarVentilacion =
+  document.getElementById("guardarVentilacion");
+
+const tituloModalVentilacion =
+  document.getElementById("tituloModalVentilacion");
+
+
+// -----------------------------------------------------
+// 1. ABRIR MODAL
+// -----------------------------------------------------
+
+function abrirModalVentilacion() {
+
+  indiceVentilacionEdicion = null;
+
+  if (tituloModalVentilacion) {
+    tituloModalVentilacion.textContent =
+      "Agregar equipo de ventilación / extracción";
+  }
+
+  cargarAreasVentilacion();
+  cargarAniosVentilacion();
+
+  if (modalVentilacion) {
+    modalVentilacion.classList.remove("hidden");
+  }
+
+}
+
+
+if (btnAgregarVentilacion) {
+
+  btnAgregarVentilacion.addEventListener(
+    "click",
+    abrirModalVentilacion
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 2. CERRAR MODAL
+// -----------------------------------------------------
+
+function cerrarModalEquipoVentilacion() {
+
+  if (modalVentilacion) {
+    modalVentilacion.classList.add("hidden");
+  }
+
+  indiceVentilacionEdicion = null;
+
+}
+
+
+if (cerrarModalVentilacion) {
+
+  cerrarModalVentilacion.addEventListener(
+    "click",
+    cerrarModalEquipoVentilacion
+  );
+
+}
+
+
+if (cancelarVentilacion) {
+
+  cancelarVentilacion.addEventListener(
+    "click",
+    cerrarModalEquipoVentilacion
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 3. CARGAR ÁREAS
+// -----------------------------------------------------
+
+function cargarAreasVentilacion() {
+
+  const selectArea =
+    document.getElementById("ventArea");
+
+  if (!selectArea) return;
+
+  selectArea.innerHTML =
+    '<option value="">Seleccione...</option>';
+
+  if (
+    typeof areasEstablecimiento !== "undefined" &&
+    Array.isArray(areasEstablecimiento)
+  ) {
+
+    areasEstablecimiento.forEach((area, index) => {
+
+      const option =
+        document.createElement("option");
+
+      const nombreArea =
+        area.nombre ||
+        area.area ||
+        area.tipo ||
+        area.descripcion ||
+        `Área ${index + 1}`;
+
+      option.value = nombreArea;
+      option.textContent = nombreArea;
+
+      selectArea.appendChild(option);
+
+    });
+
+  }
+
+  const optionOtro =
+    document.createElement("option");
+
+  optionOtro.value = "Otra área";
+  optionOtro.textContent = "Otra área";
+
+  selectArea.appendChild(optionOtro);
+
+}
+
+
+// -----------------------------------------------------
+// 4. CARGAR AÑOS
+// -----------------------------------------------------
+
+function cargarAniosVentilacion() {
+
+  const selectAnio =
+    document.getElementById("ventAnioAdquisicion");
+
+  if (!selectAnio) return;
+
+  selectAnio.innerHTML =
+    '<option value="">Seleccione...</option>';
+
+  const anioActual =
+    new Date().getFullYear();
+
+  for (
+    let anio = anioActual;
+    anio >= 1950;
+    anio--
+  ) {
+
+    const option =
+      document.createElement("option");
+
+    option.value = anio;
+    option.textContent = anio;
+
+    selectAnio.appendChild(option);
+
+  }
+
+}
+
+
+// -----------------------------------------------------
+// 5. ANTIGÜEDAD AUTOMÁTICA
+// -----------------------------------------------------
+
+const ventAnioAdquisicion =
+  document.getElementById("ventAnioAdquisicion");
+
+const ventAntiguedad =
+  document.getElementById("ventAntiguedad");
+
+
+if (
+  ventAnioAdquisicion &&
+  ventAntiguedad
+) {
+
+  ventAnioAdquisicion.addEventListener(
+    "change",
+    () => {
+
+      const anio =
+        Number(ventAnioAdquisicion.value);
+
+      if (!anio) {
+        ventAntiguedad.value = "";
+        return;
+      }
+
+      const anioActual =
+        new Date().getFullYear();
+
+      ventAntiguedad.value =
+        Math.max(
+          0,
+          anioActual - anio
+        );
+
+    }
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 6. TIPO "OTRO"
+// -----------------------------------------------------
+
+const ventTipo =
+  document.getElementById("ventTipo");
+
+const ventTipoOtroGrupo =
+  document.getElementById("ventTipoOtroGrupo");
+
+
+if (
+  ventTipo &&
+  ventTipoOtroGrupo
+) {
+
+  ventTipo.addEventListener(
+    "change",
+    () => {
+
+      if (ventTipo.value === "otro") {
+
+        ventTipoOtroGrupo.classList.remove(
+          "hidden"
+        );
+
+      } else {
+
+        ventTipoOtroGrupo.classList.add(
+          "hidden"
+        );
+
+        const campo =
+          document.getElementById(
+            "ventTipoOtro"
+          );
+
+        if (campo) {
+          campo.value = "";
+        }
+
+      }
+
+    }
+  );
+
+}
   
  
   // ======================================================
