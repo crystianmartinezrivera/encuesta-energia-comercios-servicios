@@ -15758,6 +15758,193 @@ if (
   );
 
 }
+
+// -----------------------------------------------------
+// 7. POTENCIA DESCONOCIDA
+// -----------------------------------------------------
+
+const ventPotenciaDesconocida =
+  document.getElementById("ventPotenciaDesconocida");
+
+const ventPotencia =
+  document.getElementById("ventPotencia");
+
+const ventUnidadPotencia =
+  document.getElementById("ventUnidadPotencia");
+
+const ventDatosTecnicos =
+  document.getElementById("ventDatosTecnicos");
+
+
+function limpiarDatosTecnicosVentilacion() {
+
+  const campos = [
+    "ventMarca",
+    "ventModelo",
+    "ventCaudal",
+    "ventUnidadCaudal",
+    "ventVelocidades"
+  ];
+
+  campos.forEach(id => {
+
+    const campo =
+      document.getElementById(id);
+
+    if (!campo) return;
+
+    if (campo.tagName === "SELECT") {
+      campo.selectedIndex = 0;
+    } else {
+      campo.value = "";
+    }
+
+  });
+
+}
+
+
+if (ventPotenciaDesconocida) {
+
+  ventPotenciaDesconocida.addEventListener(
+    "change",
+    () => {
+
+      if (ventPotenciaDesconocida.checked) {
+
+        // Borrar potencia capturada
+        if (ventPotencia) {
+          ventPotencia.value = "";
+          ventPotencia.disabled = true;
+        }
+
+        // Bloquear unidad
+        if (ventUnidadPotencia) {
+          ventUnidadPotencia.disabled = true;
+        }
+
+        // Mostrar datos técnicos
+        if (ventDatosTecnicos) {
+          ventDatosTecnicos.classList.remove("hidden");
+        }
+
+      } else {
+
+        // Reactivar potencia
+        if (ventPotencia) {
+          ventPotencia.disabled = false;
+        }
+
+        // Reactivar unidad
+        if (ventUnidadPotencia) {
+          ventUnidadPotencia.disabled = false;
+        }
+
+        // Ocultar datos técnicos
+        if (ventDatosTecnicos) {
+          ventDatosTecnicos.classList.add("hidden");
+        }
+
+        // Limpiar datos técnicos previos
+        limpiarDatosTecnicosVentilacion();
+
+      }
+
+    }
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 8. HORARIO GENERAL / HORARIO PROPIO
+// -----------------------------------------------------
+
+const radiosVentHorarioCoincide =
+  document.querySelectorAll(
+    'input[name="ventHorarioCoincide"]'
+  );
+
+const ventHorarioPropio =
+  document.getElementById("ventHorarioPropio");
+
+
+function limpiarHorarioVentilacion() {
+
+  const campos = [
+    "ventHorasLV",
+    "ventHorasSab",
+    "ventHorasDom"
+  ];
+
+  campos.forEach(id => {
+
+    const campo =
+      document.getElementById(id);
+
+    if (campo) {
+      campo.value = "";
+    }
+
+  });
+
+}
+
+
+radiosVentHorarioCoincide.forEach(radio => {
+
+  radio.addEventListener(
+    "change",
+    () => {
+
+      // NO coincide:
+      // mostrar horario particular
+      if (
+        radio.value === "no" &&
+        radio.checked
+      ) {
+
+        if (ventHorarioPropio) {
+          ventHorarioPropio.classList.remove("hidden");
+        }
+
+      }
+
+      // SÍ coincide:
+      // reutilizaremos horario general
+      else if (
+        radio.value === "si" &&
+        radio.checked
+      ) {
+
+        if (ventHorarioPropio) {
+          ventHorarioPropio.classList.add("hidden");
+        }
+
+        limpiarHorarioVentilacion();
+
+      }
+
+      // NO SABE:
+      // ocultar horario particular
+      else if (
+        radio.value === "no_sabe" &&
+        radio.checked
+      ) {
+
+        if (ventHorarioPropio) {
+          ventHorarioPropio.classList.add("hidden");
+        }
+
+        limpiarHorarioVentilacion();
+
+      }
+
+    }
+  );
+
+});
+
   
  
   // ======================================================
