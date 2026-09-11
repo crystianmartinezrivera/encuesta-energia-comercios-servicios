@@ -1701,105 +1701,328 @@
 
 }
 
+    
+    
+
+
 /* =====================================================
-   MODAL - CALEFACCIÓN
+   SECCIÓN 4 - C Y D (REFRIGERACIÓN + EQUIPOS DE OFICINA)
+   Implementación 100% frontend / localStorage
 ===================================================== */
 
-#modalCalefaccion {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 35, 70, 0.45);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 24px;
-  z-index: 9999;
+#moduloRefrigeracion,
+#moduloEquiposOficina{
+  margin-top:24px;
+  padding:22px;
+  border:1px solid var(--borde);
+  border-radius:12px;
+  background:#fff;
 }
 
-#modalCalefaccion.hidden {
-  display: none;
+#moduloRefrigeracion .uso-card-head h3,
+#moduloEquiposOficina .uso-card-head h3{
+  color:#0b3770;
+  font-size:19px;
+  margin:0;
 }
 
-#modalCalefaccion .modal-content {
-  background: #ffffff;
-  width: min(1000px, 96vw);
-  max-height: 92vh;
-  overflow-y: auto;
-  border-radius: 14px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
-  position: relative;
+#moduloRefrigeracion .question-block,
+#moduloEquiposOficina .question-block{
+  background:#f8fbfd;
+  border:1px solid #dce7ef;
+  border-radius:9px;
+  padding:16px;
 }
 
-#modalCalefaccion .modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid #d9e2ec;
-
-  position: sticky;
-  top: 0;
-  background: #ffffff;
-  z-index: 2;
+#moduloRefrigeracion .question-title,
+#moduloEquiposOficina .question-title{
+  font-size:14px;
+  font-weight:700;
+  color:#203348;
+  line-height:1.4;
 }
 
-#modalCalefaccion .modal-header h2 {
-  margin: 0;
-  color: #063b72;
-  font-size: 1.45rem;
+.cd-module-body{
+  margin-top:16px;
 }
 
-#modalCalefaccion .modal-close {
-  width: 38px;
-  height: 38px;
-  border: none;
-  border-radius: 50%;
-  background: #eef3f7;
-  font-size: 26px;
-  line-height: 1;
-  cursor: pointer;
-  color: #25364a;
+.cd-module-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
 }
 
-#modalCalefaccion .modal-body {
-  padding: 24px;
+.cd-empty{
+  margin-top:12px;
+  padding:14px 16px;
+  border:1px dashed #b7c7d5;
+  border-radius:8px;
+  color:#607080;
+  background:#fbfcfd;
+  font-size:13px;
 }
 
-#modalCalefaccion .modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 18px 24px;
-  border-top: 1px solid #d9e2ec;
-
-  position: sticky;
-  bottom: 0;
-  background: #ffffff;
-  z-index: 2;
+.cd-summary{
+  color:#526779;
+  font-size:13px;
+  font-weight:700;
 }
 
-#modalCalefaccion .form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px 20px;
+.cd-table-wrap{
+  width:100%;
+  overflow-x:auto;
+  margin-top:12px;
 }
 
-@media (max-width: 800px) {
+.cd-table{
+  min-width:850px;
+  width:100%;
+}
 
-  #modalCalefaccion {
-    padding: 10px;
-  }
+.cd-table th,
+.cd-table td{
+  vertical-align:middle;
+}
 
-  #modalCalefaccion .form-grid {
-    grid-template-columns: 1fr;
-  }
+.cd-table td{
+  text-align:left;
+}
 
-}    
-    
+.cd-table td.num,
+.cd-table th.num{
+  text-align:right;
+  white-space:nowrap;
+}
+
+.cd-table td.acciones,
+.cd-table th.acciones{
+  text-align:center;
+  white-space:nowrap;
+}
+
+.cd-action-btn{
+  border:1px solid #b9c7d2;
+  background:#fff;
+  color:#174873;
+  border-radius:6px;
+  padding:6px 9px;
+  margin:2px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:700;
+}
+
+.cd-action-btn:hover{
+  background:#f2f7fb;
+}
+
+.cd-action-btn.danger{
+  color:#b33636;
+  border-color:#e0bcbc;
+}
+
+.cd-action-btn.danger:hover{
+  background:#fff4f4;
+}
+
+.cd-modal{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(0,35,70,.45);
+  z-index:10000;
+}
+
+.cd-modal.hidden{
+  display:none !important;
+}
+
+.cd-modal-content{
+  width:min(980px,96vw);
+  max-height:92vh;
+  overflow-y:auto;
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 18px 50px rgba(0,0,0,.25);
+  position:relative;
+}
+
+.cd-modal-header{
+  position:sticky;
+  top:0;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:20px 24px;
+  border-bottom:1px solid #d9e2ec;
+  background:#fff;
+}
+
+.cd-modal-header h2{
+  margin:0;
+  color:#063b72;
+  font-size:1.42rem;
+}
+
+.cd-modal-close{
+  width:38px;
+  height:38px;
+  border:0;
+  border-radius:50%;
+  background:#eef3f7;
+  color:#25364a;
+  font-size:26px;
+  line-height:1;
+  cursor:pointer;
+}
+
+.cd-modal-close:hover{
+  background:#dfe8ef;
+}
+
+.cd-modal-body{
+  padding:24px;
+}
+
+.cd-modal-footer{
+  position:sticky;
+  bottom:0;
+  z-index:2;
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  padding:18px 24px;
+  border-top:1px solid #d9e2ec;
+  background:#fff;
+}
+
+.cd-info-note{
+  margin-bottom:20px;
+  padding:12px 14px;
+  background:#f2f7fb;
+  border-left:4px solid #0a4c86;
+  border-radius:6px;
+  color:#334a5f;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.cd-form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px 20px;
+}
+
+.cd-form-group{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  min-width:0;
+}
+
+.cd-form-group.full{
+  grid-column:1/-1;
+}
+
+.cd-form-group > label{
+  color:#25364a;
+  font-weight:600;
+  line-height:1.3;
+}
+
+.cd-form-group input,
+.cd-form-group select{
+  width:100%;
+}
+
+.cd-subtitle{
+  margin:26px 0 14px;
+  padding-top:18px;
+  border-top:1px solid #e4eaf0;
+  color:#0b3770;
+  font-size:16px;
+}
+
+.cd-radio-options{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  align-items:center;
+  min-height:42px;
+}
+
+.cd-radio-options label{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-weight:400;
+  cursor:pointer;
+}
+
+.cd-radio-options input{
+  width:auto;
+}
+
+.cd-method-cards{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.cd-method-card{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:13px 14px;
+  border:1px solid #d7e1e9;
+  border-radius:9px;
+  background:#fafcfd;
+  cursor:pointer;
+  font-weight:600;
+  line-height:1.35;
+}
+
+.cd-method-card input{
+  width:auto;
+  margin-top:2px;
+}
+
+.cd-calc-box{
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:8px;
+  background:#f2faf5;
+  border:1px solid #cfe5d7;
+  color:#285b40;
+  font-size:13px;
+  font-weight:700;
+}
+
+.cd-help{
+  display:block;
+  margin-top:2px;
+  color:#6b7b89;
+  font-size:11px;
+  line-height:1.35;
+}
+
+@media (max-width:800px){
+  .cd-modal{padding:10px}
+  .cd-modal-content{width:100%;max-height:96vh}
+  .cd-form-grid,.cd-method-cards{grid-template-columns:1fr}
+  #moduloRefrigeracion,#moduloEquiposOficina{padding:16px}
+}
+
 </style>
 <!-- =====================================================
    Fin de CSS
@@ -3170,16 +3393,120 @@
 
 
 
+
+
+<!-- =====================================================
+     C. REFRIGERACIÓN Y CONSERVACIÓN
+====================================================== -->
+<section class="uso-card" id="moduloRefrigeracion">
+  <div class="uso-card-head">
+    <div style="width:100%">
+      <h3>C. Refrigeración y conservación</h3>
+
+      <div class="question-block" style="margin-top:14px">
+        <div class="question-title">
+          ¿El establecimiento cuenta con equipos para refrigeración, congelación o conservación de productos?
+        </div>
+
+        <div class="radio-group" style="min-height:auto; margin-top:10px">
+          <label><input type="radio" name="usaRefrigeracion" value="si"> Sí</label>
+          <label><input type="radio" name="usaRefrigeracion" value="no"> No</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="refrigeracionContenido" class="cd-module-body hidden">
+    <div class="cd-module-actions">
+      <button type="button" class="secondary" id="btnAgregarRefrigeracion">
+        + Agregar equipo o grupo de equipos
+      </button>
+      <span id="resumenRefrigeracion" class="cd-summary"></span>
+    </div>
+
+    <div id="sinRefrigeracion" class="cd-empty">
+      Aún no se han agregado equipos de refrigeración o conservación.
+    </div>
+
+    <div id="tablaRefrigeracionContenedor" class="cd-table-wrap" style="display:none">
+      <table class="energy-table cd-table">
+        <thead>
+          <tr>
+            <th>Tipo de equipo</th>
+            <th class="num">Cantidad</th>
+            <th class="num">Antigüedad</th>
+            <th>Tamaño por equipo</th>
+            <th>Consumo indicado</th>
+            <th class="acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaRefrigeracionBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     D. EQUIPOS DE OFICINA, COMUNICACIÓN Y ELECTRÓNICOS
+====================================================== -->
+<section class="uso-card" id="moduloEquiposOficina">
+  <div class="uso-card-head">
+    <div style="width:100%">
+      <h3>D. Equipos de oficina, comunicación y electrónicos</h3>
+
+      <div class="question-block" style="margin-top:14px">
+        <div class="question-title">
+          ¿El establecimiento cuenta con equipos de oficina, comunicación o electrónicos?
+        </div>
+
+        <div class="radio-group" style="min-height:auto; margin-top:10px">
+          <label><input type="radio" name="usaEquiposOficina" value="si"> Sí</label>
+          <label><input type="radio" name="usaEquiposOficina" value="no"> No</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="equiposOficinaContenido" class="cd-module-body hidden">
+    <div class="cd-module-actions">
+      <button type="button" class="secondary" id="btnAgregarEquipoOficina">
+        + Agregar equipo o grupo de equipos
+      </button>
+      <span id="resumenEquiposOficina" class="cd-summary"></span>
+    </div>
+
+    <div id="sinEquiposOficina" class="cd-empty">
+      Aún no se han agregado equipos de oficina, comunicación o electrónicos.
+    </div>
+
+    <div id="tablaEquiposOficinaContenedor" class="cd-table-wrap" style="display:none">
+      <table class="energy-table cd-table">
+        <thead>
+          <tr>
+            <th>Equipo</th>
+            <th class="num">Cantidad</th>
+            <th class="num">Potencia</th>
+            <th>Patrón de uso</th>
+            <th class="num">Consumo estimado</th>
+            <th class="acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaEquiposOficinaBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
 <!-- =====================================================
      AQUÍ IRÁN DESPUÉS LOS SIGUIENTES USOS FINALES
 ====================================================== -->
 
 <!--
-C. Refrigeración y conservación
-D. Equipos de oficina
 E. Motores y sistemas electromecánicos
 F. Sistemas térmicos
-etc.
+G. Cocción y preparación de alimentos
+H. Equipos especializados por actividad / Otros equipos
 -->
 
 
@@ -6720,730 +7047,256 @@ etc.
 
 </div>
 
-<!-- =====================================================
-     MODAL - CALEFACCIÓN DE ESPACIOS
-====================================================== -->
-
-<div
-  id="modalCalefaccion"
-  class="modal hidden">
-
-  <div class="modal-content modal-large">
-
-    <!-- =========================================
-         ENCABEZADO
-    ========================================== -->
-
-    <div class="modal-header">
-
-      <h2 id="tituloModalCalefaccion">
-        Agregar equipo de calefacción
-      </h2>
-
-      <button
-        type="button"
-        class="modal-close"
-        id="cerrarModalCalefaccion"
-        aria-label="Cerrar">
-        ×
-      </button>
-
-    </div>
-
-
-    <div class="modal-body">
-
-
-      <!-- =========================================
-           1. IDENTIFICACIÓN
-      ========================================== -->
-
-      <h3>
-        Identificación del equipo
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label for="calefArea">
-            Área atendida
-          </label>
-
-          <select id="calefArea">
-
-            <option value="">
-              Seleccione...
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="calefTipo">
-            Tipo de equipo
-          </label>
-
-          <select id="calefTipo">
-
-            <option value="">
-              Seleccione...
-            </option>
-
-            <option value="calefactor_electrico">
-              Calefactor eléctrico
-            </option>
-
-            <option value="bomba_calor">
-              Bomba de calor
-            </option>
-
-            <option value="caldera">
-              Caldera
-            </option>
-
-            <option value="horno">
-              Horno / furnace
-            </option>
-
-            <option value="radiador">
-              Radiador
-            </option>
-
-            <option value="unidad_paquete">
-              Unidad paquete con calefacción
-            </option>
-
-            <option value="minisplit_calor">
-              Minisplit con modo calefacción
-            </option>
-
-            <option value="infrarrojo">
-              Calefactor infrarrojo
-            </option>
-
-            <option value="otro">
-              Otro
-            </option>
-
-            <option value="no_sabe">
-              No sabe
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div
-          class="form-group hidden"
-          id="calefTipoOtroGrupo">
-
-          <label for="calefTipoOtro">
-            Especifique otro tipo
-          </label>
-
-          <input
-            type="text"
-            id="calefTipoOtro"
-            placeholder="Describa el equipo">
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="calefCantidad">
-            Cantidad de equipos iguales
-          </label>
-
-          <input
-            type="number"
-            id="calefCantidad"
-            min="1"
-            step="1"
-            value="1">
-
-        </div>
-
-      </div>
-
-
-      <!-- =========================================
-           2. ANTIGÜEDAD
-      ========================================== -->
-
-      <h3 style="margin-top:28px">
-        Año de adquisición y antigüedad
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label for="calefAnioAdquisicion">
-            Año de adquisición
-          </label>
-
-          <select id="calefAnioAdquisicion">
-
-            <option value="">
-              Seleccione...
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="calefAntiguedad">
-            Antigüedad aproximada
-          </label>
-
-          <div
-            style="
-              display:flex;
-              gap:8px;
-              align-items:center;
-            ">
-
-            <input
-              type="number"
-              id="calefAntiguedad"
-              min="0"
-              step="1"
-              placeholder="Ej. 8">
-
-            <span>
-              años
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-   <!-- =========================================
-     3. ENERGÉTICO
-========================================== -->
-
-<h3 style="margin-top:28px">
-  Fuente de energía
-</h3>
-
-<div class="form-grid">
-
-  <div class="form-group">
-
-    <label for="calefEnergetico">
-      Energético utilizado
-    </label>
-
-    <select id="calefEnergetico">
-
-      <option value="">
-        Seleccione...
-      </option>
-
-    </select>
-
-    <small>
-      Se muestran únicamente los energéticos declarados
-      previamente por el establecimiento.
-    </small>
-
-  </div>
-
-</div>
-
-      <!-- =========================================
-           4. CAPACIDAD TÉRMICA
-      ========================================== -->
-
-      <h3 style="margin-top:28px">
-        Capacidad térmica
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label for="calefCapacidad">
-            Capacidad por equipo
-          </label>
-
-          <input
-            type="number"
-            id="calefCapacidad"
-            min="0"
-            step="0.01"
-            placeholder="Ej. 24000">
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="calefUnidadCapacidad">
-            Unidad de capacidad
-          </label>
-
-          <select id="calefUnidadCapacidad">
-
-            <option value="">
-              Seleccione...
-            </option>
-
-            <option value="btu_h">
-              BTU/h
-            </option>
-
-            <option value="kw_termicos">
-              kW térmicos
-            </option>
-
-            <option value="kcal_h">
-              kcal/h
-            </option>
-
-            <option value="no_sabe">
-              No sabe
-            </option>
-
-          </select>
-
-        </div>
-
-      </div>
-
-
-      <!-- =========================================
-           5. POTENCIA / CONSUMO NOMINAL
-      ========================================== -->
-
-      <h3 style="margin-top:28px">
-        Potencia o consumo nominal
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label for="calefPotencia">
-            Potencia por equipo
-          </label>
-
-          <div
-            style="
-              display:flex;
-              gap:8px;
-              align-items:center;
-            ">
-
-            <input
-              type="number"
-              id="calefPotencia"
-              min="0"
-              step="0.01"
-              placeholder="Ej. 2.5">
-
-            <select
-              id="calefUnidadPotencia"
-              style="max-width:90px">
-
-              <option value="kw">
-                kW
-              </option>
-
-              <option value="w">
-                W
-              </option>
-
-            </select>
-
-          </div>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Potencia no disponible
-          </label>
-
-          <label
-            style="
-              display:flex;
-              flex-direction:row;
-              align-items:center;
-              gap:8px;
-              font-weight:normal;
-              cursor:pointer;
-            ">
-
-            <input
-              type="checkbox"
-              id="calefPotenciaDesconocida"
-              style="width:auto; margin:0">
-
-            No conozco la potencia
-
-          </label>
-
-          <small>
-            Si no conoce la potencia, puede registrar
-            capacidad, eficiencia, marca, modelo o datos de placa.
-          </small>
-
-        </div>
-
-      </div>
-
-
-      <!-- =========================================
-           6. EFICIENCIA
-      ========================================== -->
-
-      <h3 style="margin-top:28px">
-        Eficiencia del equipo
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label for="calefIndicadorEficiencia">
-            Indicador de eficiencia
-          </label>
-
-          <select id="calefIndicadorEficiencia">
-
-            <option value="">
-              Seleccione...
-            </option>
-
-            <option value="eficiencia_termica">
-              Eficiencia térmica (%)
-            </option>
-
-            <option value="cop">
-              COP
-            </option>
-
-            <option value="afue">
-              AFUE (%)
-            </option>
-
-            <option value="otro">
-              Otro
-            </option>
-
-            <option value="no_sabe">
-              No sabe
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="calefValorEficiencia">
-            Valor de eficiencia
-          </label>
-
-          <input
-            type="number"
-            id="calefValorEficiencia"
-            min="0"
-            step="0.01"
-            placeholder="Ej. 85">
-
-        </div>
-
-      </div>
-
-
-      <!-- =========================================
-           7. DATOS TÉCNICOS
-      ========================================== -->
-
-      <div
-        id="calefDatosTecnicos"
-        class="hidden">
-
-        <h3 style="margin-top:28px">
-          Datos técnicos adicionales
-        </h3>
-
-        <div class="form-grid">
-
-          <div class="form-group">
-
-            <label for="calefMarca">
-              Marca
-            </label>
-
-            <input
-              type="text"
-              id="calefMarca"
-              placeholder="Marca">
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="calefModelo">
-              Modelo
-            </label>
-
-            <input
-              type="text"
-              id="calefModelo"
-              placeholder="Modelo">
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="calefDatosPlaca">
-              Datos de placa
-            </label>
-
-            <textarea
-              id="calefDatosPlaca"
-              rows="3"
-              placeholder="Potencia, capacidad, consumo, tensión u otros datos disponibles."></textarea>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- =========================================
-           8. TEMPERATURA
-      ========================================== -->
-
-      <h3 style="margin-top:28px">
-        Condiciones de operación
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label for="calefTemperaturaConsigna">
-            Temperatura habitual de consigna
-          </label>
-
-          <div
-            style="
-              display:flex;
-              gap:8px;
-              align-items:center;
-            ">
-
-            <input
-              type="number"
-              id="calefTemperaturaConsigna"
-              min="5"
-              max="35"
-              step="0.5"
-              placeholder="Ej. 21">
-
-            <span>
-              °C
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Temperatura no disponible
-          </label>
-
-          <label
-            style="
-              display:flex;
-              align-items:center;
-              gap:8px;
-              font-weight:normal;
-            ">
-
-            <input
-              type="checkbox"
-              id="calefTemperaturaDesconocida"
-              style="width:auto; margin:0">
-
-            No conoce la temperatura
-
-          </label>
-
-        </div>
-
-      </div>
-
-
-      <!-- =========================================
-           9. HORARIO
-      ========================================== -->
-
-      <h3 style="margin-top:28px">
-        Horario de operación
-      </h3>
-
-      <div class="form-group">
-
-        <label>
-          ¿El horario de este equipo coincide con el
-          horario general del establecimiento?
-        </label>
-
-        <div class="radio-group">
-
-          <label>
-            <input
-              type="radio"
-              name="calefHorarioCoincide"
-              value="si">
-            Sí
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="calefHorarioCoincide"
-              value="no">
-            No
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="calefHorarioCoincide"
-              value="no_sabe">
-            No sabe
-          </label>
-
-        </div>
-
-      </div>
-
-
-      <!-- HORARIO PARTICULAR -->
-
-      <div
-        id="calefHorarioPropio"
-        class="hidden">
-
-        <div class="form-grid">
-
-          <div class="form-group">
-
-            <label for="calefHorasLV">
-              Horas de uso al día — lunes a viernes
-            </label>
-
-            <input
-              type="number"
-              id="calefHorasLV"
-              min="0"
-              max="24"
-              step="0.5"
-              placeholder="Ej. 8">
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="calefHorasSab">
-              Horas de uso — sábado
-            </label>
-
-            <input
-              type="number"
-              id="calefHorasSab"
-              min="0"
-              max="24"
-              step="0.5"
-              placeholder="Ej. 5">
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="calefHorasDom">
-              Horas de uso — domingo
-            </label>
-
-            <input
-              type="number"
-              id="calefHorasDom"
-              min="0"
-              max="24"
-              step="0.5"
-              placeholder="Ej. 0">
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- =========================================
-         BOTONES
-    ========================================== -->
-
-    <div class="modal-footer">
-
-      <button
-        type="button"
-        class="secondary"
-        id="cancelarCalefaccion">
-        Cancelar
-      </button>
-
-      <button
-        type="button"
-        class="primary"
-        id="guardarCalefaccion">
-        Guardar equipo
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
   
  
 <!-- =====================================================
      Inicio de JAVA
 ====================================================== -->
   
+
+
+<!-- =====================================================
+     MODAL C. REFRIGERACIÓN Y CONSERVACIÓN
+====================================================== -->
+<div id="modalRefrigeracion" class="cd-modal hidden" aria-hidden="true">
+  <div class="cd-modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloModalRefrigeracion">
+    <div class="cd-modal-header">
+      <h2 id="tituloModalRefrigeracion">Agregar equipo de refrigeración</h2>
+      <button type="button" class="cd-modal-close" id="cerrarModalRefrigeracion" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="cd-modal-body">
+      <div class="cd-info-note">
+        Registre conjuntamente únicamente los equipos que sean del mismo tipo y tengan características similares de antigüedad y tamaño. Si son diferentes, agréguelos como otro grupo.
+      </div>
+
+      <div class="cd-form-grid">
+        <div class="cd-form-group">
+          <label for="refTipo">Tipo de equipo <span class="req">*</span></label>
+          <select id="refTipo">
+            <option value="">Seleccione...</option>
+            <option value="refrigerador">Refrigerador</option>
+            <option value="refrigerador_exhibidor">Refrigerador exhibidor / vitrina refrigerada</option>
+            <option value="enfriador_bebidas">Enfriador de bebidas</option>
+            <option value="servibar">Servibar / minibar</option>
+            <option value="congelador_horizontal">Congelador horizontal</option>
+            <option value="congelador_vertical">Congelador vertical</option>
+            <option value="congelador_exhibidor">Congelador exhibidor</option>
+            <option value="enfriador_agua">Enfriador de agua</option>
+            <option value="maquina_hielo">Máquina / fábrica de hielo</option>
+            <option value="cuarto_frio">Cámara o cuarto frío de conservación</option>
+            <option value="cuarto_congelacion">Cámara o cuarto de congelación</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="cd-form-group hidden" id="refTipoOtroBox">
+          <label for="refTipoOtro">Especifique el tipo de equipo <span class="req">*</span></label>
+          <input id="refTipoOtro" type="text" maxlength="100" placeholder="Ej. mesa refrigerada">
+          <small class="cd-help">Se pueden registrar hasta 5 tipos personalizados distintos.</small>
+        </div>
+
+        <div class="cd-form-group">
+          <label for="refCantidad">Cantidad de equipos <span class="req">*</span></label>
+          <input id="refCantidad" type="number" min="1" step="1" placeholder="Ej. 3">
+        </div>
+
+        <div class="cd-form-group">
+          <label for="refAntiguedad">Antigüedad aproximada <span class="req">*</span></label>
+          <div class="input-unit">
+            <input id="refAntiguedad" type="number" min="0" max="100" step="1" placeholder="Ej. 5">
+            <span class="unit">años</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="cd-subtitle">Tamaño del equipo</h3>
+
+      <div class="cd-form-group full">
+        <label>¿Cómo desea reportar el tamaño del equipo? <span class="req">*</span></label>
+        <div class="cd-method-cards">
+          <label class="cd-method-card">
+            <input type="radio" name="refMetodoTamano" value="volumen">
+            <span>Conozco su capacidad o volumen</span>
+          </label>
+          <label class="cd-method-card">
+            <input type="radio" name="refMetodoTamano" value="dimensiones">
+            <span>Deseo reportarlo mediante sus dimensiones</span>
+          </label>
+        </div>
+      </div>
+
+      <div id="refVolumenBox" class="hidden" style="margin-top:16px">
+        <div class="cd-form-grid">
+          <div class="cd-form-group">
+            <label for="refVolumen">Tamaño o volumen por equipo <span class="req">*</span></label>
+            <input id="refVolumen" type="number" min="0.001" step="0.001" placeholder="Ej. 72">
+          </div>
+          <div class="cd-form-group">
+            <label for="refUnidadVolumen">Unidad <span class="req">*</span></label>
+            <select id="refUnidadVolumen">
+              <option value="">Seleccione...</option>
+              <option value="ft3">pies³</option>
+              <option value="m3">m³</option>
+              <option value="litros">litros</option>
+            </select>
+          </div>
+        </div>
+        <div id="refVolumenEquivalencia" class="cd-calc-box hidden"></div>
+      </div>
+
+      <div id="refDimensionesBox" class="hidden" style="margin-top:16px">
+        <div class="cd-form-grid">
+          <div class="cd-form-group">
+            <label for="refLargo">Largo <span class="req">*</span></label>
+            <input id="refLargo" type="number" min="0.001" step="0.01" placeholder="Ej. 80">
+          </div>
+          <div class="cd-form-group">
+            <label for="refAncho">Ancho <span class="req">*</span></label>
+            <input id="refAncho" type="number" min="0.001" step="0.01" placeholder="Ej. 65">
+          </div>
+          <div class="cd-form-group">
+            <label for="refAlto">Alto <span class="req">*</span></label>
+            <input id="refAlto" type="number" min="0.001" step="0.01" placeholder="Ej. 180">
+          </div>
+          <div class="cd-form-group">
+            <label for="refUnidadDimensiones">Unidad de las dimensiones <span class="req">*</span></label>
+            <select id="refUnidadDimensiones">
+              <option value="">Seleccione...</option>
+              <option value="cm">centímetros (cm)</option>
+              <option value="m">metros (m)</option>
+            </select>
+          </div>
+        </div>
+        <div id="refDimensionesResultado" class="cd-calc-box hidden"></div>
+      </div>
+
+      <h3 class="cd-subtitle">Información de consumo en etiqueta o placa</h3>
+
+      <div class="cd-form-group full">
+        <label>¿El equipo indica un consumo de energía en su etiqueta o placa? <span class="req">*</span></label>
+        <div class="cd-radio-options">
+          <label><input type="radio" name="refEtiquetaConsumo" value="si"> Sí</label>
+          <label><input type="radio" name="refEtiquetaConsumo" value="no"> No</label>
+          <label><input type="radio" name="refEtiquetaConsumo" value="no_verificar"> No se pudo verificar</label>
+        </div>
+      </div>
+
+      <div id="refConsumoEtiquetaBox" class="cd-form-grid hidden" style="margin-top:16px">
+        <div class="cd-form-group">
+          <label for="refConsumoEtiqueta">Consumo anual indicado por equipo <span class="req">*</span></label>
+          <div class="input-unit">
+            <input id="refConsumoEtiqueta" type="number" min="0.001" step="0.01" placeholder="Ej. 420">
+            <span class="unit">kWh/año</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cd-modal-footer">
+      <button type="button" class="secondary" id="cancelarRefrigeracion">Cancelar</button>
+      <button type="button" class="primary" id="guardarRefrigeracion">Guardar equipo</button>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     MODAL D. EQUIPOS DE OFICINA, COMUNICACIÓN Y ELECTRÓNICOS
+====================================================== -->
+<div id="modalEquipoOficina" class="cd-modal hidden" aria-hidden="true">
+  <div class="cd-modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloModalEquipoOficina">
+    <div class="cd-modal-header">
+      <h2 id="tituloModalEquipoOficina">Agregar equipo de oficina</h2>
+      <button type="button" class="cd-modal-close" id="cerrarModalEquipoOficina" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="cd-modal-body">
+      <div class="cd-info-note">
+        Registre conjuntamente únicamente los equipos que tengan la misma potencia y el mismo patrón de uso. Si equipos del mismo tipo tienen horarios diferentes, regístrelos como grupos separados. Puede usar <strong>Duplicar</strong> para copiar un grupo y modificar únicamente su cantidad u horario.
+      </div>
+
+      <div class="cd-form-grid">
+        <div class="cd-form-group">
+          <label for="ofiTipo">Tipo de equipo <span class="req">*</span></label>
+          <select id="ofiTipo">
+            <option value="">Seleccione...</option>
+            <option value="computadora_escritorio">Computadora de escritorio</option>
+            <option value="monitor">Monitor</option>
+            <option value="todo_en_uno">Computadora todo en uno</option>
+            <option value="laptop">Laptop</option>
+            <option value="pos">Terminal de punto de venta (POS) / caja registradora</option>
+            <option value="impresora_tickets">Impresora de tickets</option>
+            <option value="impresora">Impresora</option>
+            <option value="multifuncional">Multifuncional / fotocopiadora</option>
+            <option value="servidor">Servidor</option>
+            <option value="modem_router">Módem / router</option>
+            <option value="central_telefonica">Central telefónica</option>
+            <option value="television">Televisión / pantalla</option>
+            <option value="senalizacion">Pantalla de señalización digital</option>
+            <option value="proyector">Proyector</option>
+            <option value="sonido">Sistema de sonido / amplificador</option>
+            <option value="videovigilancia">Sistema de videovigilancia</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="cd-form-group hidden" id="ofiTipoOtroBox">
+          <label for="ofiTipoOtro">Especifique el nombre del equipo <span class="req">*</span></label>
+          <input id="ofiTipoOtro" type="text" maxlength="100" placeholder="Especifique el equipo">
+          <small class="cd-help">Se pueden registrar hasta 10 tipos personalizados distintos.</small>
+        </div>
+
+        <div class="cd-form-group">
+          <label for="ofiCantidad">Número de equipos <span class="req">*</span></label>
+          <input id="ofiCantidad" type="number" min="1" step="1" placeholder="Ej. 8">
+        </div>
+
+        <div class="cd-form-group">
+          <label for="ofiPotencia">Potencia por equipo <span class="req">*</span></label>
+          <div class="input-unit">
+            <input id="ofiPotencia" type="number" min="0.01" step="0.01" placeholder="Ej. 120">
+            <span class="unit">W</span>
+          </div>
+        </div>
+
+        <div class="cd-form-group">
+          <label for="ofiHorasDia">Horas de uso por día <span class="req">*</span></label>
+          <div class="input-unit">
+            <input id="ofiHorasDia" type="number" min="0" max="24" step="0.25" placeholder="Ej. 9">
+            <span class="unit">h/día</span>
+          </div>
+        </div>
+
+        <div class="cd-form-group">
+          <label for="ofiDiasSemana">Días de uso por semana <span class="req">*</span></label>
+          <div class="input-unit">
+            <input id="ofiDiasSemana" type="number" min="0" max="7" step="1" placeholder="Ej. 5">
+            <span class="unit">días</span>
+          </div>
+        </div>
+
+        <div class="cd-form-group">
+          <label for="ofiSemanasAnio">Semanas de uso por año <span class="req">*</span></label>
+          <div class="input-unit">
+            <input id="ofiSemanasAnio" type="number" min="0" max="52" step="1" value="52">
+            <span class="unit">sem/año</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="ofiConsumoPreview" class="cd-calc-box" style="margin-top:18px">
+        Complete cantidad, potencia y patrón de uso para calcular el consumo anual estimado.
+      </div>
+    </div>
+
+    <div class="cd-modal-footer">
+      <button type="button" class="secondary" id="cancelarEquipoOficina">Cancelar</button>
+      <button type="button" class="primary" id="guardarEquipoOficina">Guardar equipo</button>
+    </div>
+  </div>
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const STORAGE_KEY = "encuestaEnergiaComerciosServicios_v1";
@@ -17681,846 +17534,731 @@ function eliminarVentilacion(
   renderizarTablaVentilacion();
 
 } 
+ 
 
-  // =====================================================
-// EDITAR AIRE ACONDICIONADO
-// =====================================================
-
-window.editarAireAcondicionado = function(index) {
-
-  const equipo =
-    equiposAireAcondicionado[index];
-
-  if (!equipo) {
-    return;
-  }
-
-  indiceAireAcondicionadoEdicion = index;
-
-  // Cargar listas antes de asignar valores
-  cargarAreasAireAcondicionado();
-  cargarAniosAireAcondicionado();
-
-  if (tituloModalAireAcondicionado) {
-    tituloModalAireAcondicionado.textContent =
-      "Editar equipo de aire acondicionado";
-  }
-
-
-  // -------------------------------------------------
-  // DATOS GENERALES
-  // -------------------------------------------------
-
-  document.getElementById("acArea").value =
-    equipo.area || "";
-
-  document.getElementById("acTipo").value =
-    equipo.tipo || "";
-
-  document.getElementById("acTipoOtro").value =
-    equipo.tipoOtro || "";
-
-  document.getElementById("acCantidad").value =
-    equipo.cantidad ?? "";
-
-
-  // Otro tipo
-  if (equipo.tipo === "otro") {
-
-    acTipoOtroBox.classList.remove("hidden");
-
-  } else {
-
-    acTipoOtroBox.classList.add("hidden");
-
-  }
-
-
-  // -------------------------------------------------
-  // ANTIGÜEDAD
-  // -------------------------------------------------
-
-  document.getElementById("acAnioAdquisicion").value =
-    equipo.anioAdquisicion || "";
-
-  document.getElementById("acAntiguedad").value =
-    equipo.antiguedad ?? "";
-
-
-  // -------------------------------------------------
-  // CAPACIDAD
-  // -------------------------------------------------
-
-  document.getElementById("acCapacidad").value =
-    equipo.capacidad ?? "";
-
-  document.getElementById("acUnidadCapacidad").value =
-    equipo.unidadCapacidad || "";
-
-
-  // -------------------------------------------------
-  // POTENCIA
-  // -------------------------------------------------
-
-  acPotenciaDesconocida.checked =
-    Boolean(equipo.potenciaDesconocida);
-
-  if (equipo.potenciaDesconocida) {
-
-    acPotencia.value = "";
-    acPotencia.disabled = true;
-
-    acUnidadPotencia.disabled = true;
-
-    acDatosTecnicosBox.classList.remove("hidden");
-
-  } else {
-
-    acPotencia.value =
-      equipo.potencia ?? "";
-
-    acPotencia.disabled = false;
-
-    acUnidadPotencia.disabled = false;
-
-    acDatosTecnicosBox.classList.add("hidden");
-
-  }
-
-  acUnidadPotencia.value =
-    equipo.unidadPotencia || "kw";
-
-
-  // -------------------------------------------------
-  // EFICIENCIA
-  // -------------------------------------------------
-
-  document.getElementById("acIndicadorEficiencia").value =
-    equipo.indicadorEficiencia || "";
-
-  document.getElementById("acValorEficiencia").value =
-    equipo.valorEficiencia ?? "";
-
-
-  // -------------------------------------------------
-  // DATOS TÉCNICOS
-  // -------------------------------------------------
-
-  document.getElementById("acMarca").value =
-    equipo.marca || "";
-
-  document.getElementById("acModelo").value =
-    equipo.modelo || "";
-
-  document.getElementById("acVoltaje").value =
-    equipo.voltaje ?? "";
-
-  document.getElementById("acCorriente").value =
-    equipo.corriente ?? "";
-
-  document.getElementById("acDatosPlaca").value =
-    equipo.datosPlaca || "";
-
-
-  // -------------------------------------------------
-  // CONDICIONES DE OPERACIÓN
-  // -------------------------------------------------
-
-  document.getElementById("acProporcionArea").value =
-    equipo.proporcionArea || "";
-
-  acTemperaturaDesconocida.checked =
-    Boolean(equipo.temperaturaDesconocida);
-
-  if (equipo.temperaturaDesconocida) {
-
-    acTemperaturaConsigna.value = "";
-    acTemperaturaConsigna.disabled = true;
-
-  } else {
-
-    acTemperaturaConsigna.value =
-      equipo.temperaturaConsigna ?? "";
-
-    acTemperaturaConsigna.disabled = false;
-
-  }
-
-
-  // -------------------------------------------------
-  // HORARIO: COINCIDE
-  // -------------------------------------------------
-
-  document
-    .querySelectorAll(
-      'input[name="acHorarioCoincide"]'
-    )
-    .forEach(radio => {
-
-      radio.checked =
-        radio.value === equipo.horarioCoincide;
-
-    });
-
-
-  if (equipo.horarioCoincide === "no") {
-
-    acHorarioEspecificoBox.classList.remove("hidden");
-
-  } else {
-
-    acHorarioEspecificoBox.classList.add("hidden");
-
-  }
-
-
-  // -------------------------------------------------
-  // HORARIO: ESTACIONAL
-  // -------------------------------------------------
-
-  document
-    .querySelectorAll(
-      'input[name="acHorarioEstacional"]'
-    )
-    .forEach(radio => {
-
-      radio.checked =
-        radio.value === equipo.horarioEstacional;
-
-    });
-
-
-  if (equipo.horarioEstacional === "no") {
-
-    acHorarioNormal.classList.remove("hidden");
-    acHorarioTemporadas.classList.add("hidden");
-
-  }
-
-  else if (equipo.horarioEstacional === "si") {
-
-    acHorarioNormal.classList.add("hidden");
-    acHorarioTemporadas.classList.remove("hidden");
-
-  }
-
-  else {
-
-    acHorarioNormal.classList.add("hidden");
-    acHorarioTemporadas.classList.add("hidden");
-
-  }
-
-
-  // Horario habitual
-  document.getElementById("acHorasLV").value =
-    equipo.horasLV ?? "";
-
-  document.getElementById("acHorasSab").value =
-    equipo.horasSab ?? "";
-
-  document.getElementById("acHorasDom").value =
-    equipo.horasDom ?? "";
-
-
-  // Temporada cálida
-  document.getElementById("acCalidaInicio").value =
-    equipo.calidaInicio ?? "";
-
-  document.getElementById("acCalidaFin").value =
-    equipo.calidaFin ?? "";
-
-  document.getElementById("acCalidaLV").value =
-    equipo.calidaLV ?? "";
-
-  document.getElementById("acCalidaSab").value =
-    equipo.calidaSab ?? "";
-
-  document.getElementById("acCalidaDom").value =
-    equipo.calidaDom ?? "";
-
-
-  // Temporada fría
-  document.getElementById("acFriaLV").value =
-    equipo.friaLV ?? "";
-
-  document.getElementById("acFriaSab").value =
-    equipo.friaSab ?? "";
-
-  document.getElementById("acFriaDom").value =
-    equipo.friaDom ?? "";
-
-
-  // -------------------------------------------------
-  // ABRIR MODAL
-  // -------------------------------------------------
-
-  modalAireAcondicionado.classList.remove("hidden");
-
-};
-
-  
-  // =====================================================
-// EDITAR VENTILACIÓN / EXTRACCIÓN
-// =====================================================
-
-window.editarVentilacion = function(index) {
-
-  const equipo =
-    equiposVentilacion[index];
-
-  if (!equipo) {
-    return;
-  }
-
-  indiceVentilacionEdicion = index;
-
-  cargarAreasVentilacion();
-  cargarAniosVentilacion();
-
-
-  if (tituloModalVentilacion) {
-
-    tituloModalVentilacion.textContent =
-      "Editar equipo de ventilación / extracción";
-
-  }
-
-
-  // -------------------------------------------------
-  // IDENTIFICACIÓN
-  // -------------------------------------------------
-
-  document.getElementById("ventArea").value =
-    equipo.area || "";
-
-  document.getElementById("ventTipo").value =
-    equipo.tipo || "";
-
-  document.getElementById("ventTipoOtro").value =
-    equipo.tipoOtro || "";
-
-  document.getElementById("ventCantidad").value =
-    equipo.cantidad ?? "";
-
-
-  if (equipo.tipo === "otro") {
-
-    ventTipoOtroGrupo.classList.remove("hidden");
-
-  } else {
-
-    ventTipoOtroGrupo.classList.add("hidden");
-
-  }
-
-
-  // -------------------------------------------------
-  // ANTIGÜEDAD
-  // -------------------------------------------------
-
-  document.getElementById("ventAnioAdquisicion").value =
-    equipo.anioAdquisicion || "";
-
-  document.getElementById("ventAntiguedad").value =
-    equipo.antiguedad ?? "";
-
-
-  // -------------------------------------------------
-  // POTENCIA
-  // -------------------------------------------------
-
-  ventPotenciaDesconocida.checked =
-    Boolean(equipo.potenciaDesconocida);
-
-
-  if (equipo.potenciaDesconocida) {
-
-    ventPotencia.value = "";
-    ventPotencia.disabled = true;
-
-    ventUnidadPotencia.disabled = true;
-
-    ventDatosTecnicos.classList.remove("hidden");
-
-  } else {
-
-    ventPotencia.value =
-      equipo.potencia ?? "";
-
-    ventPotencia.disabled = false;
-
-    ventUnidadPotencia.disabled = false;
-
-    ventDatosTecnicos.classList.add("hidden");
-
-  }
-
-
-  ventUnidadPotencia.value =
-    equipo.unidadPotencia || "w";
-
-
-  // -------------------------------------------------
-  // DATOS TÉCNICOS
-  // -------------------------------------------------
-
-  document.getElementById("ventMarca").value =
-    equipo.marca || "";
-
-  document.getElementById("ventModelo").value =
-    equipo.modelo || "";
-
-  document.getElementById("ventCaudal").value =
-    equipo.caudal ?? "";
-
-  document.getElementById("ventUnidadCaudal").value =
-    equipo.unidadCaudal || "";
-
-  document.getElementById("ventVelocidades").value =
-    equipo.velocidades || "";
-
-
-  // -------------------------------------------------
-  // HORARIO
-  // -------------------------------------------------
-
-  document
-    .querySelectorAll(
-      'input[name="ventHorarioCoincide"]'
-    )
-    .forEach(radio => {
-
-      radio.checked =
-        radio.value === equipo.horarioCoincide;
-
-    });
-
-
-  if (equipo.horarioCoincide === "no") {
-
-    ventHorarioPropio.classList.remove("hidden");
-
-  } else {
-
-    ventHorarioPropio.classList.add("hidden");
-
-  }
-
-
-  document.getElementById("ventHorasLV").value =
-    equipo.horasLV ?? "";
-
-  document.getElementById("ventHorasSab").value =
-    equipo.horasSab ?? "";
-
-  document.getElementById("ventHorasDom").value =
-    equipo.horasDom ?? "";
-
-
-  // -------------------------------------------------
-  // ABRIR MODAL
-  // -------------------------------------------------
-
-  modalVentilacion.classList.remove("hidden");
-
-};
 
 // =====================================================
-// B. CALEFACCIÓN DE ESPACIOS
+// SECCIÓN 4 - C Y D
+// REFRIGERACIÓN + EQUIPOS DE OFICINA
+// FUNCIONAMIENTO 100% FRONTEND / LOCALSTORAGE
 // =====================================================
 
-let equiposCalefaccion = [];
-let indiceCalefaccionEdicion = null;
+const STORAGE_USOS_CD = "encuesta_cys_usos_cd_v1";
 
+let equiposRefrigeracion = [];
+let indiceRefrigeracionEdicion = null;
+let equiposOficina = [];
+let indiceEquipoOficinaEdicion = null;
 
-// -----------------------------------------------------
-// ELEMENTOS
-// -----------------------------------------------------
-
-const btnAgregarCalefaccion =
-  document.getElementById("btnAgregarCalefaccion");
-
-const modalCalefaccion =
-  document.getElementById("modalCalefaccion");
-
-const cerrarModalCalefaccion =
-  document.getElementById("cerrarModalCalefaccion");
-
-const cancelarCalefaccion =
-  document.getElementById("cancelarCalefaccion");
-
-const guardarCalefaccion =
-  document.getElementById("guardarCalefaccion");
-
-const tituloModalCalefaccion =
-  document.getElementById("tituloModalCalefaccion");
-
-
-// -----------------------------------------------------
-// CARGAR ÁREAS
-// -----------------------------------------------------
-
-function cargarAreasCalefaccion() {
-
-  const select =
-    document.getElementById("calefArea");
-
-  if (!select) return;
-
-  select.innerHTML =
-    '<option value="">Seleccione...</option>';
-
-  if (
-    typeof areasEstablecimiento !== "undefined" &&
-    Array.isArray(areasEstablecimiento)
-  ) {
-
-    areasEstablecimiento.forEach((area, index) => {
-
-      const option =
-        document.createElement("option");
-
-      const nombre =
-        area.nombre ||
-        area.area ||
-        area.tipo ||
-        area.descripcion ||
-        `Área ${index + 1}`;
-
-      option.value = nombre;
-      option.textContent = nombre;
-
-      select.appendChild(option);
-
-    });
-
-  }
-
+function escaparHTMLCD(valor) {
+  return String(valor ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-
-// -----------------------------------------------------
-// CARGAR AÑOS
-// -----------------------------------------------------
-
-function cargarAniosCalefaccion() {
-
-  const select =
-    document.getElementById("calefAnioAdquisicion");
-
-  if (!select) return;
-
-  select.innerHTML =
-    '<option value="">Seleccione...</option>';
-
-  const actual =
-    new Date().getFullYear();
-
-  for (let anio = actual; anio >= 1950; anio--) {
-
-    const option =
-      document.createElement("option");
-
-    option.value = anio;
-    option.textContent = anio;
-
-    select.appendChild(option);
-
-  }
-
+function valorRadioCD(nombre) {
+  const el = document.querySelector(`input[name="${nombre}"]:checked`);
+  return el ? el.value : "";
 }
 
-
-// -----------------------------------------------------
-// ABRIR
-// -----------------------------------------------------
-
-function abrirModalCalefaccion() {
-
-  indiceCalefaccionEdicion = null;
-
-  if (tituloModalCalefaccion) {
-
-    tituloModalCalefaccion.textContent =
-      "Agregar equipo de calefacción";
-
-  }
-
-  cargarAreasCalefaccion();
-  cargarAniosCalefaccion();
-  cargarEnergeticosCalefaccion();
-
-  modalCalefaccion?.classList.remove("hidden");
-
+function ponerRadioCD(nombre, valor) {
+  document.querySelectorAll(`input[name="${nombre}"]`).forEach(r => {
+    r.checked = r.value === valor;
+  });
 }
 
-btnAgregarCalefaccion?.addEventListener(
-  "click",
-  abrirModalCalefaccion
-);
-
-
-// -----------------------------------------------------
-// CERRAR
-// -----------------------------------------------------
-
-function cerrarModalEquipoCalefaccion() {
-
-  modalCalefaccion?.classList.add("hidden");
-
-  indiceCalefaccionEdicion = null;
-
+function guardarUsosCDLocal() {
+  try {
+    const datos = {
+      usaRefrigeracion: valorRadioCD("usaRefrigeracion"),
+      usaEquiposOficina: valorRadioCD("usaEquiposOficina"),
+      equiposRefrigeracion,
+      equiposOficina,
+      fechaGuardado: new Date().toISOString()
+    };
+    localStorage.setItem(STORAGE_USOS_CD, JSON.stringify(datos));
+  } catch (e) {
+    console.warn("No se pudieron guardar localmente los módulos C y D.", e);
+  }
 }
 
-
-cerrarModalCalefaccion?.addEventListener(
-  "click",
-  cerrarModalEquipoCalefaccion
-);
-
-cancelarCalefaccion?.addEventListener(
-  "click",
-  cerrarModalEquipoCalefaccion
-);
-
-
-// -----------------------------------------------------
-// TIPO "OTRO"
-// -----------------------------------------------------
-
-const calefTipo =
-  document.getElementById("calefTipo");
-
-const calefTipoOtroGrupo =
-  document.getElementById("calefTipoOtroGrupo");
-
-
-calefTipo?.addEventListener("change", () => {
-
-  calefTipoOtroGrupo?.classList.toggle(
-    "hidden",
-    calefTipo.value !== "otro"
-  );
-
-  if (calefTipo.value !== "otro") {
-
-    const campo =
-      document.getElementById("calefTipoOtro");
-
-    if (campo) campo.value = "";
-
-  }
-
-});
-
-// -----------------------------------------------------
-// ENERGÉTICOS DECLARADOS EN EL ESTABLECIMIENTO
-// -----------------------------------------------------
-
-function cargarEnergeticosCalefaccion() {
-
-  const select =
-    document.getElementById("calefEnergetico");
-
-  if (!select) return;
-
-  select.innerHTML =
-    '<option value="">Seleccione...</option>';
-
-  if (
-    typeof energeticosEstablecimiento === "undefined" ||
-    !Array.isArray(energeticosEstablecimiento)
-  ) {
-    return;
-  }
-
-  energeticosEstablecimiento.forEach(
-    energetico => {
-
-      if (
-        !energetico ||
-        !energetico.codigo
-      ) {
-        return;
-      }
-
-      const option =
-        document.createElement("option");
-
-      option.value =
-        energetico.codigo;
-
-      option.textContent =
-        energetico.nombre ||
-        energetico.codigo;
-
-      select.appendChild(option);
-
-    }
-  );
-
-}
-
-// -----------------------------------------------------
-// AÑO → ANTIGÜEDAD
-// -----------------------------------------------------
-
-const calefAnioAdquisicion =
-  document.getElementById("calefAnioAdquisicion");
-
-const calefAntiguedad =
-  document.getElementById("calefAntiguedad");
-
-
-calefAnioAdquisicion?.addEventListener(
-  "change",
-  () => {
-
-    const anio =
-      Number(calefAnioAdquisicion.value);
-
-    if (!anio) {
-
-      calefAntiguedad.value = "";
+function cargarUsosCDLocal() {
+  try {
+    const raw = localStorage.getItem(STORAGE_USOS_CD);
+    if (!raw) {
+      actualizarVisibilidadRefrigeracion();
+      actualizarVisibilidadEquiposOficina();
+      renderizarTablaRefrigeracion();
+      renderizarTablaEquiposOficina();
       return;
-
     }
 
-    calefAntiguedad.value =
-      Math.max(
-        0,
-        new Date().getFullYear() - anio
-      );
+    const datos = JSON.parse(raw);
+    equiposRefrigeracion = Array.isArray(datos.equiposRefrigeracion)
+      ? datos.equiposRefrigeracion
+      : [];
+    equiposOficina = Array.isArray(datos.equiposOficina)
+      ? datos.equiposOficina
+      : [];
 
+    ponerRadioCD("usaRefrigeracion", datos.usaRefrigeracion || "");
+    ponerRadioCD("usaEquiposOficina", datos.usaEquiposOficina || "");
+
+    actualizarVisibilidadRefrigeracion();
+    actualizarVisibilidadEquiposOficina();
+    renderizarTablaRefrigeracion();
+    renderizarTablaEquiposOficina();
+  } catch (e) {
+    console.warn("No se pudo recuperar el avance local de los módulos C y D.", e);
   }
-);
-
+}
 
 // -----------------------------------------------------
-// POTENCIA DESCONOCIDA
+// C. REFRIGERACIÓN Y CONSERVACIÓN
 // -----------------------------------------------------
 
-const calefPotencia =
-  document.getElementById("calefPotencia");
+const nombresTipoRefrigeracion = {
+  refrigerador: "Refrigerador",
+  refrigerador_exhibidor: "Refrigerador exhibidor / vitrina refrigerada",
+  enfriador_bebidas: "Enfriador de bebidas",
+  servibar: "Servibar / minibar",
+  congelador_horizontal: "Congelador horizontal",
+  congelador_vertical: "Congelador vertical",
+  congelador_exhibidor: "Congelador exhibidor",
+  enfriador_agua: "Enfriador de agua",
+  maquina_hielo: "Máquina / fábrica de hielo",
+  cuarto_frio: "Cámara o cuarto frío de conservación",
+  cuarto_congelacion: "Cámara o cuarto de congelación",
+  otro: "Otro"
+};
 
-const calefUnidadPotencia =
-  document.getElementById("calefUnidadPotencia");
+function nombreRefrigeracion(item) {
+  return item.tipo === "otro"
+    ? (item.tipoOtro || "Otro")
+    : (nombresTipoRefrigeracion[item.tipo] || item.tipo || "—");
+}
 
-const calefPotenciaDesconocida =
-  document.getElementById("calefPotenciaDesconocida");
+function convertirVolumenALitros(valor, unidad) {
+  const n = Number(valor);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  if (unidad === "litros") return n;
+  if (unidad === "m3") return n * 1000;
+  if (unidad === "ft3") return n * 28.316846592;
+  return null;
+}
 
-const calefDatosTecnicos =
-  document.getElementById("calefDatosTecnicos");
+function volumenDimensionesLitros(largo, ancho, alto, unidad) {
+  const l = Number(largo);
+  const a = Number(ancho);
+  const h = Number(alto);
+  if (![l, a, h].every(v => Number.isFinite(v) && v > 0)) return null;
+  if (unidad === "cm") return (l * a * h) / 1000;
+  if (unidad === "m") return l * a * h * 1000;
+  return null;
+}
 
+function formatearLitros(litros) {
+  if (!Number.isFinite(litros)) return "";
+  return litros.toLocaleString("es-MX", { maximumFractionDigits: 1 });
+}
 
-calefPotenciaDesconocida?.addEventListener(
-  "change",
-  () => {
+function actualizarVisibilidadRefrigeracion() {
+  const contenido = document.getElementById("refrigeracionContenido");
+  if (!contenido) return;
+  contenido.classList.toggle("hidden", valorRadioCD("usaRefrigeracion") !== "si");
+}
 
-    const desconocida =
-      calefPotenciaDesconocida.checked;
-
-    if (desconocida) {
-
-      calefPotencia.value = "";
-      calefPotencia.disabled = true;
-
-      calefUnidadPotencia.disabled = true;
-
-      calefDatosTecnicos?.classList.remove("hidden");
-
-    } else {
-
-      calefPotencia.disabled = false;
-      calefUnidadPotencia.disabled = false;
-
-      calefDatosTecnicos?.classList.add("hidden");
-
-    }
-
+function actualizarTipoOtroRefrigeracion() {
+  const tipo = document.getElementById("refTipo")?.value || "";
+  document.getElementById("refTipoOtroBox")?.classList.toggle("hidden", tipo !== "otro");
+  if (tipo !== "otro") {
+    const campo = document.getElementById("refTipoOtro");
+    if (campo) campo.value = "";
   }
-);
+}
 
+function actualizarMetodoTamanoRefrigeracion() {
+  const metodo = valorRadioCD("refMetodoTamano");
+  document.getElementById("refVolumenBox")?.classList.toggle("hidden", metodo !== "volumen");
+  document.getElementById("refDimensionesBox")?.classList.toggle("hidden", metodo !== "dimensiones");
+  actualizarCalculosTamanoRefrigeracion();
+}
 
-// -----------------------------------------------------
-// TEMPERATURA DESCONOCIDA
-// -----------------------------------------------------
-
-const calefTemperaturaConsigna =
-  document.getElementById("calefTemperaturaConsigna");
-
-const calefTemperaturaDesconocida =
-  document.getElementById("calefTemperaturaDesconocida");
-
-
-calefTemperaturaDesconocida?.addEventListener(
-  "change",
-  () => {
-
-    if (calefTemperaturaDesconocida.checked) {
-
-      calefTemperaturaConsigna.value = "";
-      calefTemperaturaConsigna.disabled = true;
-
-    } else {
-
-      calefTemperaturaConsigna.disabled = false;
-
-    }
-
+function actualizarEtiquetaRefrigeracion() {
+  const valor = valorRadioCD("refEtiquetaConsumo");
+  document.getElementById("refConsumoEtiquetaBox")?.classList.toggle("hidden", valor !== "si");
+  if (valor !== "si") {
+    const campo = document.getElementById("refConsumoEtiqueta");
+    if (campo) campo.value = "";
   }
-);
+}
 
+function actualizarCalculosTamanoRefrigeracion() {
+  const metodo = valorRadioCD("refMetodoTamano");
+  const eq = document.getElementById("refVolumenEquivalencia");
+  const dim = document.getElementById("refDimensionesResultado");
 
-// -----------------------------------------------------
-// HORARIO GENERAL / PROPIO
-// -----------------------------------------------------
+  if (eq) eq.classList.add("hidden");
+  if (dim) dim.classList.add("hidden");
 
-const calefHorarioPropio =
-  document.getElementById("calefHorarioPropio");
+  if (metodo === "volumen") {
+    const volumen = document.getElementById("refVolumen")?.value;
+    const unidad = document.getElementById("refUnidadVolumen")?.value;
+    const litros = convertirVolumenALitros(volumen, unidad);
+    if (eq && litros !== null) {
+      eq.textContent = `Equivalencia aproximada: ${formatearLitros(litros)} litros por equipo.`;
+      eq.classList.remove("hidden");
+    }
+  }
 
-const radiosCalefHorario =
-  document.querySelectorAll(
-    'input[name="calefHorarioCoincide"]'
-  );
+  if (metodo === "dimensiones") {
+    const largo = document.getElementById("refLargo")?.value;
+    const ancho = document.getElementById("refAncho")?.value;
+    const alto = document.getElementById("refAlto")?.value;
+    const unidad = document.getElementById("refUnidadDimensiones")?.value;
+    const litros = volumenDimensionesLitros(largo, ancho, alto, unidad);
+    if (dim && litros !== null) {
+      const m3 = litros / 1000;
+      dim.textContent = `Volumen aproximado calculado: ${formatearLitros(litros)} L (${m3.toLocaleString("es-MX", {maximumFractionDigits:3})} m³) por equipo.`;
+      dim.classList.remove("hidden");
+    }
+  }
+}
 
+function limpiarFormularioRefrigeracion() {
+  ["refTipo", "refTipoOtro", "refCantidad", "refAntiguedad", "refVolumen",
+   "refUnidadVolumen", "refLargo", "refAncho", "refAlto", "refUnidadDimensiones",
+   "refConsumoEtiqueta"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  ponerRadioCD("refMetodoTamano", "");
+  ponerRadioCD("refEtiquetaConsumo", "");
+  actualizarTipoOtroRefrigeracion();
+  actualizarMetodoTamanoRefrigeracion();
+  actualizarEtiquetaRefrigeracion();
+}
 
-radiosCalefHorario.forEach(radio => {
+function abrirModalRefrigeracion(index = null) {
+  indiceRefrigeracionEdicion = index;
+  limpiarFormularioRefrigeracion();
 
-  radio.addEventListener("change", () => {
+  const titulo = document.getElementById("tituloModalRefrigeracion");
+  if (titulo) titulo.textContent = index === null
+    ? "Agregar equipo de refrigeración"
+    : "Editar equipo de refrigeración";
 
-    if (
-      radio.checked &&
-      radio.value === "no"
-    ) {
+  if (index !== null) {
+    const item = equiposRefrigeracion[index];
+    if (!item) return;
 
-      calefHorarioPropio?.classList.remove("hidden");
+    document.getElementById("refTipo").value = item.tipo || "";
+    actualizarTipoOtroRefrigeracion();
+    document.getElementById("refTipoOtro").value = item.tipoOtro || "";
+    document.getElementById("refCantidad").value = item.cantidad ?? "";
+    document.getElementById("refAntiguedad").value = item.antiguedad ?? "";
+    ponerRadioCD("refMetodoTamano", item.metodoTamano || "");
+    actualizarMetodoTamanoRefrigeracion();
 
-    } else if (radio.checked) {
-
-      calefHorarioPropio?.classList.add("hidden");
-
-      [
-        "calefHorasLV",
-        "calefHorasSab",
-        "calefHorasDom"
-      ].forEach(id => {
-
-        const campo =
-          document.getElementById(id);
-
-        if (campo) campo.value = "";
-
-      });
-
+    if (item.metodoTamano === "volumen") {
+      document.getElementById("refVolumen").value = item.volumenIngresado ?? "";
+      document.getElementById("refUnidadVolumen").value = item.unidadVolumen || "";
+    } else if (item.metodoTamano === "dimensiones") {
+      document.getElementById("refLargo").value = item.largo ?? "";
+      document.getElementById("refAncho").value = item.ancho ?? "";
+      document.getElementById("refAlto").value = item.alto ?? "";
+      document.getElementById("refUnidadDimensiones").value = item.unidadDimensiones || "";
     }
 
+    ponerRadioCD("refEtiquetaConsumo", item.etiquetaConsumo || "");
+    actualizarEtiquetaRefrigeracion();
+    if (item.etiquetaConsumo === "si") {
+      document.getElementById("refConsumoEtiqueta").value = item.consumoEtiqueta ?? "";
+    }
+    actualizarCalculosTamanoRefrigeracion();
+  }
+
+  const modal = document.getElementById("modalRefrigeracion");
+  modal?.classList.remove("hidden");
+  modal?.setAttribute("aria-hidden", "false");
+}
+
+function cerrarModalRefrigeracionFn() {
+  const modal = document.getElementById("modalRefrigeracion");
+  modal?.classList.add("hidden");
+  modal?.setAttribute("aria-hidden", "true");
+  indiceRefrigeracionEdicion = null;
+}
+
+function contarOtrosRefrigeracionExcepto(indiceExcluir) {
+  const nombres = new Set();
+  equiposRefrigeracion.forEach((item, i) => {
+    if (i === indiceExcluir || item.tipo !== "otro") return;
+    const nombre = String(item.tipoOtro || "").trim().toLocaleLowerCase("es-MX");
+    if (nombre) nombres.add(nombre);
+  });
+  return nombres;
+}
+
+function guardarEquipoRefrigeracionFn() {
+  const tipo = document.getElementById("refTipo")?.value || "";
+  const tipoOtro = (document.getElementById("refTipoOtro")?.value || "").trim();
+  const cantidad = Number(document.getElementById("refCantidad")?.value);
+  const antiguedad = Number(document.getElementById("refAntiguedad")?.value);
+  const metodoTamano = valorRadioCD("refMetodoTamano");
+  const etiquetaConsumo = valorRadioCD("refEtiquetaConsumo");
+
+  if (!tipo) return alert("Seleccione el tipo de equipo.");
+  if (tipo === "otro" && !tipoOtro) return alert("Especifique el tipo de equipo.");
+  if (!Number.isInteger(cantidad) || cantidad < 1) return alert("Ingrese una cantidad válida de equipos.");
+  if (!Number.isFinite(antiguedad) || antiguedad < 0) return alert("Ingrese una antigüedad válida.");
+  if (!metodoTamano) return alert("Indique cómo desea reportar el tamaño del equipo.");
+  if (!etiquetaConsumo) return alert("Indique si el equipo muestra un consumo de energía en su etiqueta o placa.");
+
+  if (tipo === "otro") {
+    const otros = contarOtrosRefrigeracionExcepto(indiceRefrigeracionEdicion);
+    const clave = tipoOtro.toLocaleLowerCase("es-MX");
+    if (!otros.has(clave) && otros.size >= 5) {
+      return alert("Ya se registraron 5 tipos personalizados en la opción Otro.");
+    }
+  }
+
+  let volumenLitros = null;
+  let volumenIngresado = null;
+  let unidadVolumen = "";
+  let largo = null, ancho = null, alto = null, unidadDimensiones = "";
+
+  if (metodoTamano === "volumen") {
+    volumenIngresado = Number(document.getElementById("refVolumen")?.value);
+    unidadVolumen = document.getElementById("refUnidadVolumen")?.value || "";
+    volumenLitros = convertirVolumenALitros(volumenIngresado, unidadVolumen);
+    if (volumenLitros === null || !unidadVolumen) {
+      return alert("Ingrese el tamaño del equipo y seleccione su unidad.");
+    }
+  } else {
+    largo = Number(document.getElementById("refLargo")?.value);
+    ancho = Number(document.getElementById("refAncho")?.value);
+    alto = Number(document.getElementById("refAlto")?.value);
+    unidadDimensiones = document.getElementById("refUnidadDimensiones")?.value || "";
+    volumenLitros = volumenDimensionesLitros(largo, ancho, alto, unidadDimensiones);
+    if (volumenLitros === null || !unidadDimensiones) {
+      return alert("Capture las tres dimensiones del equipo y seleccione la unidad utilizada.");
+    }
+  }
+
+  let consumoEtiqueta = null;
+  if (etiquetaConsumo === "si") {
+    consumoEtiqueta = Number(document.getElementById("refConsumoEtiqueta")?.value);
+    if (!Number.isFinite(consumoEtiqueta) || consumoEtiqueta <= 0) {
+      return alert("Ingrese el consumo anual indicado en la etiqueta o placa.");
+    }
+  }
+
+  const item = {
+    tipo,
+    tipoOtro: tipo === "otro" ? tipoOtro : "",
+    cantidad,
+    antiguedad,
+    metodoTamano,
+    volumenIngresado,
+    unidadVolumen,
+    largo,
+    ancho,
+    alto,
+    unidadDimensiones,
+    volumenLitros,
+    etiquetaConsumo,
+    consumoEtiqueta,
+    consumoGrupo: consumoEtiqueta !== null ? consumoEtiqueta * cantidad : null
+  };
+
+  if (indiceRefrigeracionEdicion === null) equiposRefrigeracion.push(item);
+  else equiposRefrigeracion[indiceRefrigeracionEdicion] = item;
+
+  guardarUsosCDLocal();
+  renderizarTablaRefrigeracion();
+  cerrarModalRefrigeracionFn();
+}
+
+function textoTamanoRefrigeracion(item) {
+  if (item.metodoTamano === "volumen") {
+    const unidad = item.unidadVolumen === "ft3" ? "pies³" : (item.unidadVolumen === "m3" ? "m³" : "L");
+    const original = Number(item.volumenIngresado).toLocaleString("es-MX", {maximumFractionDigits:3});
+    return `${original} ${unidad} (≈ ${formatearLitros(Number(item.volumenLitros))} L)`;
+  }
+
+  const unidad = item.unidadDimensiones || "";
+  return `${item.largo} × ${item.ancho} × ${item.alto} ${unidad} (≈ ${formatearLitros(Number(item.volumenLitros))} L)`;
+}
+
+function textoConsumoRefrigeracion(item) {
+  if (item.etiquetaConsumo === "si" && item.consumoEtiqueta !== null) {
+    const porEquipo = Number(item.consumoEtiqueta).toLocaleString("es-MX", {maximumFractionDigits:1});
+    const grupo = Number(item.consumoGrupo).toLocaleString("es-MX", {maximumFractionDigits:1});
+    return `${porEquipo} kWh/año por equipo · ${grupo} kWh/año grupo`;
+  }
+  if (item.etiquetaConsumo === "no_verificar") return "No se pudo verificar";
+  return "No indicado";
+}
+
+function renderizarTablaRefrigeracion() {
+  const tbody = document.getElementById("tablaRefrigeracionBody");
+  const cont = document.getElementById("tablaRefrigeracionContenedor");
+  const vacio = document.getElementById("sinRefrigeracion");
+  const resumen = document.getElementById("resumenRefrigeracion");
+  if (!tbody || !cont || !vacio) return;
+
+  tbody.innerHTML = "";
+
+  if (equiposRefrigeracion.length === 0) {
+    cont.style.display = "none";
+    vacio.style.display = "block";
+    if (resumen) resumen.textContent = "";
+    return;
+  }
+
+  cont.style.display = "block";
+  vacio.style.display = "none";
+
+  equiposRefrigeracion.forEach((item, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escaparHTMLCD(nombreRefrigeracion(item))}</td>
+      <td class="num">${Number(item.cantidad).toLocaleString("es-MX")}</td>
+      <td class="num">${Number(item.antiguedad).toLocaleString("es-MX")} años</td>
+      <td>${escaparHTMLCD(textoTamanoRefrigeracion(item))}</td>
+      <td>${escaparHTMLCD(textoConsumoRefrigeracion(item))}</td>
+      <td class="acciones">
+        <button type="button" class="cd-action-btn" onclick="editarRefrigeracion(${index})">Editar</button>
+        <button type="button" class="cd-action-btn danger" onclick="eliminarRefrigeracion(${index})">Eliminar</button>
+      </td>`;
+    tbody.appendChild(tr);
   });
 
+  if (resumen) {
+    const cantidadTotal = equiposRefrigeracion.reduce((s, x) => s + Number(x.cantidad || 0), 0);
+    const consumoConocido = equiposRefrigeracion.reduce((s, x) => s + Number(x.consumoGrupo || 0), 0);
+    const gruposConEtiqueta = equiposRefrigeracion.filter(x => x.consumoGrupo !== null).length;
+    let texto = `${cantidadTotal} equipo${cantidadTotal === 1 ? "" : "s"} registrado${cantidadTotal === 1 ? "" : "s"}`;
+    if (gruposConEtiqueta > 0) {
+      texto += ` · Consumo informado en etiqueta: ${consumoConocido.toLocaleString("es-MX", {maximumFractionDigits:1})} kWh/año`;
+    }
+    resumen.textContent = texto;
+  }
+}
+
+window.editarRefrigeracion = function(index) {
+  abrirModalRefrigeracion(index);
+};
+
+window.eliminarRefrigeracion = function(index) {
+  const item = equiposRefrigeracion[index];
+  if (!item) return;
+  if (!confirm(`¿Desea eliminar ${nombreRefrigeracion(item)}?`)) return;
+  equiposRefrigeracion.splice(index, 1);
+  guardarUsosCDLocal();
+  renderizarTablaRefrigeracion();
+};
+
+// -----------------------------------------------------
+// D. EQUIPOS DE OFICINA, COMUNICACIÓN Y ELECTRÓNICOS
+// -----------------------------------------------------
+
+const nombresTipoOficina = {
+  computadora_escritorio: "Computadora de escritorio",
+  monitor: "Monitor",
+  todo_en_uno: "Computadora todo en uno",
+  laptop: "Laptop",
+  pos: "Terminal de punto de venta (POS) / caja registradora",
+  impresora_tickets: "Impresora de tickets",
+  impresora: "Impresora",
+  multifuncional: "Multifuncional / fotocopiadora",
+  servidor: "Servidor",
+  modem_router: "Módem / router",
+  central_telefonica: "Central telefónica",
+  television: "Televisión / pantalla",
+  senalizacion: "Pantalla de señalización digital",
+  proyector: "Proyector",
+  sonido: "Sistema de sonido / amplificador",
+  videovigilancia: "Sistema de videovigilancia",
+  otro: "Otro"
+};
+
+function nombreEquipoOficina(item) {
+  return item.tipo === "otro"
+    ? (item.tipoOtro || "Otro")
+    : (nombresTipoOficina[item.tipo] || item.tipo || "—");
+}
+
+function calcularConsumoOficina(cantidad, potencia, horas, dias, semanas) {
+  const nums = [cantidad, potencia, horas, dias, semanas].map(Number);
+  if (!nums.every(Number.isFinite)) return null;
+  const [c, p, h, d, s] = nums;
+  if (c < 1 || p <= 0 || h < 0 || h > 24 || d < 0 || d > 7 || s < 0 || s > 52) return null;
+  return (c * p * h * d * s) / 1000;
+}
+
+function actualizarVisibilidadEquiposOficina() {
+  const contenido = document.getElementById("equiposOficinaContenido");
+  if (!contenido) return;
+  contenido.classList.toggle("hidden", valorRadioCD("usaEquiposOficina") !== "si");
+}
+
+function actualizarTipoOtroOficina() {
+  const tipo = document.getElementById("ofiTipo")?.value || "";
+  document.getElementById("ofiTipoOtroBox")?.classList.toggle("hidden", tipo !== "otro");
+  if (tipo !== "otro") {
+    const campo = document.getElementById("ofiTipoOtro");
+    if (campo) campo.value = "";
+  }
+}
+
+function actualizarPreviewOficina() {
+  const consumo = calcularConsumoOficina(
+    document.getElementById("ofiCantidad")?.value,
+    document.getElementById("ofiPotencia")?.value,
+    document.getElementById("ofiHorasDia")?.value,
+    document.getElementById("ofiDiasSemana")?.value,
+    document.getElementById("ofiSemanasAnio")?.value
+  );
+  const box = document.getElementById("ofiConsumoPreview");
+  if (!box) return;
+  box.textContent = consumo === null
+    ? "Complete cantidad, potencia y patrón de uso para calcular el consumo anual estimado."
+    : `Consumo anual estimado del grupo: ${consumo.toLocaleString("es-MX", {maximumFractionDigits:1})} kWh/año.`;
+}
+
+function limpiarFormularioOficina() {
+  ["ofiTipo", "ofiTipoOtro", "ofiCantidad", "ofiPotencia", "ofiHorasDia", "ofiDiasSemana"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  const semanas = document.getElementById("ofiSemanasAnio");
+  if (semanas) semanas.value = "52";
+  actualizarTipoOtroOficina();
+  actualizarPreviewOficina();
+}
+
+function abrirModalEquipoOficina(index = null, duplicar = false) {
+  indiceEquipoOficinaEdicion = duplicar ? null : index;
+  limpiarFormularioOficina();
+
+  const titulo = document.getElementById("tituloModalEquipoOficina");
+  if (titulo) titulo.textContent = duplicar
+    ? "Duplicar grupo de equipos"
+    : (index === null ? "Agregar equipo de oficina" : "Editar equipo de oficina");
+
+  if (index !== null) {
+    const item = equiposOficina[index];
+    if (!item) return;
+    document.getElementById("ofiTipo").value = item.tipo || "";
+    actualizarTipoOtroOficina();
+    document.getElementById("ofiTipoOtro").value = item.tipoOtro || "";
+    document.getElementById("ofiCantidad").value = item.cantidad ?? "";
+    document.getElementById("ofiPotencia").value = item.potenciaW ?? "";
+    document.getElementById("ofiHorasDia").value = item.horasDia ?? "";
+    document.getElementById("ofiDiasSemana").value = item.diasSemana ?? "";
+    document.getElementById("ofiSemanasAnio").value = item.semanasAnio ?? 52;
+    actualizarPreviewOficina();
+  }
+
+  const modal = document.getElementById("modalEquipoOficina");
+  modal?.classList.remove("hidden");
+  modal?.setAttribute("aria-hidden", "false");
+}
+
+function cerrarModalEquipoOficinaFn() {
+  const modal = document.getElementById("modalEquipoOficina");
+  modal?.classList.add("hidden");
+  modal?.setAttribute("aria-hidden", "true");
+  indiceEquipoOficinaEdicion = null;
+}
+
+function contarOtrosOficinaExcepto(indiceExcluir) {
+  const nombres = new Set();
+  equiposOficina.forEach((item, i) => {
+    if (i === indiceExcluir || item.tipo !== "otro") return;
+    const nombre = String(item.tipoOtro || "").trim().toLocaleLowerCase("es-MX");
+    if (nombre) nombres.add(nombre);
+  });
+  return nombres;
+}
+
+function guardarEquipoOficinaFn() {
+  const tipo = document.getElementById("ofiTipo")?.value || "";
+  const tipoOtro = (document.getElementById("ofiTipoOtro")?.value || "").trim();
+  const cantidad = Number(document.getElementById("ofiCantidad")?.value);
+  const potenciaW = Number(document.getElementById("ofiPotencia")?.value);
+  const horasDia = Number(document.getElementById("ofiHorasDia")?.value);
+  const diasSemana = Number(document.getElementById("ofiDiasSemana")?.value);
+  const semanasAnio = Number(document.getElementById("ofiSemanasAnio")?.value);
+
+  if (!tipo) return alert("Seleccione el tipo de equipo.");
+  if (tipo === "otro" && !tipoOtro) return alert("Especifique el nombre del equipo.");
+  if (!Number.isInteger(cantidad) || cantidad < 1) return alert("Ingrese un número válido de equipos.");
+  if (!Number.isFinite(potenciaW) || potenciaW <= 0) return alert("Ingrese una potencia válida en watts.");
+  if (!Number.isFinite(horasDia) || horasDia < 0 || horasDia > 24) return alert("Las horas de uso por día deben estar entre 0 y 24.");
+  if (!Number.isInteger(diasSemana) || diasSemana < 0 || diasSemana > 7) return alert("Los días de uso por semana deben estar entre 0 y 7.");
+  if (!Number.isInteger(semanasAnio) || semanasAnio < 0 || semanasAnio > 52) return alert("Las semanas de uso por año deben estar entre 0 y 52.");
+
+  if (tipo === "otro") {
+    const otros = contarOtrosOficinaExcepto(indiceEquipoOficinaEdicion);
+    const clave = tipoOtro.toLocaleLowerCase("es-MX");
+    if (!otros.has(clave) && otros.size >= 10) {
+      return alert("Ya se registraron 10 tipos personalizados en la opción Otro.");
+    }
+  }
+
+  const consumoKWh = calcularConsumoOficina(cantidad, potenciaW, horasDia, diasSemana, semanasAnio);
+  const item = {
+    tipo,
+    tipoOtro: tipo === "otro" ? tipoOtro : "",
+    cantidad,
+    potenciaW,
+    horasDia,
+    diasSemana,
+    semanasAnio,
+    consumoKWh
+  };
+
+  if (indiceEquipoOficinaEdicion === null) equiposOficina.push(item);
+  else equiposOficina[indiceEquipoOficinaEdicion] = item;
+
+  guardarUsosCDLocal();
+  renderizarTablaEquiposOficina();
+  cerrarModalEquipoOficinaFn();
+}
+
+function renderizarTablaEquiposOficina() {
+  const tbody = document.getElementById("tablaEquiposOficinaBody");
+  const cont = document.getElementById("tablaEquiposOficinaContenedor");
+  const vacio = document.getElementById("sinEquiposOficina");
+  const resumen = document.getElementById("resumenEquiposOficina");
+  if (!tbody || !cont || !vacio) return;
+
+  tbody.innerHTML = "";
+
+  if (equiposOficina.length === 0) {
+    cont.style.display = "none";
+    vacio.style.display = "block";
+    if (resumen) resumen.textContent = "";
+    return;
+  }
+
+  cont.style.display = "block";
+  vacio.style.display = "none";
+
+  equiposOficina.forEach((item, index) => {
+    const tr = document.createElement("tr");
+    const consumo = Number(item.consumoKWh || 0).toLocaleString("es-MX", {maximumFractionDigits:1});
+    tr.innerHTML = `
+      <td>${escaparHTMLCD(nombreEquipoOficina(item))}</td>
+      <td class="num">${Number(item.cantidad).toLocaleString("es-MX")}</td>
+      <td class="num">${Number(item.potenciaW).toLocaleString("es-MX", {maximumFractionDigits:2})} W</td>
+      <td>${Number(item.horasDia).toLocaleString("es-MX", {maximumFractionDigits:2})} h/día · ${item.diasSemana} días/sem · ${item.semanasAnio} sem/año</td>
+      <td class="num">${consumo} kWh/año</td>
+      <td class="acciones">
+        <button type="button" class="cd-action-btn" onclick="editarEquipoOficina(${index})">Editar</button>
+        <button type="button" class="cd-action-btn" onclick="duplicarEquipoOficina(${index})">Duplicar</button>
+        <button type="button" class="cd-action-btn danger" onclick="eliminarEquipoOficina(${index})">Eliminar</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  if (resumen) {
+    const cantidadTotal = equiposOficina.reduce((s, x) => s + Number(x.cantidad || 0), 0);
+    const consumoTotal = equiposOficina.reduce((s, x) => s + Number(x.consumoKWh || 0), 0);
+    resumen.textContent = `${cantidadTotal} equipo${cantidadTotal === 1 ? "" : "s"} registrado${cantidadTotal === 1 ? "" : "s"} · Consumo estimado: ${consumoTotal.toLocaleString("es-MX", {maximumFractionDigits:1})} kWh/año`;
+  }
+}
+
+window.editarEquipoOficina = function(index) {
+  abrirModalEquipoOficina(index, false);
+};
+
+window.duplicarEquipoOficina = function(index) {
+  abrirModalEquipoOficina(index, true);
+};
+
+window.eliminarEquipoOficina = function(index) {
+  const item = equiposOficina[index];
+  if (!item) return;
+  if (!confirm(`¿Desea eliminar ${nombreEquipoOficina(item)}?`)) return;
+  equiposOficina.splice(index, 1);
+  guardarUsosCDLocal();
+  renderizarTablaEquiposOficina();
+};
+
+// -----------------------------------------------------
+// EVENTOS C Y D
+// -----------------------------------------------------
+
+document.querySelectorAll('input[name="usaRefrigeracion"]').forEach(r => {
+  r.addEventListener("change", () => {
+    actualizarVisibilidadRefrigeracion();
+    guardarUsosCDLocal();
+  });
 });
 
-    
+document.querySelectorAll('input[name="usaEquiposOficina"]').forEach(r => {
+  r.addEventListener("change", () => {
+    actualizarVisibilidadEquiposOficina();
+    guardarUsosCDLocal();
+  });
+});
+
+document.getElementById("btnAgregarRefrigeracion")?.addEventListener("click", () => abrirModalRefrigeracion(null));
+document.getElementById("cerrarModalRefrigeracion")?.addEventListener("click", cerrarModalRefrigeracionFn);
+document.getElementById("cancelarRefrigeracion")?.addEventListener("click", cerrarModalRefrigeracionFn);
+document.getElementById("guardarRefrigeracion")?.addEventListener("click", guardarEquipoRefrigeracionFn);
+document.getElementById("refTipo")?.addEventListener("change", actualizarTipoOtroRefrigeracion);
+document.querySelectorAll('input[name="refMetodoTamano"]').forEach(r => r.addEventListener("change", actualizarMetodoTamanoRefrigeracion));
+document.querySelectorAll('input[name="refEtiquetaConsumo"]').forEach(r => r.addEventListener("change", actualizarEtiquetaRefrigeracion));
+["refVolumen", "refUnidadVolumen", "refLargo", "refAncho", "refAlto", "refUnidadDimensiones"].forEach(id => {
+  document.getElementById(id)?.addEventListener("input", actualizarCalculosTamanoRefrigeracion);
+  document.getElementById(id)?.addEventListener("change", actualizarCalculosTamanoRefrigeracion);
+});
+
+document.getElementById("btnAgregarEquipoOficina")?.addEventListener("click", () => abrirModalEquipoOficina(null, false));
+document.getElementById("cerrarModalEquipoOficina")?.addEventListener("click", cerrarModalEquipoOficinaFn);
+document.getElementById("cancelarEquipoOficina")?.addEventListener("click", cerrarModalEquipoOficinaFn);
+document.getElementById("guardarEquipoOficina")?.addEventListener("click", guardarEquipoOficinaFn);
+document.getElementById("ofiTipo")?.addEventListener("change", actualizarTipoOtroOficina);
+["ofiCantidad", "ofiPotencia", "ofiHorasDia", "ofiDiasSemana", "ofiSemanasAnio"].forEach(id => {
+  document.getElementById(id)?.addEventListener("input", actualizarPreviewOficina);
+  document.getElementById(id)?.addEventListener("change", actualizarPreviewOficina);
+});
+
+[document.getElementById("modalRefrigeracion"), document.getElementById("modalEquipoOficina")].forEach(modal => {
+  modal?.addEventListener("click", e => {
+    if (e.target !== modal) return;
+    if (modal.id === "modalRefrigeracion") cerrarModalRefrigeracionFn();
+    else cerrarModalEquipoOficinaFn();
+  });
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (!document.getElementById("modalRefrigeracion")?.classList.contains("hidden")) cerrarModalRefrigeracionFn();
+  if (!document.getElementById("modalEquipoOficina")?.classList.contains("hidden")) cerrarModalEquipoOficinaFn();
+});
+
+// Navegación de la sección 4: simulación frontend sin base de datos.
+document.getElementById("btnUsosAnterior")?.addEventListener("click", () => {
+  guardarUsosCDLocal();
+  mostrarVista("facturacion");
+});
+
+document.getElementById("btnUsosContinuar")?.addEventListener("click", () => {
+  guardarUsosCDLocal();
+  alert("La información de usos finales de energía se guardó correctamente.");
+  mostrarVista("practicas");
+});
+
+
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
@@ -18529,6 +18267,9 @@ radiosCalefHorario.forEach(radio => {
 
   // Recupera un avance anterior, si existe.
   cargarLocal();
+
+  // Recupera los módulos C y D guardados localmente.
+  cargarUsosCDLocal();
 
 </script>
  </body>
