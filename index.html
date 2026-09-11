@@ -6623,6 +6623,768 @@ etc.
 
 </div>
 
+<!-- =====================================================
+     MODAL - CALEFACCIÓN DE ESPACIOS
+====================================================== -->
+
+<div
+  id="modalCalefaccion"
+  class="modal hidden">
+
+  <div class="modal-content modal-large">
+
+    <!-- =========================================
+         ENCABEZADO
+    ========================================== -->
+
+    <div class="modal-header">
+
+      <h2 id="tituloModalCalefaccion">
+        Agregar equipo de calefacción
+      </h2>
+
+      <button
+        type="button"
+        class="modal-close"
+        id="cerrarModalCalefaccion"
+        aria-label="Cerrar">
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="modal-body">
+
+
+      <!-- =========================================
+           1. IDENTIFICACIÓN
+      ========================================== -->
+
+      <h3>
+        Identificación del equipo
+      </h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="calefArea">
+            Área atendida
+          </label>
+
+          <select id="calefArea">
+
+            <option value="">
+              Seleccione...
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="calefTipo">
+            Tipo de equipo
+          </label>
+
+          <select id="calefTipo">
+
+            <option value="">
+              Seleccione...
+            </option>
+
+            <option value="calefactor_electrico">
+              Calefactor eléctrico
+            </option>
+
+            <option value="bomba_calor">
+              Bomba de calor
+            </option>
+
+            <option value="caldera">
+              Caldera
+            </option>
+
+            <option value="horno">
+              Horno / furnace
+            </option>
+
+            <option value="radiador">
+              Radiador
+            </option>
+
+            <option value="unidad_paquete">
+              Unidad paquete con calefacción
+            </option>
+
+            <option value="minisplit_calor">
+              Minisplit con modo calefacción
+            </option>
+
+            <option value="infrarrojo">
+              Calefactor infrarrojo
+            </option>
+
+            <option value="otro">
+              Otro
+            </option>
+
+            <option value="no_sabe">
+              No sabe
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div
+          class="form-group hidden"
+          id="calefTipoOtroGrupo">
+
+          <label for="calefTipoOtro">
+            Especifique otro tipo
+          </label>
+
+          <input
+            type="text"
+            id="calefTipoOtro"
+            placeholder="Describa el equipo">
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="calefCantidad">
+            Cantidad de equipos iguales
+          </label>
+
+          <input
+            type="number"
+            id="calefCantidad"
+            min="1"
+            step="1"
+            value="1">
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           2. ANTIGÜEDAD
+      ========================================== -->
+
+      <h3 style="margin-top:28px">
+        Año de adquisición y antigüedad
+      </h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="calefAnioAdquisicion">
+            Año de adquisición
+          </label>
+
+          <select id="calefAnioAdquisicion">
+
+            <option value="">
+              Seleccione...
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="calefAntiguedad">
+            Antigüedad aproximada
+          </label>
+
+          <div
+            style="
+              display:flex;
+              gap:8px;
+              align-items:center;
+            ">
+
+            <input
+              type="number"
+              id="calefAntiguedad"
+              min="0"
+              step="1"
+              placeholder="Ej. 8">
+
+            <span>
+              años
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           3. ENERGÉTICO
+      ========================================== -->
+
+      <h3 style="margin-top:28px">
+        Fuente de energía
+      </h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="calefEnergetico">
+            Energético utilizado
+          </label>
+
+          <select id="calefEnergetico">
+
+            <option value="">
+              Seleccione...
+            </option>
+
+            <option value="electricidad">
+              Electricidad
+            </option>
+
+            <option value="gas_lp">
+              Gas LP
+            </option>
+
+            <option value="gas_natural">
+              Gas natural
+            </option>
+
+            <option value="diesel">
+              Diésel
+            </option>
+
+            <option value="combustoleo">
+              Combustóleo
+            </option>
+
+            <option value="biomasa">
+              Biomasa
+            </option>
+
+            <option value="otro">
+              Otro
+            </option>
+
+            <option value="no_sabe">
+              No sabe
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div
+          class="form-group hidden"
+          id="calefEnergeticoOtroGrupo">
+
+          <label for="calefEnergeticoOtro">
+            Especifique el energético
+          </label>
+
+          <input
+            type="text"
+            id="calefEnergeticoOtro"
+            placeholder="Especifique">
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           4. CAPACIDAD TÉRMICA
+      ========================================== -->
+
+      <h3 style="margin-top:28px">
+        Capacidad térmica
+      </h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="calefCapacidad">
+            Capacidad por equipo
+          </label>
+
+          <input
+            type="number"
+            id="calefCapacidad"
+            min="0"
+            step="0.01"
+            placeholder="Ej. 24000">
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="calefUnidadCapacidad">
+            Unidad de capacidad
+          </label>
+
+          <select id="calefUnidadCapacidad">
+
+            <option value="">
+              Seleccione...
+            </option>
+
+            <option value="btu_h">
+              BTU/h
+            </option>
+
+            <option value="kw_termicos">
+              kW térmicos
+            </option>
+
+            <option value="kcal_h">
+              kcal/h
+            </option>
+
+            <option value="no_sabe">
+              No sabe
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           5. POTENCIA / CONSUMO NOMINAL
+      ========================================== -->
+
+      <h3 style="margin-top:28px">
+        Potencia o consumo nominal
+      </h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="calefPotencia">
+            Potencia por equipo
+          </label>
+
+          <div
+            style="
+              display:flex;
+              gap:8px;
+              align-items:center;
+            ">
+
+            <input
+              type="number"
+              id="calefPotencia"
+              min="0"
+              step="0.01"
+              placeholder="Ej. 2.5">
+
+            <select
+              id="calefUnidadPotencia"
+              style="max-width:90px">
+
+              <option value="kw">
+                kW
+              </option>
+
+              <option value="w">
+                W
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Potencia no disponible
+          </label>
+
+          <label
+            style="
+              display:flex;
+              flex-direction:row;
+              align-items:center;
+              gap:8px;
+              font-weight:normal;
+              cursor:pointer;
+            ">
+
+            <input
+              type="checkbox"
+              id="calefPotenciaDesconocida"
+              style="width:auto; margin:0">
+
+            No conozco la potencia
+
+          </label>
+
+          <small>
+            Si no conoce la potencia, puede registrar
+            capacidad, eficiencia, marca, modelo o datos de placa.
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           6. EFICIENCIA
+      ========================================== -->
+
+      <h3 style="margin-top:28px">
+        Eficiencia del equipo
+      </h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="calefIndicadorEficiencia">
+            Indicador de eficiencia
+          </label>
+
+          <select id="calefIndicadorEficiencia">
+
+            <option value="">
+              Seleccione...
+            </option>
+
+            <option value="eficiencia_termica">
+              Eficiencia térmica (%)
+            </option>
+
+            <option value="cop">
+              COP
+            </option>
+
+            <option value="afue">
+              AFUE (%)
+            </option>
+
+            <option value="otro">
+              Otro
+            </option>
+
+            <option value="no_sabe">
+              No sabe
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="calefValorEficiencia">
+            Valor de eficiencia
+          </label>
+
+          <input
+            type="number"
+            id="calefValorEficiencia"
+            min="0"
+            step="0.01"
+            placeholder="Ej. 85">
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           7. DATOS TÉCNICOS
+      ========================================== -->
+
+      <div
+        id="calefDatosTecnicos"
+        class="hidden">
+
+        <h3 style="margin-top:28px">
+          Datos técnicos adicionales
+        </h3>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label for="calefMarca">
+              Marca
+            </label>
+
+            <input
+              type="text"
+              id="calefMarca"
+              placeholder="Marca">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="calefModelo">
+              Modelo
+            </label>
+
+            <input
+              type="text"
+              id="calefModelo"
+              placeholder="Modelo">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="calefDatosPlaca">
+              Datos de placa
+            </label>
+
+            <textarea
+              id="calefDatosPlaca"
+              rows="3"
+              placeholder="Potencia, capacidad, consumo, tensión u otros datos disponibles."></textarea>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           8. TEMPERATURA
+      ========================================== -->
+
+      <h3 style="margin-top:28px">
+        Condiciones de operación
+      </h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="calefTemperaturaConsigna">
+            Temperatura habitual de consigna
+          </label>
+
+          <div
+            style="
+              display:flex;
+              gap:8px;
+              align-items:center;
+            ">
+
+            <input
+              type="number"
+              id="calefTemperaturaConsigna"
+              min="5"
+              max="35"
+              step="0.5"
+              placeholder="Ej. 21">
+
+            <span>
+              °C
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Temperatura no disponible
+          </label>
+
+          <label
+            style="
+              display:flex;
+              align-items:center;
+              gap:8px;
+              font-weight:normal;
+            ">
+
+            <input
+              type="checkbox"
+              id="calefTemperaturaDesconocida"
+              style="width:auto; margin:0">
+
+            No conoce la temperatura
+
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           9. HORARIO
+      ========================================== -->
+
+      <h3 style="margin-top:28px">
+        Horario de operación
+      </h3>
+
+      <div class="form-group">
+
+        <label>
+          ¿El horario de este equipo coincide con el
+          horario general del establecimiento?
+        </label>
+
+        <div class="radio-group">
+
+          <label>
+            <input
+              type="radio"
+              name="calefHorarioCoincide"
+              value="si">
+            Sí
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="calefHorarioCoincide"
+              value="no">
+            No
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="calefHorarioCoincide"
+              value="no_sabe">
+            No sabe
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- HORARIO PARTICULAR -->
+
+      <div
+        id="calefHorarioPropio"
+        class="hidden">
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label for="calefHorasLV">
+              Horas de uso al día — lunes a viernes
+            </label>
+
+            <input
+              type="number"
+              id="calefHorasLV"
+              min="0"
+              max="24"
+              step="0.5"
+              placeholder="Ej. 8">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="calefHorasSab">
+              Horas de uso — sábado
+            </label>
+
+            <input
+              type="number"
+              id="calefHorasSab"
+              min="0"
+              max="24"
+              step="0.5"
+              placeholder="Ej. 5">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="calefHorasDom">
+              Horas de uso — domingo
+            </label>
+
+            <input
+              type="number"
+              id="calefHorasDom"
+              min="0"
+              max="24"
+              step="0.5"
+              placeholder="Ej. 0">
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         BOTONES
+    ========================================== -->
+
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="secondary"
+        id="cancelarCalefaccion">
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarCalefaccion">
+        Guardar equipo
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
   
  
 <!-- =====================================================
