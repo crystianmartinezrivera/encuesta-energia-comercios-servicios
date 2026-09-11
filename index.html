@@ -16866,6 +16866,450 @@ function eliminarVentilacion(
   renderizarTablaVentilacion();
 
 } 
+
+  // =====================================================
+// EDITAR AIRE ACONDICIONADO
+// =====================================================
+
+window.editarAireAcondicionado = function(index) {
+
+  const equipo =
+    equiposAireAcondicionado[index];
+
+  if (!equipo) {
+    return;
+  }
+
+  indiceAireAcondicionadoEdicion = index;
+
+  // Cargar listas antes de asignar valores
+  cargarAreasAireAcondicionado();
+  cargarAniosAireAcondicionado();
+
+  if (tituloModalAireAcondicionado) {
+    tituloModalAireAcondicionado.textContent =
+      "Editar equipo de aire acondicionado";
+  }
+
+
+  // -------------------------------------------------
+  // DATOS GENERALES
+  // -------------------------------------------------
+
+  document.getElementById("acArea").value =
+    equipo.area || "";
+
+  document.getElementById("acTipo").value =
+    equipo.tipo || "";
+
+  document.getElementById("acTipoOtro").value =
+    equipo.tipoOtro || "";
+
+  document.getElementById("acCantidad").value =
+    equipo.cantidad ?? "";
+
+
+  // Otro tipo
+  if (equipo.tipo === "otro") {
+
+    acTipoOtroBox.classList.remove("hidden");
+
+  } else {
+
+    acTipoOtroBox.classList.add("hidden");
+
+  }
+
+
+  // -------------------------------------------------
+  // ANTIGÜEDAD
+  // -------------------------------------------------
+
+  document.getElementById("acAnioAdquisicion").value =
+    equipo.anioAdquisicion || "";
+
+  document.getElementById("acAntiguedad").value =
+    equipo.antiguedad ?? "";
+
+
+  // -------------------------------------------------
+  // CAPACIDAD
+  // -------------------------------------------------
+
+  document.getElementById("acCapacidad").value =
+    equipo.capacidad ?? "";
+
+  document.getElementById("acUnidadCapacidad").value =
+    equipo.unidadCapacidad || "";
+
+
+  // -------------------------------------------------
+  // POTENCIA
+  // -------------------------------------------------
+
+  acPotenciaDesconocida.checked =
+    Boolean(equipo.potenciaDesconocida);
+
+  if (equipo.potenciaDesconocida) {
+
+    acPotencia.value = "";
+    acPotencia.disabled = true;
+
+    acUnidadPotencia.disabled = true;
+
+    acDatosTecnicosBox.classList.remove("hidden");
+
+  } else {
+
+    acPotencia.value =
+      equipo.potencia ?? "";
+
+    acPotencia.disabled = false;
+
+    acUnidadPotencia.disabled = false;
+
+    acDatosTecnicosBox.classList.add("hidden");
+
+  }
+
+  acUnidadPotencia.value =
+    equipo.unidadPotencia || "kw";
+
+
+  // -------------------------------------------------
+  // EFICIENCIA
+  // -------------------------------------------------
+
+  document.getElementById("acIndicadorEficiencia").value =
+    equipo.indicadorEficiencia || "";
+
+  document.getElementById("acValorEficiencia").value =
+    equipo.valorEficiencia ?? "";
+
+
+  // -------------------------------------------------
+  // DATOS TÉCNICOS
+  // -------------------------------------------------
+
+  document.getElementById("acMarca").value =
+    equipo.marca || "";
+
+  document.getElementById("acModelo").value =
+    equipo.modelo || "";
+
+  document.getElementById("acVoltaje").value =
+    equipo.voltaje ?? "";
+
+  document.getElementById("acCorriente").value =
+    equipo.corriente ?? "";
+
+  document.getElementById("acDatosPlaca").value =
+    equipo.datosPlaca || "";
+
+
+  // -------------------------------------------------
+  // CONDICIONES DE OPERACIÓN
+  // -------------------------------------------------
+
+  document.getElementById("acProporcionArea").value =
+    equipo.proporcionArea || "";
+
+  acTemperaturaDesconocida.checked =
+    Boolean(equipo.temperaturaDesconocida);
+
+  if (equipo.temperaturaDesconocida) {
+
+    acTemperaturaConsigna.value = "";
+    acTemperaturaConsigna.disabled = true;
+
+  } else {
+
+    acTemperaturaConsigna.value =
+      equipo.temperaturaConsigna ?? "";
+
+    acTemperaturaConsigna.disabled = false;
+
+  }
+
+
+  // -------------------------------------------------
+  // HORARIO: COINCIDE
+  // -------------------------------------------------
+
+  document
+    .querySelectorAll(
+      'input[name="acHorarioCoincide"]'
+    )
+    .forEach(radio => {
+
+      radio.checked =
+        radio.value === equipo.horarioCoincide;
+
+    });
+
+
+  if (equipo.horarioCoincide === "no") {
+
+    acHorarioEspecificoBox.classList.remove("hidden");
+
+  } else {
+
+    acHorarioEspecificoBox.classList.add("hidden");
+
+  }
+
+
+  // -------------------------------------------------
+  // HORARIO: ESTACIONAL
+  // -------------------------------------------------
+
+  document
+    .querySelectorAll(
+      'input[name="acHorarioEstacional"]'
+    )
+    .forEach(radio => {
+
+      radio.checked =
+        radio.value === equipo.horarioEstacional;
+
+    });
+
+
+  if (equipo.horarioEstacional === "no") {
+
+    acHorarioNormal.classList.remove("hidden");
+    acHorarioTemporadas.classList.add("hidden");
+
+  }
+
+  else if (equipo.horarioEstacional === "si") {
+
+    acHorarioNormal.classList.add("hidden");
+    acHorarioTemporadas.classList.remove("hidden");
+
+  }
+
+  else {
+
+    acHorarioNormal.classList.add("hidden");
+    acHorarioTemporadas.classList.add("hidden");
+
+  }
+
+
+  // Horario habitual
+  document.getElementById("acHorasLV").value =
+    equipo.horasLV ?? "";
+
+  document.getElementById("acHorasSab").value =
+    equipo.horasSab ?? "";
+
+  document.getElementById("acHorasDom").value =
+    equipo.horasDom ?? "";
+
+
+  // Temporada cálida
+  document.getElementById("acCalidaInicio").value =
+    equipo.calidaInicio ?? "";
+
+  document.getElementById("acCalidaFin").value =
+    equipo.calidaFin ?? "";
+
+  document.getElementById("acCalidaLV").value =
+    equipo.calidaLV ?? "";
+
+  document.getElementById("acCalidaSab").value =
+    equipo.calidaSab ?? "";
+
+  document.getElementById("acCalidaDom").value =
+    equipo.calidaDom ?? "";
+
+
+  // Temporada fría
+  document.getElementById("acFriaLV").value =
+    equipo.friaLV ?? "";
+
+  document.getElementById("acFriaSab").value =
+    equipo.friaSab ?? "";
+
+  document.getElementById("acFriaDom").value =
+    equipo.friaDom ?? "";
+
+
+  // -------------------------------------------------
+  // ABRIR MODAL
+  // -------------------------------------------------
+
+  modalAireAcondicionado.classList.remove("hidden");
+
+};
+// =====================================================
+// EDITAR VENTILACIÓN / EXTRACCIÓN
+// =====================================================
+
+window.editarVentilacion = function(index) {
+
+  const equipo =
+    equiposVentilacion[index];
+
+  if (!equipo) {
+    return;
+  }
+
+  indiceVentilacionEdicion = index;
+
+  cargarAreasVentilacion();
+  cargarAniosVentilacion();
+
+
+  if (tituloModalVentilacion) {
+
+    tituloModalVentilacion.textContent =
+      "Editar equipo de ventilación / extracción";
+
+  }
+
+
+  // -------------------------------------------------
+  // IDENTIFICACIÓN
+  // -------------------------------------------------
+
+  document.getElementById("ventArea").value =
+    equipo.area || "";
+
+  document.getElementById("ventTipo").value =
+    equipo.tipo || "";
+
+  document.getElementById("ventTipoOtro").value =
+    equipo.tipoOtro || "";
+
+  document.getElementById("ventCantidad").value =
+    equipo.cantidad ?? "";
+
+
+  if (equipo.tipo === "otro") {
+
+    ventTipoOtroGrupo.classList.remove("hidden");
+
+  } else {
+
+    ventTipoOtroGrupo.classList.add("hidden");
+
+  }
+
+
+  // -------------------------------------------------
+  // ANTIGÜEDAD
+  // -------------------------------------------------
+
+  document.getElementById("ventAnioAdquisicion").value =
+    equipo.anioAdquisicion || "";
+
+  document.getElementById("ventAntiguedad").value =
+    equipo.antiguedad ?? "";
+
+
+  // -------------------------------------------------
+  // POTENCIA
+  // -------------------------------------------------
+
+  ventPotenciaDesconocida.checked =
+    Boolean(equipo.potenciaDesconocida);
+
+
+  if (equipo.potenciaDesconocida) {
+
+    ventPotencia.value = "";
+    ventPotencia.disabled = true;
+
+    ventUnidadPotencia.disabled = true;
+
+    ventDatosTecnicos.classList.remove("hidden");
+
+  } else {
+
+    ventPotencia.value =
+      equipo.potencia ?? "";
+
+    ventPotencia.disabled = false;
+
+    ventUnidadPotencia.disabled = false;
+
+    ventDatosTecnicos.classList.add("hidden");
+
+  }
+
+
+  ventUnidadPotencia.value =
+    equipo.unidadPotencia || "w";
+
+
+  // -------------------------------------------------
+  // DATOS TÉCNICOS
+  // -------------------------------------------------
+
+  document.getElementById("ventMarca").value =
+    equipo.marca || "";
+
+  document.getElementById("ventModelo").value =
+    equipo.modelo || "";
+
+  document.getElementById("ventCaudal").value =
+    equipo.caudal ?? "";
+
+  document.getElementById("ventUnidadCaudal").value =
+    equipo.unidadCaudal || "";
+
+  document.getElementById("ventVelocidades").value =
+    equipo.velocidades || "";
+
+
+  // -------------------------------------------------
+  // HORARIO
+  // -------------------------------------------------
+
+  document
+    .querySelectorAll(
+      'input[name="ventHorarioCoincide"]'
+    )
+    .forEach(radio => {
+
+      radio.checked =
+        radio.value === equipo.horarioCoincide;
+
+    });
+
+
+  if (equipo.horarioCoincide === "no") {
+
+    ventHorarioPropio.classList.remove("hidden");
+
+  } else {
+
+    ventHorarioPropio.classList.add("hidden");
+
+  }
+
+
+  document.getElementById("ventHorasLV").value =
+    equipo.horasLV ?? "";
+
+  document.getElementById("ventHorasSab").value =
+    equipo.horasSab ?? "";
+
+  document.getElementById("ventHorasDom").value =
+    equipo.horasDom ?? "";
+
+
+  // -------------------------------------------------
+  // ABRIR MODAL
+  // -------------------------------------------------
+
+  modalVentilacion.classList.remove("hidden");
+
+};
+  
+  
  
   // ======================================================
   // INICIALIZACIÓN
