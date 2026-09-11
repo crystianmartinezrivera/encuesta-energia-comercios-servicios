@@ -3365,33 +3365,76 @@
       
     </div>
 
+<!-- =================================================
+     CALEFACCIÓN
+================================================== -->
 
-    <!-- =================================================
-         CALEFACCIÓN
-    ================================================== -->
+<div
+  id="accionesCalefaccion"
+  class="hidden"
+  style="margin-bottom:12px">
 
-    <div
-      id="accionesCalefaccion"
-      class="hidden"
-      style="margin-bottom:12px">
+  <button
+    type="button"
+    class="secondary"
+    id="btnAgregarCalefaccion">
+    + Agregar equipo de calefacción
+  </button>
 
-      <button
-        type="button"
-        class="secondary"
-        id="btnAgregarCalefaccion">
-        + Agregar equipo de calefacción
-      </button>
 
-    </div>
+  <!-- TABLA DE CALEFACCIÓN -->
+
+  <div
+    id="sinCalefaccion"
+    class="empty-module hidden"
+    style="margin-top:12px">
+    Aún no se han agregado equipos de calefacción.
+  </div>
+
+
+  <div
+    id="tablaCalefaccionContenedor"
+    class="table-responsive"
+    style="display:none; margin-top:14px">
+
+    <table class="energy-table">
+
+      <thead>
+        <tr>
+
+          <th>Área</th>
+          <th>Tipo</th>
+          <th>Energético</th>
+          <th class="num">Cantidad</th>
+          <th class="num">Capacidad</th>
+          <th class="num">Potencia</th>
+          <th class="num">Temperatura</th>
+          <th>Operación</th>
+          <th class="num">Consumo estimado</th>
+          <th class="acciones">Acciones</th>
+
+        </tr>
+      </thead>
+
+      <tbody id="tablaCalefaccionBody"></tbody>
+
+    </table>
 
   </div>
 
+
+  <div
+    id="resumenCalefaccion"
+    class="uso-summary"
+    style="margin-top:10px">
+  </div>
+
+</div>
+ 
+</div>
+
 </section>
 <!-- FIN moduloAcondicionamiento -->
-
-       
-
-
 
 
 
