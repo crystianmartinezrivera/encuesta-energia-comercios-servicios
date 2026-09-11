@@ -38,6 +38,9 @@
     header{
       min-height:92px;
       background:#fff;
+      position:sticky;
+      top:0;
+      z-index:1000;
       border-bottom:6px solid var(--azul);
       padding:18px 3%;
       display:flex;
@@ -53,12 +56,18 @@
     }
 
     .logo{
-      font-size:38px;
-      font-weight:800;
-      color:#60a943;
-      letter-spacing:-2px;
       padding-right:24px;
       border-right:1px solid #cfd8df;
+      display:flex;
+      align-items:center;
+    }
+
+    .logo img{
+      display:block;
+      height:56px;
+      width:auto;
+      max-width:190px;
+      object-fit:contain;
     }
 
     .brand-title h2{
@@ -573,8 +582,8 @@
       .grid-2,.grid-3,.hero-cards{
         grid-template-columns:1fr;
       }
-      .logo{
-        font-size:30px;
+      .logo img{
+        height:50px;
       }
       .section-title{
         font-size:24px;
@@ -2084,66 +2093,6 @@
   #moduloRefrigeracion,#moduloEquiposOficina,#moduloElectromecanicos,#moduloSistemasTermicos,#moduloCoccion{padding:16px}
 }
 
-
-
-/* =====================================================
-   MODAL - CALEFACCIÓN DE ESPACIOS
-===================================================== */
-#modalCalefaccion {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,35,70,.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  z-index: 10001;
-}
-#modalCalefaccion.hidden { display:none !important; }
-#modalCalefaccion .modal-content {
-  width:min(1000px,96vw);
-  max-height:92vh;
-  overflow-y:auto;
-  background:#fff;
-  border-radius:14px;
-  box-shadow:0 18px 50px rgba(0,0,0,.25);
-  position:relative;
-}
-#modalCalefaccion .modal-header {
-  position:sticky; top:0; z-index:2;
-  display:flex; align-items:center; justify-content:space-between; gap:16px;
-  padding:20px 24px; border-bottom:1px solid #d9e2ec; background:#fff;
-}
-#modalCalefaccion .modal-header h2 { margin:0; color:#063b72; font-size:1.45rem; }
-#modalCalefaccion .modal-close {
-  width:38px; height:38px; border:0; border-radius:50%; background:#eef3f7;
-  color:#25364a; font-size:26px; line-height:1; cursor:pointer;
-}
-#modalCalefaccion .modal-body { padding:24px; }
-#modalCalefaccion .modal-footer {
-  position:sticky; bottom:0; z-index:2; display:flex; justify-content:flex-end; gap:12px;
-  padding:18px 24px; border-top:1px solid #d9e2ec; background:#fff;
-}
-#modalCalefaccion .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 20px; }
-#modalCalefaccion .form-group { display:flex; flex-direction:column; gap:7px; min-width:0; }
-#modalCalefaccion .form-group.full { grid-column:1/-1; }
-#modalCalefaccion .form-group input,
-#modalCalefaccion .form-group select,
-#modalCalefaccion .form-group textarea { width:100%; }
-#modalCalefaccion input:disabled,
-#modalCalefaccion select:disabled { background:#f1f3f5; color:#7b8792; cursor:not-allowed; }
-#modalCalefaccion .calef-nota {
-  margin-bottom:20px; padding:12px 14px; border-left:4px solid #0a4c86;
-  border-radius:6px; background:#f2f7fb; color:#334a5f; font-size:13px; line-height:1.5;
-}
-@media (max-width:800px){
-  #modalCalefaccion{padding:10px}
-  #modalCalefaccion .modal-content{width:100%;max-height:96vh}
-  #modalCalefaccion .form-grid{grid-template-columns:1fr}
-}
-
 </style>
 <!-- =====================================================
    Fin de CSS
@@ -2153,10 +2102,10 @@
 <body>
 <header>
   <div class="brand">
-    <div class="logo">CONUEE</div>
+    <div class="logo"><img src="Conuee.png" alt="CONUEE"></div>
     <div class="brand-title">
       <h2>Encuesta de Consumo y Usos de Energía</h2>
-      <p>Comercios y Servicios</p>
+      <p>Sector Comercial y de Servicios</p>
     </div>
   </div>
 
@@ -3488,7 +3437,7 @@
 
 
     <!-- =================================================
-         CALEFACCIÓN DE ESPACIOS
+         CALEFACCIÓN
     ================================================== -->
 
     <div
@@ -3500,41 +3449,8 @@
         type="button"
         class="secondary"
         id="btnAgregarCalefaccion">
-        + Agregar equipo de calefacción de espacios
+        + Agregar equipo de calefacción
       </button>
-
-      <div
-        id="sinCalefaccion"
-        class="empty-module hidden"
-        style="margin-top:12px">
-        Aún no se han agregado equipos de calefacción de espacios.
-      </div>
-
-      <div
-        id="tablaCalefaccionContenedor"
-        class="table-responsive"
-        style="display:none; margin-top:14px">
-
-        <table class="energy-table">
-          <thead>
-            <tr>
-              <th>Área</th>
-              <th>Tipo</th>
-              <th>Energético</th>
-              <th class="num">Cantidad</th>
-              <th class="num">Capacidad</th>
-              <th class="num">Potencia</th>
-              <th class="num">Temperatura</th>
-              <th>Operación</th>
-              <th class="num">Consumo estimado</th>
-              <th class="acciones">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tablaCalefaccionBody"></tbody>
-        </table>
-      </div>
-
-      <div id="resumenCalefaccion" class="uso-summary" style="margin-top:10px"></div>
 
     </div>
 
@@ -3714,10 +3630,7 @@
 
       <div class="question-block" style="margin-top:14px">
         <div class="question-title">
-          ¿El establecimiento cuenta con sistemas para generación de agua caliente, vapor o calor de proceso, como calderas, calentadores de agua, sistemas solares térmicos o bombas de calor?
-        </div>
-        <div class="efg-inline-note">
-          No registre aquí equipos utilizados exclusivamente para calefacción directa de espacios; esos se registran en B. Acondicionamiento de espacios.
+          ¿El establecimiento cuenta con calderas, calentadores, sistemas de vapor, sistemas solares térmicos o bombas de calor?
         </div>
 
         <div class="radio-group" style="min-height:auto; margin-top:10px">
@@ -7723,182 +7636,6 @@
     <div class="cd-modal-footer">
       <button type="button" class="secondary" id="cancelarElectromecanico">Cancelar</button>
       <button type="button" class="primary" id="guardarElectromecanico">Guardar equipo</button>
-    </div>
-  </div>
-</div>
-
-<!-- =====================================================
-     MODAL - CALEFACCIÓN DE ESPACIOS
-====================================================== -->
-<div id="modalCalefaccion" class="modal hidden" aria-hidden="true">
-  <div class="modal-content modal-large" role="dialog" aria-modal="true" aria-labelledby="tituloModalCalefaccion">
-
-    <div class="modal-header">
-      <h2 id="tituloModalCalefaccion">Agregar equipo de calefacción de espacios</h2>
-      <button type="button" class="modal-close" id="cerrarModalCalefaccion" aria-label="Cerrar">×</button>
-    </div>
-
-    <div class="modal-body">
-      <div class="calef-nota">
-        Registre aquí únicamente equipos destinados a <strong>calentar directamente los espacios interiores para confort térmico</strong>.
-        Calderas, calentadores de agua, vapor, solar térmico y otros sistemas de generación de calor para servicios o procesos se registran en el apartado F.
-      </div>
-
-      <h3>Identificación del equipo</h3>
-      <div class="form-grid" style="margin-top:14px">
-        <div class="form-group">
-          <label for="calefArea">Área atendida</label>
-          <select id="calefArea"><option value="">Seleccione...</option></select>
-        </div>
-
-        <div class="form-group">
-          <label for="calefTipo">Tipo de equipo</label>
-          <select id="calefTipo">
-            <option value="">Seleccione...</option>
-            <option value="calefactor_electrico">Calefactor eléctrico</option>
-            <option value="bomba_calor_espacios">Bomba de calor para calefacción de espacios</option>
-            <option value="minisplit_calor">Minisplit con modo calefacción</option>
-            <option value="unidad_paquete">Unidad paquete con calefacción</option>
-            <option value="radiador_ambiente">Radiador / calefactor de ambiente</option>
-            <option value="infrarrojo">Calefactor infrarrojo</option>
-            <option value="otro_espacios">Otro equipo de calefacción de espacios</option>
-            <option value="no_sabe">No sabe</option>
-          </select>
-        </div>
-
-        <div class="form-group hidden" id="calefTipoOtroGrupo">
-          <label for="calefTipoOtro">Especifique el tipo</label>
-          <input type="text" id="calefTipoOtro" maxlength="120" placeholder="Especifique">
-        </div>
-
-        <div class="form-group">
-          <label for="calefCantidad">Cantidad de equipos iguales</label>
-          <input type="number" id="calefCantidad" min="1" step="1" value="1">
-        </div>
-      </div>
-
-      <h3 style="margin-top:28px">Antigüedad</h3>
-      <div class="form-grid" style="margin-top:14px">
-        <div class="form-group">
-          <label for="calefAnioAdquisicion">Año de adquisición</label>
-          <select id="calefAnioAdquisicion"><option value="">Seleccione...</option></select>
-        </div>
-        <div class="form-group">
-          <label for="calefAntiguedad">Antigüedad aproximada</label>
-          <div class="input-unit">
-            <input type="number" id="calefAntiguedad" min="0" step="1" placeholder="Ej. 8">
-            <span class="unit">años</span>
-          </div>
-        </div>
-      </div>
-
-      <h3 style="margin-top:28px">Fuente de energía</h3>
-      <div class="form-grid" style="margin-top:14px">
-        <div class="form-group">
-          <label for="calefEnergetico">Energético utilizado</label>
-          <select id="calefEnergetico"><option value="">Seleccione...</option></select>
-          <small class="cd-help">Se muestran únicamente los energéticos declarados previamente por el establecimiento.</small>
-        </div>
-      </div>
-
-      <h3 style="margin-top:28px">Capacidad y potencia</h3>
-      <div class="form-grid" style="margin-top:14px">
-        <div class="form-group">
-          <label for="calefCapacidad">Capacidad térmica por equipo</label>
-          <input type="number" id="calefCapacidad" min="0" step="0.01" placeholder="Ej. 24000">
-        </div>
-        <div class="form-group">
-          <label for="calefUnidadCapacidad">Unidad de capacidad</label>
-          <select id="calefUnidadCapacidad">
-            <option value="">Seleccione...</option>
-            <option value="btu_h">BTU/h</option>
-            <option value="kw_termicos">kW térmicos</option>
-            <option value="kcal_h">kcal/h</option>
-            <option value="no_sabe">No sabe</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="calefPotencia">Potencia eléctrica por equipo</label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <input type="number" id="calefPotencia" min="0" step="0.01" placeholder="Ej. 1.5">
-            <select id="calefUnidadPotencia" style="max-width:90px">
-              <option value="kw">kW</option>
-              <option value="w">W</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Potencia no disponible</label>
-          <label style="display:flex;flex-direction:row;align-items:center;gap:8px;font-weight:normal">
-            <input type="checkbox" id="calefPotenciaDesconocida" style="width:auto;margin:0">
-            No conozco la potencia
-          </label>
-        </div>
-      </div>
-
-      <div id="calefDatosTecnicos" class="hidden">
-        <h3 style="margin-top:28px">Datos técnicos adicionales</h3>
-        <div class="form-grid" style="margin-top:14px">
-          <div class="form-group"><label for="calefMarca">Marca</label><input type="text" id="calefMarca"></div>
-          <div class="form-group"><label for="calefModelo">Modelo</label><input type="text" id="calefModelo"></div>
-          <div class="form-group full"><label for="calefDatosPlaca">Datos de placa</label><textarea id="calefDatosPlaca" rows="3" placeholder="Potencia, capacidad u otros datos disponibles"></textarea></div>
-        </div>
-      </div>
-
-      <h3 style="margin-top:28px">Eficiencia y condiciones de operación</h3>
-      <div class="form-grid" style="margin-top:14px">
-        <div class="form-group">
-          <label for="calefIndicadorEficiencia">Indicador de eficiencia</label>
-          <select id="calefIndicadorEficiencia">
-            <option value="">Seleccione...</option>
-            <option value="cop">COP</option>
-            <option value="eficiencia_termica">Eficiencia (%)</option>
-            <option value="otro">Otro</option>
-            <option value="no_sabe">No sabe</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="calefValorEficiencia">Valor de eficiencia</label>
-          <input type="number" id="calefValorEficiencia" min="0" step="0.01">
-        </div>
-        <div class="form-group">
-          <label for="calefTemperaturaConsigna">Temperatura habitual de consigna</label>
-          <div class="input-unit">
-            <input type="number" id="calefTemperaturaConsigna" min="5" max="35" step="0.5" placeholder="Ej. 21">
-            <span class="unit">°C</span>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Temperatura no disponible</label>
-          <label style="display:flex;flex-direction:row;align-items:center;gap:8px;font-weight:normal">
-            <input type="checkbox" id="calefTemperaturaDesconocida" style="width:auto;margin:0">
-            No conoce la temperatura
-          </label>
-        </div>
-      </div>
-
-      <h3 style="margin-top:28px">Horario de operación</h3>
-      <div class="form-group" style="margin-top:14px">
-        <label>¿El horario de este equipo coincide con el horario general del establecimiento?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="calefHorarioCoincide" value="si"> Sí</label>
-          <label><input type="radio" name="calefHorarioCoincide" value="no"> No</label>
-          <label><input type="radio" name="calefHorarioCoincide" value="no_sabe"> No sabe</label>
-        </div>
-      </div>
-
-      <div id="calefHorarioPropio" class="hidden">
-        <div class="form-grid" style="margin-top:14px">
-          <div class="form-group"><label for="calefHorasLV">Horas de uso al día — lunes a viernes</label><input type="number" id="calefHorasLV" min="0" max="24" step="0.5"></div>
-          <div class="form-group"><label for="calefHorasSab">Horas de uso — sábado</label><input type="number" id="calefHorasSab" min="0" max="24" step="0.5"></div>
-          <div class="form-group"><label for="calefHorasDom">Horas de uso — domingo</label><input type="number" id="calefHorasDom" min="0" max="24" step="0.5"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button type="button" class="secondary" id="cancelarCalefaccion">Cancelar</button>
-      <button type="button" class="primary" id="guardarCalefaccion">Guardar equipo</button>
     </div>
   </div>
 </div>
@@ -18527,367 +18264,6 @@ function eliminarVentilacion(
 } 
  
 
-
-// =====================================================
-// SECCIÓN 4 - B. CALEFACCIÓN DE ESPACIOS
-// Separada de F. Sistemas térmicos y generación de calor
-// =====================================================
-
-let equiposCalefaccion = [];
-let indiceCalefaccionEdicion = null;
-
-const btnAgregarCalefaccion = document.getElementById("btnAgregarCalefaccion");
-const modalCalefaccion = document.getElementById("modalCalefaccion");
-const cerrarModalCalefaccion = document.getElementById("cerrarModalCalefaccion");
-const cancelarCalefaccion = document.getElementById("cancelarCalefaccion");
-const guardarCalefaccion = document.getElementById("guardarCalefaccion");
-const tituloModalCalefaccion = document.getElementById("tituloModalCalefaccion");
-const calefTipo = document.getElementById("calefTipo");
-const calefTipoOtroGrupo = document.getElementById("calefTipoOtroGrupo");
-const calefPotencia = document.getElementById("calefPotencia");
-const calefUnidadPotencia = document.getElementById("calefUnidadPotencia");
-const calefPotenciaDesconocida = document.getElementById("calefPotenciaDesconocida");
-const calefDatosTecnicos = document.getElementById("calefDatosTecnicos");
-const calefTemperaturaConsigna = document.getElementById("calefTemperaturaConsigna");
-const calefTemperaturaDesconocida = document.getElementById("calefTemperaturaDesconocida");
-const calefHorarioPropio = document.getElementById("calefHorarioPropio");
-
-function valorCampoCalef(id) {
-  return document.getElementById(id)?.value ?? "";
-}
-
-function numeroCampoCalef(id) {
-  const raw = valorCampoCalef(id);
-  if (raw === "") return null;
-  const n = Number(raw);
-  return Number.isFinite(n) ? n : null;
-}
-
-function cargarAreasCalefaccion() {
-  const select = document.getElementById("calefArea");
-  if (!select) return;
-  const actual = select.value;
-  select.innerHTML = '<option value="">Seleccione...</option>';
-  if (typeof areasEstablecimiento !== "undefined" && Array.isArray(areasEstablecimiento)) {
-    areasEstablecimiento.forEach((area, index) => {
-      const nombre = area?.nombre || area?.area || area?.tipo || area?.descripcion || `Área ${index + 1}`;
-      const op = document.createElement("option");
-      op.value = nombre;
-      op.textContent = nombre;
-      select.appendChild(op);
-    });
-  }
-  if (Array.from(select.options).some(o => o.value === actual)) select.value = actual;
-}
-
-function cargarAniosCalefaccion() {
-  const select = document.getElementById("calefAnioAdquisicion");
-  if (!select) return;
-  const actualSeleccionado = select.value;
-  select.innerHTML = '<option value="">Seleccione...</option>';
-  const actual = new Date().getFullYear();
-  for (let anio = actual; anio >= 1950; anio--) {
-    const op = document.createElement("option");
-    op.value = String(anio);
-    op.textContent = String(anio);
-    select.appendChild(op);
-  }
-  if (actualSeleccionado) select.value = actualSeleccionado;
-}
-
-function cargarEnergeticosCalefaccion() {
-  const select = document.getElementById("calefEnergetico");
-  if (!select) return;
-  const actual = select.value;
-  select.innerHTML = '<option value="">Seleccione...</option>';
-  if (typeof energeticosEstablecimiento !== "undefined" && Array.isArray(energeticosEstablecimiento)) {
-    energeticosEstablecimiento.forEach(item => {
-      if (!item?.codigo) return;
-      const op = document.createElement("option");
-      op.value = item.codigo;
-      op.textContent = item.nombre || item.codigo;
-      select.appendChild(op);
-    });
-  }
-  if (Array.from(select.options).some(o => o.value === actual)) select.value = actual;
-}
-
-function limpiarFormularioCalefaccion() {
-  [
-    "calefArea","calefTipo","calefTipoOtro","calefAnioAdquisicion","calefAntiguedad",
-    "calefEnergetico","calefCapacidad","calefUnidadCapacidad","calefPotencia",
-    "calefIndicadorEficiencia","calefValorEficiencia","calefMarca","calefModelo",
-    "calefDatosPlaca","calefTemperaturaConsigna","calefHorasLV","calefHorasSab","calefHorasDom"
-  ].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
-  const cantidad = document.getElementById("calefCantidad");
-  if (cantidad) cantidad.value = "1";
-  if (calefUnidadPotencia) calefUnidadPotencia.value = "kw";
-  if (calefPotenciaDesconocida) calefPotenciaDesconocida.checked = false;
-  if (calefTemperaturaDesconocida) calefTemperaturaDesconocida.checked = false;
-  if (calefPotencia) calefPotencia.disabled = false;
-  if (calefUnidadPotencia) calefUnidadPotencia.disabled = false;
-  if (calefTemperaturaConsigna) calefTemperaturaConsigna.disabled = false;
-  calefTipoOtroGrupo?.classList.add("hidden");
-  calefDatosTecnicos?.classList.add("hidden");
-  calefHorarioPropio?.classList.add("hidden");
-  document.querySelectorAll('input[name="calefHorarioCoincide"]').forEach(r => r.checked = false);
-}
-
-function abrirModalCalefaccion(index = null) {
-  indiceCalefaccionEdicion = index;
-  cargarAreasCalefaccion();
-  cargarAniosCalefaccion();
-  cargarEnergeticosCalefaccion();
-
-  if (index === null) {
-    limpiarFormularioCalefaccion();
-    cargarAreasCalefaccion();
-    cargarAniosCalefaccion();
-    cargarEnergeticosCalefaccion();
-    if (tituloModalCalefaccion) tituloModalCalefaccion.textContent = "Agregar equipo de calefacción de espacios";
-  } else {
-    const e = equiposCalefaccion[index];
-    if (!e) return;
-    if (tituloModalCalefaccion) tituloModalCalefaccion.textContent = "Editar equipo de calefacción de espacios";
-    document.getElementById("calefArea").value = e.area || "";
-    document.getElementById("calefTipo").value = e.tipo || "";
-    document.getElementById("calefTipoOtro").value = e.tipoOtro || "";
-    document.getElementById("calefCantidad").value = e.cantidad ?? 1;
-    document.getElementById("calefAnioAdquisicion").value = e.anioAdquisicion || "";
-    document.getElementById("calefAntiguedad").value = e.antiguedad ?? "";
-    document.getElementById("calefEnergetico").value = e.energetico || "";
-    document.getElementById("calefCapacidad").value = e.capacidad ?? "";
-    document.getElementById("calefUnidadCapacidad").value = e.unidadCapacidad || "";
-    document.getElementById("calefPotencia").value = e.potencia ?? "";
-    document.getElementById("calefUnidadPotencia").value = e.unidadPotencia || "kw";
-    document.getElementById("calefIndicadorEficiencia").value = e.indicadorEficiencia || "";
-    document.getElementById("calefValorEficiencia").value = e.valorEficiencia ?? "";
-    document.getElementById("calefMarca").value = e.marca || "";
-    document.getElementById("calefModelo").value = e.modelo || "";
-    document.getElementById("calefDatosPlaca").value = e.datosPlaca || "";
-    document.getElementById("calefTemperaturaConsigna").value = e.temperaturaConsigna ?? "";
-    document.getElementById("calefHorasLV").value = e.horasLV ?? "";
-    document.getElementById("calefHorasSab").value = e.horasSab ?? "";
-    document.getElementById("calefHorasDom").value = e.horasDom ?? "";
-    calefTipoOtroGrupo?.classList.toggle("hidden", e.tipo !== "otro_espacios");
-    if (calefPotenciaDesconocida) calefPotenciaDesconocida.checked = !!e.potenciaDesconocida;
-    if (calefPotencia) calefPotencia.disabled = !!e.potenciaDesconocida;
-    if (calefUnidadPotencia) calefUnidadPotencia.disabled = !!e.potenciaDesconocida;
-    calefDatosTecnicos?.classList.toggle("hidden", !e.potenciaDesconocida);
-    if (calefTemperaturaDesconocida) calefTemperaturaDesconocida.checked = !!e.temperaturaDesconocida;
-    if (calefTemperaturaConsigna) calefTemperaturaConsigna.disabled = !!e.temperaturaDesconocida;
-    document.querySelectorAll('input[name="calefHorarioCoincide"]').forEach(r => r.checked = r.value === e.horarioCoincide);
-    calefHorarioPropio?.classList.toggle("hidden", e.horarioCoincide !== "no");
-  }
-
-  modalCalefaccion?.classList.remove("hidden");
-  modalCalefaccion?.setAttribute("aria-hidden", "false");
-}
-
-function cerrarModalCalefaccionFn() {
-  modalCalefaccion?.classList.add("hidden");
-  modalCalefaccion?.setAttribute("aria-hidden", "true");
-  indiceCalefaccionEdicion = null;
-}
-
-function horasAnualesCalefaccion(horarioCoincide, lv, sab, dom) {
-  if (horarioCoincide !== "no") return null;
-  const vals = [lv, sab, dom].map(Number);
-  if (!vals.every(Number.isFinite)) return null;
-  if (vals.some(v => v < 0 || v > 24)) return null;
-  return 52 * ((vals[0] * 5) + vals[1] + vals[2]);
-}
-
-function potenciaCalefKW(potencia, unidad) {
-  const p = Number(potencia);
-  if (!Number.isFinite(p) || p <= 0) return null;
-  return unidad === "w" ? p / 1000 : (unidad === "kw" ? p : null);
-}
-
-function consumoCalefaccionKWh(item) {
-  if (item.energetico !== "electricidad") return null;
-  const p = potenciaCalefKW(item.potencia, item.unidadPotencia);
-  if (!p || !item.horasAnuales || !item.cantidad) return null;
-  return p * Number(item.cantidad) * item.horasAnuales;
-}
-
-function guardarCalefaccionFn() {
-  const area = valorCampoCalef("calefArea");
-  const tipo = valorCampoCalef("calefTipo");
-  const tipoOtro = valorCampoCalef("calefTipoOtro").trim();
-  const cantidad = Number(valorCampoCalef("calefCantidad"));
-  const energetico = valorCampoCalef("calefEnergetico");
-  const horarioCoincide = document.querySelector('input[name="calefHorarioCoincide"]:checked')?.value || "";
-
-  if (!area) return alert("Seleccione el área atendida.");
-  if (!tipo) return alert("Seleccione el tipo de equipo.");
-  if (tipo === "otro_espacios" && !tipoOtro) return alert("Especifique el tipo de equipo.");
-  if (!Number.isInteger(cantidad) || cantidad < 1) return alert("Capture una cantidad válida.");
-  if (!energetico) return alert("Seleccione el energético utilizado.");
-
-  const selEner = document.getElementById("calefEnergetico");
-  const energeticoNombre = selEner?.selectedOptions?.[0]?.textContent?.trim() || energetico;
-  const lv = valorCampoCalef("calefHorasLV");
-  const sab = valorCampoCalef("calefHorasSab");
-  const dom = valorCampoCalef("calefHorasDom");
-
-  const item = {
-    area, tipo, tipoOtro, cantidad,
-    anioAdquisicion: valorCampoCalef("calefAnioAdquisicion"),
-    antiguedad: numeroCampoCalef("calefAntiguedad"),
-    energetico, energeticoNombre,
-    capacidad: numeroCampoCalef("calefCapacidad"),
-    unidadCapacidad: valorCampoCalef("calefUnidadCapacidad"),
-    potencia: calefPotenciaDesconocida?.checked ? null : numeroCampoCalef("calefPotencia"),
-    unidadPotencia: valorCampoCalef("calefUnidadPotencia"),
-    potenciaDesconocida: !!calefPotenciaDesconocida?.checked,
-    indicadorEficiencia: valorCampoCalef("calefIndicadorEficiencia"),
-    valorEficiencia: numeroCampoCalef("calefValorEficiencia"),
-    marca: valorCampoCalef("calefMarca").trim(),
-    modelo: valorCampoCalef("calefModelo").trim(),
-    datosPlaca: valorCampoCalef("calefDatosPlaca").trim(),
-    temperaturaConsigna: calefTemperaturaDesconocida?.checked ? null : numeroCampoCalef("calefTemperaturaConsigna"),
-    temperaturaDesconocida: !!calefTemperaturaDesconocida?.checked,
-    horarioCoincide, horasLV: lv, horasSab: sab, horasDom: dom,
-    horasAnuales: horasAnualesCalefaccion(horarioCoincide, lv, sab, dom)
-  };
-  item.consumoKWh = consumoCalefaccionKWh(item);
-
-  if (indiceCalefaccionEdicion === null) equiposCalefaccion.push(item);
-  else equiposCalefaccion[indiceCalefaccionEdicion] = item;
-
-  renderizarTablaCalefaccion();
-  cerrarModalCalefaccionFn();
-}
-
-function nombreTipoCalefaccion(tipo, otro) {
-  const mapa = {
-    calefactor_electrico:"Calefactor eléctrico",
-    bomba_calor_espacios:"Bomba de calor para calefacción de espacios",
-    minisplit_calor:"Minisplit con modo calefacción",
-    unidad_paquete:"Unidad paquete con calefacción",
-    radiador_ambiente:"Radiador / calefactor de ambiente",
-    infrarrojo:"Calefactor infrarrojo",
-    no_sabe:"No sabe"
-  };
-  return tipo === "otro_espacios" ? (otro || "Otro equipo de calefacción de espacios") : (mapa[tipo] || tipo || "—");
-}
-
-function capacidadCalefTexto(item) {
-  if (!Number.isFinite(Number(item.capacidad)) || Number(item.capacidad) <= 0) return "No disponible";
-  const u = {btu_h:"BTU/h",kw_termicos:"kW térm.",kcal_h:"kcal/h",no_sabe:""}[item.unidadCapacidad] || item.unidadCapacidad || "";
-  return `${Number(item.capacidad).toLocaleString("es-MX",{maximumFractionDigits:2})} ${u}`.trim();
-}
-
-function potenciaCalefTexto(item) {
-  if (!Number.isFinite(Number(item.potencia)) || Number(item.potencia) <= 0) return "No disponible";
-  return `${Number(item.potencia).toLocaleString("es-MX",{maximumFractionDigits:2})} ${item.unidadPotencia === "w" ? "W" : "kW"}`;
-}
-
-function operacionCalefTexto(item) {
-  if (item.horarioCoincide === "si") return "Horario general";
-  if (item.horarioCoincide === "no_sabe") return "No sabe";
-  if (item.horarioCoincide === "no" && item.horasAnuales !== null) return `${Math.round(item.horasAnuales).toLocaleString("es-MX")} h/año`;
-  return "Sin datos suficientes";
-}
-
-function renderizarTablaCalefaccion() {
-  const tbody = document.getElementById("tablaCalefaccionBody");
-  const cont = document.getElementById("tablaCalefaccionContenedor");
-  const vacio = document.getElementById("sinCalefaccion");
-  const resumen = document.getElementById("resumenCalefaccion");
-  if (!tbody || !cont || !vacio) return;
-  tbody.innerHTML = "";
-
-  if (!equiposCalefaccion.length) {
-    cont.style.display = "none";
-    vacio.classList.remove("hidden");
-    if (resumen) resumen.textContent = "";
-    return;
-  }
-  vacio.classList.add("hidden");
-  cont.style.display = "block";
-
-  let cantidadTotal = 0, consumoTotal = 0, conConsumo = 0;
-  equiposCalefaccion.forEach((item,index) => {
-    cantidadTotal += Number(item.cantidad || 0);
-    if (item.consumoKWh !== null && Number.isFinite(Number(item.consumoKWh))) { consumoTotal += Number(item.consumoKWh); conConsumo++; }
-    const temperatura = item.temperaturaDesconocida ? "No sabe" : (item.temperaturaConsigna !== null ? `${item.temperaturaConsigna} °C` : "No disponible");
-    const consumo = item.consumoKWh !== null
-      ? `${Math.round(item.consumoKWh).toLocaleString("es-MX")} kWh/año`
-      : (item.energetico === "electricidad" ? "Sin datos suficientes" : "No calculado en este módulo");
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${item.area}</td>
-      <td>${nombreTipoCalefaccion(item.tipo,item.tipoOtro)}</td>
-      <td>${item.energeticoNombre || item.energetico}</td>
-      <td class="num">${item.cantidad}</td>
-      <td class="num">${capacidadCalefTexto(item)}</td>
-      <td class="num">${potenciaCalefTexto(item)}</td>
-      <td class="num">${temperatura}</td>
-      <td>${operacionCalefTexto(item)}</td>
-      <td class="num">${consumo}</td>
-      <td class="acciones">
-        <button type="button" class="table-action" onclick="editarCalefaccion(${index})">Editar</button>
-        <button type="button" class="table-action danger" onclick="eliminarCalefaccion(${index})">Eliminar</button>
-      </td>`;
-    tbody.appendChild(tr);
-  });
-
-  if (resumen) {
-    let t = `${cantidadTotal} equipo${cantidadTotal === 1 ? "" : "s"}`;
-    if (conConsumo) t += ` · Consumo eléctrico estimado: ${Math.round(consumoTotal).toLocaleString("es-MX")} kWh/año`;
-    resumen.textContent = t;
-  }
-}
-
-window.editarCalefaccion = index => abrirModalCalefaccion(index);
-window.eliminarCalefaccion = function(index) {
-  const item = equiposCalefaccion[index];
-  if (!item) return;
-  if (!confirm("¿Desea eliminar este equipo de calefacción de espacios?")) return;
-  equiposCalefaccion.splice(index,1);
-  renderizarTablaCalefaccion();
-};
-
-btnAgregarCalefaccion?.addEventListener("click", () => abrirModalCalefaccion(null));
-cerrarModalCalefaccion?.addEventListener("click", cerrarModalCalefaccionFn);
-cancelarCalefaccion?.addEventListener("click", cerrarModalCalefaccionFn);
-guardarCalefaccion?.addEventListener("click", guardarCalefaccionFn);
-
-calefTipo?.addEventListener("change", () => {
-  const esOtro = calefTipo.value === "otro_espacios";
-  calefTipoOtroGrupo?.classList.toggle("hidden", !esOtro);
-  if (!esOtro && document.getElementById("calefTipoOtro")) document.getElementById("calefTipoOtro").value = "";
-});
-
-document.getElementById("calefAnioAdquisicion")?.addEventListener("change", e => {
-  const anio = Number(e.target.value);
-  const campo = document.getElementById("calefAntiguedad");
-  if (campo) campo.value = anio ? Math.max(0,new Date().getFullYear()-anio) : "";
-});
-
-calefPotenciaDesconocida?.addEventListener("change", () => {
-  const off = calefPotenciaDesconocida.checked;
-  if (off && calefPotencia) calefPotencia.value = "";
-  if (calefPotencia) calefPotencia.disabled = off;
-  if (calefUnidadPotencia) calefUnidadPotencia.disabled = off;
-  calefDatosTecnicos?.classList.toggle("hidden", !off);
-});
-
-calefTemperaturaDesconocida?.addEventListener("change", () => {
-  const off = calefTemperaturaDesconocida.checked;
-  if (off && calefTemperaturaConsigna) calefTemperaturaConsigna.value = "";
-  if (calefTemperaturaConsigna) calefTemperaturaConsigna.disabled = off;
-});
-
-document.querySelectorAll('input[name="calefHorarioCoincide"]').forEach(r => {
-  r.addEventListener("change", () => {
-    const propio = document.querySelector('input[name="calefHorarioCoincide"]:checked')?.value === "no";
-    calefHorarioPropio?.classList.toggle("hidden", !propio);
-    if (!propio) ["calefHorasLV","calefHorasSab","calefHorasDom"].forEach(id => { const el=document.getElementById(id); if(el) el.value=""; });
-  });
-});
 
 // =====================================================
 // SECCIÓN 4 - C Y D
