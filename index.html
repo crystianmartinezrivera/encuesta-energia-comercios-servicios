@@ -2708,80 +2708,177 @@
 
 <!-- FIN moduloAcondicionamiento -->
 
-
 <!-- =====================================================
-     TABLA DE EQUIPOS DE AIRE ACONDICIONADO
+     B. ACONDICIONAMIENTO DE ESPACIOS
 ====================================================== -->
 
-<div
-  id="sinAireAcondicionado"
-  class="empty-module hidden"
-  style="margin-top:12px">
+<section class="uso-card" id="moduloAcondicionamiento">
 
-  Aún no se han agregado equipos de aire acondicionado.
+  <div class="uso-card-head">
 
-</div>
+    <div style="width:100%">
 
+      <h3>B. Acondicionamiento de espacios</h3>
 
-<div
-  id="tablaAireAcondicionadoContenedor"
-  class="table-responsive"
-  style="display:none; margin-top:14px">
+      <div class="question-block" style="margin-top:14px">
 
-  <table class="energy-table">
+        <div class="question-title">
+          ¿El establecimiento cuenta con equipos o sistemas para acondicionamiento de espacios?
+        </div>
 
-    <thead>
+        <div class="checkbox-group" style="margin-top:10px">
 
-      <tr>
+          <label>
+            <input
+              type="checkbox"
+              id="acondAire"
+              value="aire">
+            Aire acondicionado o enfriamiento
+          </label>
 
-        <th>Área</th>
+          <label>
+            <input
+              type="checkbox"
+              id="acondVentilacion"
+              value="ventilacion">
+            Ventilación o extracción mecánica
+          </label>
 
-        <th>Tipo</th>
+          <label>
+            <input
+              type="checkbox"
+              id="acondCalefaccion"
+              value="calefaccion">
+            Calefacción de espacios
+          </label>
 
-        <th class="num">
-          Cantidad
-        </th>
+          <label>
+            <input
+              type="checkbox"
+              id="acondNinguno"
+              value="ninguno">
+            Ninguno
+          </label>
 
-        <th class="num">
-          Capacidad
-        </th>
+        </div>
 
-        <th class="num">
-          Potencia
-        </th>
+      </div>
 
-        <th class="num">
-          Temperatura
-        </th>
+    </div>
 
-        <th>
-          Operación
-        </th>
-
-        <th class="num">
-          Consumo estimado
-        </th>
-
-        <th class="acciones">
-          Acciones
-        </th>
-
-      </tr>
-
-    </thead>
-
-    <tbody id="tablaAireAcondicionadoBody"></tbody>
-
-  </table>
-
-</div>
+  </div>
 
 
-<div
-  id="resumenAireAcondicionado"
-  class="uso-summary"
-  style="margin-top:10px">
-</div>
+  <div
+    id="contenidoAcondicionamiento"
+    class="uso-card-body hidden">
+
+    <!-- =================================================
+         AIRE ACONDICIONADO
+    ================================================== -->
+
+    <div
+      id="accionesAireAcondicionado"
+      class="hidden"
+      style="margin-bottom:12px">
+
+      <button
+        type="button"
+        class="secondary"
+        id="btnAgregarAireAcondicionado">
+        + Agregar equipo de aire acondicionado
+      </button>
+
+
+      <div
+        id="sinAireAcondicionado"
+        class="empty-module hidden"
+        style="margin-top:12px">
+        Aún no se han agregado equipos de aire acondicionado.
+      </div>
+
+
+      <div
+        id="tablaAireAcondicionadoContenedor"
+        class="table-responsive"
+        style="display:none; margin-top:14px">
+
+        <table class="energy-table">
+
+          <thead>
+            <tr>
+              <th>Área</th>
+              <th>Tipo</th>
+              <th class="num">Cantidad</th>
+              <th class="num">Capacidad</th>
+              <th class="num">Potencia</th>
+              <th class="num">Temperatura</th>
+              <th>Operación</th>
+              <th class="num">Consumo estimado</th>
+              <th class="acciones">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody id="tablaAireAcondicionadoBody"></tbody>
+
+        </table>
+
+      </div>
+
+
+      <div
+        id="resumenAireAcondicionado"
+        class="uso-summary"
+        style="margin-top:10px">
+      </div>
+
+    </div>
+
+
+    <!-- =================================================
+         VENTILACIÓN / EXTRACCIÓN
+    ================================================== -->
+
+    <div
+      id="accionesVentilacion"
+      class="hidden"
+      style="margin-bottom:12px">
+
+      <button
+        type="button"
+        class="secondary"
+        id="btnAgregarVentilacion">
+        + Agregar equipo de ventilación / extracción
+      </button>
+
+    </div>
+
+
+    <!-- =================================================
+         CALEFACCIÓN
+    ================================================== -->
+
+    <div
+      id="accionesCalefaccion"
+      class="hidden"
+      style="margin-bottom:12px">
+
+      <button
+        type="button"
+        class="secondary"
+        id="btnAgregarCalefaccion">
+        + Agregar equipo de calefacción
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+<!-- FIN moduloAcondicionamiento -->
+
+       
+
 
 
 <!-- =====================================================
