@@ -3002,7 +3002,47 @@
         id="btnAgregarVentilacion">
         + Agregar equipo de ventilación / extracción
       </button>
+<!-- TABLA DE VENTILACIÓN / EXTRACCIÓN -->
 
+<div
+  id="sinVentilacion"
+  class="empty-module hidden"
+  style="margin-top:12px">
+  Aún no se han agregado equipos de ventilación / extracción.
+</div>
+
+<div
+  id="tablaVentilacionContenedor"
+  class="table-responsive"
+  style="display:none; margin-top:14px">
+
+  <table class="energy-table">
+
+    <thead>
+      <tr>
+        <th>Área</th>
+        <th>Tipo</th>
+        <th class="num">Cantidad</th>
+        <th class="num">Potencia</th>
+        <th class="num">Caudal</th>
+        <th>Operación</th>
+        <th class="num">Consumo estimado</th>
+        <th class="acciones">Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody id="tablaVentilacionBody"></tbody>
+
+  </table>
+
+</div>
+
+<div
+  id="resumenVentilacion"
+  class="uso-summary"
+  style="margin-top:10px">
+</div>
+      
     </div>
 
 
@@ -15945,7 +15985,887 @@ radiosVentHorarioCoincide.forEach(radio => {
 
 });
 
-  
+ // =====================================================
+// VENTILACIÓN / EXTRACCIÓN
+// GUARDAR + TABLA + CONSUMO
+// =====================================================
+
+
+// -----------------------------------------------------
+// 9. FUNCIONES AUXILIARES
+// -----------------------------------------------------
+
+function valorCampoVent(id) {
+
+  const elemento =
+    document.getElementById(id);
+
+  return elemento
+    ? elemento.value
+    : "";
+
+}
+
+
+function numeroCampoVent(id) {
+
+  const valor =
+    Number(valorCampoVent(id));
+
+  return Number.isFinite(valor) && valor > 0
+    ? valor
+    : null;
+
+}
+
+
+// -----------------------------------------------------
+// 10. POTENCIA A kW
+// -----------------------------------------------------
+
+function potenciaVentKW(
+  potencia,
+  unidad
+) {
+
+  if (!potencia) {
+    return null;
+  }
+
+  if (unidad === "w") {
+    return potencia / 1000;
+  }
+
+  if (unidad === "kw") {
+    return potencia;
+  }
+
+  return null;
+
+}
+
+
+// -----------------------------------------------------
+// 11. HORAS ANUALES
+// -----------------------------------------------------
+
+function obtenerHorasAnualesVentilacion() {
+
+  const horario =
+    document.querySelector(
+      'input[name="ventHorarioCoincide"]:checked'
+    );
+
+
+  if (!horario) {
+
+    return {
+      horas: null,
+      origen: "Sin horario"
+    };
+
+  }
+
+
+  // -------------------------------------------
+  // COINCIDE CON HORARIO GENERAL
+  // -------------------------------------------
+
+  if (horario.value === "si") {
+
+    return {
+      horas: null,
+      origen: "Horario general"
+    };
+
+  }
+
+
+  // -------------------------------------------
+  // NO SABE
+  // -------------------------------------------
+
+  if (horario.value === "no_sabe") {
+
+    return {
+      horas: null,
+      origen: "No sabe"
+    };
+
+  }
+
+
+  // -------------------------------------------
+  // HORARIO PROPIO
+  // -------------------------------------------
+
+  if (horario.value === "no") {
+
+    const lv =
+      Number(
+        valorCampoVent("ventHorasLV")
+      );
+
+    const sab =
+      Number(
+        valorCampoVent("ventHorasSab")
+      );
+
+    const dom =
+      Number(
+        valorCampoVent("ventHorasDom")
+      );
+
+
+    if (
+      !Number.isFinite(lv) ||
+      !Number.isFinite(sab) ||
+      !Number.isFinite(dom)
+    ) {
+
+      return {
+        horas: null,
+        origen: "Horario específico"
+      };
+
+    }
+
+
+    const horasAnuales =
+      52 * (
+        (lv * 5) +
+        sab +
+        dom
+      );
+
+
+    return {
+      horas: horasAnuales,
+      origen: "Horario específico"
+    };
+
+  }
+
+
+  return {
+    horas: null,
+    origen: "Sin horario"
+  };
+
+}
+
+
+// -----------------------------------------------------
+// 12. CALCULAR CONSUMO
+// -----------------------------------------------------
+
+function calcularConsumoVentilacion(
+  datos
+) {
+
+  const potenciaKW =
+    potenciaVentKW(
+      datos.potencia,
+      datos.unidadPotencia
+    );
+
+
+  if (
+    !potenciaKW ||
+    !datos.horasAnuales ||
+    !datos.cantidad
+  ) {
+
+    return {
+      consumoKWh: null,
+      potenciaCalculoKW:
+        potenciaKW
+    };
+
+  }
+
+
+  const consumo =
+    potenciaKW *
+    datos.cantidad *
+    datos.horasAnuales;
+
+
+  return {
+    consumoKWh: consumo,
+    potenciaCalculoKW:
+      potenciaKW
+  };
+
+}
+
+
+// -----------------------------------------------------
+// 13. GUARDAR EQUIPO
+// -----------------------------------------------------
+
+if (guardarVentilacion) {
+
+  guardarVentilacion.addEventListener(
+    "click",
+    () => {
+
+
+      // -----------------------------------------
+      // VALIDACIONES BÁSICAS
+      // -----------------------------------------
+
+      const area =
+        valorCampoVent("ventArea");
+
+      const tipo =
+        valorCampoVent("ventTipo");
+
+      const cantidad =
+        numeroCampoVent("ventCantidad");
+
+
+      if (!area) {
+
+        alert(
+          "Seleccione el área atendida."
+        );
+
+        return;
+
+      }
+
+
+      if (!tipo) {
+
+        alert(
+          "Seleccione el tipo de equipo."
+        );
+
+        return;
+
+      }
+
+
+      if (!cantidad) {
+
+        alert(
+          "Capture una cantidad válida."
+        );
+
+        return;
+
+      }
+
+
+      // -----------------------------------------
+      // HORARIO
+      // -----------------------------------------
+
+      const resultadoHorario =
+        obtenerHorasAnualesVentilacion();
+
+
+      // -----------------------------------------
+      // DATOS
+      // -----------------------------------------
+
+      const datos = {
+
+        area: area,
+
+        tipo: tipo,
+
+        tipoOtro:
+          valorCampoVent(
+            "ventTipoOtro"
+          ),
+
+        cantidad: cantidad,
+
+
+        anioAdquisicion:
+          valorCampoVent(
+            "ventAnioAdquisicion"
+          ),
+
+        antiguedad:
+          valorCampoVent(
+            "ventAntiguedad"
+          ),
+
+
+        potencia:
+          numeroCampoVent(
+            "ventPotencia"
+          ),
+
+        unidadPotencia:
+          valorCampoVent(
+            "ventUnidadPotencia"
+          ),
+
+
+        potenciaDesconocida:
+          ventPotenciaDesconocida
+            ? ventPotenciaDesconocida.checked
+            : false,
+
+
+        marca:
+          valorCampoVent(
+            "ventMarca"
+          ),
+
+        modelo:
+          valorCampoVent(
+            "ventModelo"
+          ),
+
+        caudal:
+          numeroCampoVent(
+            "ventCaudal"
+          ),
+
+        unidadCaudal:
+          valorCampoVent(
+            "ventUnidadCaudal"
+          ),
+
+        velocidades:
+          valorCampoVent(
+            "ventVelocidades"
+          ),
+
+
+        horarioCoincide:
+          document.querySelector(
+            'input[name="ventHorarioCoincide"]:checked'
+          )?.value || "",
+
+
+        horasLV:
+          valorCampoVent(
+            "ventHorasLV"
+          ),
+
+        horasSab:
+          valorCampoVent(
+            "ventHorasSab"
+          ),
+
+        horasDom:
+          valorCampoVent(
+            "ventHorasDom"
+          ),
+
+
+        horasAnuales:
+          resultadoHorario.horas,
+
+        origenHorario:
+          resultadoHorario.origen
+
+      };
+
+
+      // -----------------------------------------
+      // CONSUMO
+      // -----------------------------------------
+
+      const resultadoConsumo =
+        calcularConsumoVentilacion(
+          datos
+        );
+
+
+      datos.consumoKWh =
+        resultadoConsumo.consumoKWh;
+
+      datos.potenciaCalculoKW =
+        resultadoConsumo.potenciaCalculoKW;
+
+
+      // -----------------------------------------
+      // GUARDAR / EDITAR
+      // -----------------------------------------
+
+      if (
+        indiceVentilacionEdicion !== null
+      ) {
+
+        equiposVentilacion[
+          indiceVentilacionEdicion
+        ] = datos;
+
+      } else {
+
+        equiposVentilacion.push(
+          datos
+        );
+
+      }
+
+
+      renderizarTablaVentilacion();
+
+      cerrarModalEquipoVentilacion();
+
+    }
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 14. NOMBRE LEGIBLE DEL TIPO
+// -----------------------------------------------------
+
+function nombreTipoVentilacion(
+  tipo,
+  otro
+) {
+
+  const nombres = {
+
+    techo:
+      "Ventilador de techo",
+
+    pedestal_pared:
+      "Pedestal / pared",
+
+    extractor_axial:
+      "Extractor axial",
+
+    extractor_centrifugo:
+      "Extractor centrífugo",
+
+    ventilador_axial:
+      "Ventilador axial",
+
+    ventilador_centrifugo:
+      "Ventilador centrífugo",
+
+    manejadora:
+      "Manejadora de aire",
+
+    suministro:
+      "Ventilador de suministro",
+
+    retorno:
+      "Ventilador de retorno",
+
+    campana:
+      "Campana / extracción de cocina",
+
+    no_sabe:
+      "No sabe"
+
+  };
+
+
+  if (tipo === "otro") {
+
+    return otro || "Otro";
+
+  }
+
+
+  return nombres[tipo] || tipo;
+
+}
+
+
+// -----------------------------------------------------
+// 15. TEXTO POTENCIA
+// -----------------------------------------------------
+
+function textoPotenciaVentilacion(
+  equipo
+) {
+
+  if (!equipo.potencia) {
+
+    return "No disponible";
+
+  }
+
+
+  return (
+    equipo.potencia.toLocaleString(
+      "es-MX"
+    ) +
+    " " +
+    (
+      equipo.unidadPotencia === "kw"
+        ? "kW"
+        : "W"
+    )
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 16. TEXTO CAUDAL
+// -----------------------------------------------------
+
+function textoCaudalVentilacion(
+  equipo
+) {
+
+  if (!equipo.caudal) {
+
+    return "No disponible";
+
+  }
+
+
+  const unidades = {
+
+    m3_h:
+      "m³/h",
+
+    m3_s:
+      "m³/s",
+
+    cfm:
+      "CFM"
+
+  };
+
+
+  return (
+    equipo.caudal.toLocaleString(
+      "es-MX"
+    ) +
+    " " +
+    (
+      unidades[
+        equipo.unidadCaudal
+      ] || ""
+    )
+  );
+
+}
+
+
+// -----------------------------------------------------
+// 17. TEXTO OPERACIÓN
+// -----------------------------------------------------
+
+function textoOperacionVentilacion(
+  equipo
+) {
+
+  if (
+    equipo.horarioCoincide === "si"
+  ) {
+
+    return "Horario general";
+
+  }
+
+
+  if (
+    equipo.horarioCoincide ===
+    "no_sabe"
+  ) {
+
+    return "No sabe";
+
+  }
+
+
+  if (
+    equipo.horarioCoincide === "no" &&
+    equipo.horasAnuales !== null
+  ) {
+
+    return (
+      Math.round(
+        equipo.horasAnuales
+      ).toLocaleString("es-MX") +
+      " h/año"
+    );
+
+  }
+
+
+  return "Sin datos suficientes";
+
+}
+
+
+// -----------------------------------------------------
+// 18. RENDERIZAR TABLA
+// -----------------------------------------------------
+
+function renderizarTablaVentilacion() {
+
+  const tbody =
+    document.getElementById(
+      "tablaVentilacionBody"
+    );
+
+  const contenedor =
+    document.getElementById(
+      "tablaVentilacionContenedor"
+    );
+
+  const vacio =
+    document.getElementById(
+      "sinVentilacion"
+    );
+
+  const resumen =
+    document.getElementById(
+      "resumenVentilacion"
+    );
+
+
+  if (
+    !tbody ||
+    !contenedor ||
+    !vacio
+  ) {
+
+    return;
+
+  }
+
+
+  tbody.innerHTML = "";
+
+
+  // -----------------------------------------
+  // SIN EQUIPOS
+  // -----------------------------------------
+
+  if (
+    equiposVentilacion.length === 0
+  ) {
+
+    contenedor.style.display =
+      "none";
+
+    vacio.classList.remove(
+      "hidden"
+    );
+
+    if (resumen) {
+
+      resumen.textContent = "";
+
+    }
+
+    return;
+
+  }
+
+
+  // -----------------------------------------
+  // CON EQUIPOS
+  // -----------------------------------------
+
+  vacio.classList.add(
+    "hidden"
+  );
+
+  contenedor.style.display =
+    "block";
+
+
+  let consumoTotal = 0;
+
+  let equiposConConsumo = 0;
+
+
+  equiposVentilacion.forEach(
+    (equipo, index) => {
+
+
+      const fila =
+        document.createElement(
+          "tr"
+        );
+
+
+      const consumo =
+        equipo.consumoKWh !== null
+          ? (
+              Math.round(
+                equipo.consumoKWh
+              ).toLocaleString(
+                "es-MX"
+              ) +
+              " kWh/año"
+            )
+          : "Sin datos suficientes";
+
+
+      if (
+        equipo.consumoKWh !== null
+      ) {
+
+        consumoTotal +=
+          equipo.consumoKWh;
+
+        equiposConConsumo++;
+
+      }
+
+
+      fila.innerHTML = `
+
+        <td>
+          ${equipo.area}
+        </td>
+
+        <td>
+          ${nombreTipoVentilacion(
+            equipo.tipo,
+            equipo.tipoOtro
+          )}
+        </td>
+
+        <td class="num">
+          ${equipo.cantidad}
+        </td>
+
+        <td class="num">
+          ${textoPotenciaVentilacion(
+            equipo
+          )}
+        </td>
+
+        <td class="num">
+          ${textoCaudalVentilacion(
+            equipo
+          )}
+        </td>
+
+        <td>
+          ${textoOperacionVentilacion(
+            equipo
+          )}
+        </td>
+
+        <td class="num">
+          ${consumo}
+        </td>
+
+        <td class="acciones">
+
+          <button
+            type="button"
+            class="table-action"
+            onclick="editarVentilacion(${index})">
+            Editar
+          </button>
+
+          <button
+            type="button"
+            class="table-action danger"
+            onclick="eliminarVentilacion(${index})">
+            Eliminar
+          </button>
+
+        </td>
+
+      `;
+
+
+      tbody.appendChild(
+        fila
+      );
+
+    }
+  );
+
+
+  // -----------------------------------------
+  // RESUMEN
+  // -----------------------------------------
+
+  if (resumen) {
+
+    const cantidadTotal =
+      equiposVentilacion.reduce(
+        (total, equipo) =>
+          total + equipo.cantidad,
+        0
+      );
+
+
+    let texto =
+      `${cantidadTotal} equipo`;
+
+    if (
+      cantidadTotal !== 1
+    ) {
+
+      texto += "s";
+
+    }
+
+
+    if (
+      equiposConConsumo > 0
+    ) {
+
+      texto +=
+        " · Consumo estimado: " +
+        Math.round(
+          consumoTotal
+        ).toLocaleString(
+          "es-MX"
+        ) +
+        " kWh/año";
+
+    }
+
+
+    resumen.textContent =
+      texto;
+
+  }
+
+}
+
+
+// -----------------------------------------------------
+// 19. ELIMINAR
+// -----------------------------------------------------
+
+function eliminarVentilacion(
+  index
+) {
+
+  const equipo =
+    equiposVentilacion[index];
+
+  if (!equipo) return;
+
+
+  const confirmar =
+    confirm(
+      "¿Desea eliminar este equipo de ventilación / extracción?"
+    );
+
+
+  if (!confirmar) return;
+
+
+  equiposVentilacion.splice(
+    index,
+    1
+  );
+
+
+  renderizarTablaVentilacion();
+
+} 
  
   // ======================================================
   // INICIALIZACIÓN
