@@ -5893,6 +5893,544 @@ etc.
 
 </div>
 <!-- FIN modalAireAcondicionado -->
+
+<!-- =====================================================
+     MODAL - VENTILACIÓN / EXTRACCIÓN
+====================================================== -->
+
+<div
+  id="modalVentilacion"
+  class="modal hidden">
+
+  <div class="modal-content modal-large">
+
+    <!-- =========================================
+         ENCABEZADO
+    ========================================== -->
+
+    <div class="modal-header">
+
+      <h2 id="tituloModalVentilacion">
+        Agregar equipo de ventilación / extracción
+      </h2>
+
+      <button
+        type="button"
+        class="modal-close"
+        id="cerrarModalVentilacion"
+        aria-label="Cerrar">
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="modal-body">
+
+      <!-- =========================================
+           1. IDENTIFICACIÓN
+      ========================================== -->
+
+      <h3>Identificación del equipo</h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="ventArea">
+            Área donde se encuentra o presta servicio
+          </label>
+
+          <select id="ventArea">
+            <option value="">Seleccione...</option>
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="ventTipo">
+            Tipo de equipo
+          </label>
+
+          <select id="ventTipo">
+
+            <option value="">Seleccione...</option>
+
+            <option value="techo">
+              Ventilador de techo
+            </option>
+
+            <option value="pedestal_pared">
+              Ventilador de pedestal / pared
+            </option>
+
+            <option value="extractor_axial">
+              Extractor axial
+            </option>
+
+            <option value="extractor_centrifugo">
+              Extractor centrífugo
+            </option>
+
+            <option value="ventilador_axial">
+              Ventilador axial
+            </option>
+
+            <option value="ventilador_centrifugo">
+              Ventilador centrífugo
+            </option>
+
+            <option value="manejadora">
+              Manejadora de aire
+            </option>
+
+            <option value="suministro">
+              Ventilador de suministro
+            </option>
+
+            <option value="retorno">
+              Ventilador de retorno
+            </option>
+
+            <option value="campana">
+              Campana / extracción de cocina
+            </option>
+
+            <option value="otro">
+              Otro
+            </option>
+
+            <option value="no_sabe">
+              No sabe
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div
+          class="form-group hidden"
+          id="ventTipoOtroGrupo">
+
+          <label for="ventTipoOtro">
+            Especifique otro tipo
+          </label>
+
+          <input
+            type="text"
+            id="ventTipoOtro"
+            placeholder="Describa el equipo">
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="ventCantidad">
+            Cantidad de equipos iguales
+          </label>
+
+          <input
+            type="number"
+            id="ventCantidad"
+            min="1"
+            step="1"
+            value="1">
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           2. ANTIGÜEDAD
+      ========================================== -->
+
+      <h3 style="margin-top:28px">
+        Año de adquisición y antigüedad
+      </h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="ventAnioAdquisicion">
+            Año de adquisición
+          </label>
+
+          <select id="ventAnioAdquisicion">
+            <option value="">Seleccione...</option>
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="ventAntiguedad">
+            Antigüedad aproximada
+          </label>
+
+          <div style="display:flex; gap:8px; align-items:center">
+
+            <input
+              type="number"
+              id="ventAntiguedad"
+              min="0"
+              step="1"
+              placeholder="Ej. 5">
+
+            <span>años</span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           3. DATOS ELÉCTRICOS
+      ========================================== -->
+
+      <h3 style="margin-top:28px">
+        Datos eléctricos
+      </h3>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="ventPotencia">
+            Potencia por equipo
+          </label>
+
+          <div style="display:flex; gap:8px; align-items:center">
+
+            <input
+              type="number"
+              id="ventPotencia"
+              min="0"
+              step="0.01"
+              placeholder="Ej. 250">
+
+            <select
+              id="ventUnidadPotencia"
+              style="max-width:90px">
+
+              <option value="w">W</option>
+              <option value="kw">kW</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Potencia no disponible
+          </label>
+
+          <label
+            style="
+              display:flex;
+              flex-direction:row;
+              align-items:center;
+              gap:8px;
+              font-weight:normal;
+              cursor:pointer;
+            ">
+
+            <input
+              type="checkbox"
+              id="ventPotenciaDesconocida"
+              style="width:auto; margin:0">
+
+            No conozco la potencia
+
+          </label>
+
+          <small>
+            Si no conoce la potencia, puede proporcionar
+            marca, modelo o datos de placa.
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           4. DATOS TÉCNICOS COMPLEMENTARIOS
+      ========================================== -->
+
+      <div
+        id="ventDatosTecnicos"
+        class="hidden">
+
+        <h3 style="margin-top:28px">
+          Datos técnicos del equipo
+        </h3>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label for="ventMarca">
+              Marca
+            </label>
+
+            <input
+              type="text"
+              id="ventMarca"
+              placeholder="Ej. Soler & Palau">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="ventModelo">
+              Modelo
+            </label>
+
+            <input
+              type="text"
+              id="ventModelo"
+              placeholder="Modelo del equipo">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="ventCaudal">
+              Caudal de aire
+            </label>
+
+            <input
+              type="number"
+              id="ventCaudal"
+              min="0"
+              step="0.1"
+              placeholder="Si está disponible">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="ventUnidadCaudal">
+              Unidad del caudal
+            </label>
+
+            <select id="ventUnidadCaudal">
+
+              <option value="">
+                Seleccione...
+              </option>
+
+              <option value="m3_h">
+                m³/h
+              </option>
+
+              <option value="m3_s">
+                m³/s
+              </option>
+
+              <option value="cfm">
+                CFM
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="ventVelocidades">
+              Velocidades
+            </label>
+
+            <select id="ventVelocidades">
+
+              <option value="">
+                Seleccione...
+              </option>
+
+              <option value="1">
+                Una velocidad
+              </option>
+
+              <option value="2">
+                Dos velocidades
+              </option>
+
+              <option value="3_mas">
+                Tres o más velocidades
+              </option>
+
+              <option value="variable">
+                Velocidad variable
+              </option>
+
+              <option value="no_sabe">
+                No sabe
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           5. HORARIO DE OPERACIÓN
+      ========================================== -->
+
+      <h3 style="margin-top:28px">
+        Horario de operación
+      </h3>
+
+      <div class="form-group">
+
+        <label>
+          ¿El horario de este equipo coincide con el
+          horario general del establecimiento?
+        </label>
+
+        <div class="radio-group">
+
+          <label>
+            <input
+              type="radio"
+              name="ventHorarioCoincide"
+              value="si">
+            Sí
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="ventHorarioCoincide"
+              value="no">
+            No
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="ventHorarioCoincide"
+              value="no_sabe">
+            No sabe
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- HORARIO PARTICULAR -->
+
+      <div
+        id="ventHorarioPropio"
+        class="hidden">
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label for="ventHorasLV">
+              Horas de uso al día — lunes a viernes
+            </label>
+
+            <input
+              type="number"
+              id="ventHorasLV"
+              min="0"
+              max="24"
+              step="0.5"
+              placeholder="Ej. 10">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="ventHorasSab">
+              Horas de uso — sábado
+            </label>
+
+            <input
+              type="number"
+              id="ventHorasSab"
+              min="0"
+              max="24"
+              step="0.5"
+              placeholder="Ej. 8">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="ventHorasDom">
+              Horas de uso — domingo
+            </label>
+
+            <input
+              type="number"
+              id="ventHorasDom"
+              min="0"
+              max="24"
+              step="0.5"
+              placeholder="Ej. 0">
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         BOTONES DEL MODAL
+    ========================================== -->
+
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="secondary"
+        id="cancelarVentilacion">
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        id="guardarVentilacion">
+        Guardar equipo
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
   
  
 <!-- =====================================================
@@ -8320,543 +8858,6 @@ function limpiarFormularioAireAcondicionado() {
   limpiarHorarioEspecificoAireAcondicionado();
 
 }
-
-<!-- =====================================================
-     MODAL - VENTILACIÓN / EXTRACCIÓN
-====================================================== -->
-
-<div
-  id="modalVentilacion"
-  class="modal hidden">
-
-  <div class="modal-content modal-large">
-
-    <!-- =========================================
-         ENCABEZADO
-    ========================================== -->
-
-    <div class="modal-header">
-
-      <h2 id="tituloModalVentilacion">
-        Agregar equipo de ventilación / extracción
-      </h2>
-
-      <button
-        type="button"
-        class="modal-close"
-        id="cerrarModalVentilacion"
-        aria-label="Cerrar">
-        ×
-      </button>
-
-    </div>
-
-
-    <div class="modal-body">
-
-      <!-- =========================================
-           1. IDENTIFICACIÓN
-      ========================================== -->
-
-      <h3>Identificación del equipo</h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label for="ventArea">
-            Área donde se encuentra o presta servicio
-          </label>
-
-          <select id="ventArea">
-            <option value="">Seleccione...</option>
-          </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="ventTipo">
-            Tipo de equipo
-          </label>
-
-          <select id="ventTipo">
-
-            <option value="">Seleccione...</option>
-
-            <option value="techo">
-              Ventilador de techo
-            </option>
-
-            <option value="pedestal_pared">
-              Ventilador de pedestal / pared
-            </option>
-
-            <option value="extractor_axial">
-              Extractor axial
-            </option>
-
-            <option value="extractor_centrifugo">
-              Extractor centrífugo
-            </option>
-
-            <option value="ventilador_axial">
-              Ventilador axial
-            </option>
-
-            <option value="ventilador_centrifugo">
-              Ventilador centrífugo
-            </option>
-
-            <option value="manejadora">
-              Manejadora de aire
-            </option>
-
-            <option value="suministro">
-              Ventilador de suministro
-            </option>
-
-            <option value="retorno">
-              Ventilador de retorno
-            </option>
-
-            <option value="campana">
-              Campana / extracción de cocina
-            </option>
-
-            <option value="otro">
-              Otro
-            </option>
-
-            <option value="no_sabe">
-              No sabe
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div
-          class="form-group hidden"
-          id="ventTipoOtroGrupo">
-
-          <label for="ventTipoOtro">
-            Especifique otro tipo
-          </label>
-
-          <input
-            type="text"
-            id="ventTipoOtro"
-            placeholder="Describa el equipo">
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="ventCantidad">
-            Cantidad de equipos iguales
-          </label>
-
-          <input
-            type="number"
-            id="ventCantidad"
-            min="1"
-            step="1"
-            value="1">
-
-        </div>
-
-      </div>
-
-
-      <!-- =========================================
-           2. ANTIGÜEDAD
-      ========================================== -->
-
-      <h3 style="margin-top:28px">
-        Año de adquisición y antigüedad
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label for="ventAnioAdquisicion">
-            Año de adquisición
-          </label>
-
-          <select id="ventAnioAdquisicion">
-            <option value="">Seleccione...</option>
-          </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="ventAntiguedad">
-            Antigüedad aproximada
-          </label>
-
-          <div style="display:flex; gap:8px; align-items:center">
-
-            <input
-              type="number"
-              id="ventAntiguedad"
-              min="0"
-              step="1"
-              placeholder="Ej. 5">
-
-            <span>años</span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- =========================================
-           3. DATOS ELÉCTRICOS
-      ========================================== -->
-
-      <h3 style="margin-top:28px">
-        Datos eléctricos
-      </h3>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label for="ventPotencia">
-            Potencia por equipo
-          </label>
-
-          <div style="display:flex; gap:8px; align-items:center">
-
-            <input
-              type="number"
-              id="ventPotencia"
-              min="0"
-              step="0.01"
-              placeholder="Ej. 250">
-
-            <select
-              id="ventUnidadPotencia"
-              style="max-width:90px">
-
-              <option value="w">W</option>
-              <option value="kw">kW</option>
-
-            </select>
-
-          </div>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Potencia no disponible
-          </label>
-
-          <label
-            style="
-              display:flex;
-              flex-direction:row;
-              align-items:center;
-              gap:8px;
-              font-weight:normal;
-              cursor:pointer;
-            ">
-
-            <input
-              type="checkbox"
-              id="ventPotenciaDesconocida"
-              style="width:auto; margin:0">
-
-            No conozco la potencia
-
-          </label>
-
-          <small>
-            Si no conoce la potencia, puede proporcionar
-            marca, modelo o datos de placa.
-          </small>
-
-        </div>
-
-      </div>
-
-
-      <!-- =========================================
-           4. DATOS TÉCNICOS COMPLEMENTARIOS
-      ========================================== -->
-
-      <div
-        id="ventDatosTecnicos"
-        class="hidden">
-
-        <h3 style="margin-top:28px">
-          Datos técnicos del equipo
-        </h3>
-
-        <div class="form-grid">
-
-          <div class="form-group">
-
-            <label for="ventMarca">
-              Marca
-            </label>
-
-            <input
-              type="text"
-              id="ventMarca"
-              placeholder="Ej. Soler & Palau">
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="ventModelo">
-              Modelo
-            </label>
-
-            <input
-              type="text"
-              id="ventModelo"
-              placeholder="Modelo del equipo">
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="ventCaudal">
-              Caudal de aire
-            </label>
-
-            <input
-              type="number"
-              id="ventCaudal"
-              min="0"
-              step="0.1"
-              placeholder="Si está disponible">
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="ventUnidadCaudal">
-              Unidad del caudal
-            </label>
-
-            <select id="ventUnidadCaudal">
-
-              <option value="">
-                Seleccione...
-              </option>
-
-              <option value="m3_h">
-                m³/h
-              </option>
-
-              <option value="m3_s">
-                m³/s
-              </option>
-
-              <option value="cfm">
-                CFM
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="ventVelocidades">
-              Velocidades
-            </label>
-
-            <select id="ventVelocidades">
-
-              <option value="">
-                Seleccione...
-              </option>
-
-              <option value="1">
-                Una velocidad
-              </option>
-
-              <option value="2">
-                Dos velocidades
-              </option>
-
-              <option value="3_mas">
-                Tres o más velocidades
-              </option>
-
-              <option value="variable">
-                Velocidad variable
-              </option>
-
-              <option value="no_sabe">
-                No sabe
-              </option>
-
-            </select>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- =========================================
-           5. HORARIO DE OPERACIÓN
-      ========================================== -->
-
-      <h3 style="margin-top:28px">
-        Horario de operación
-      </h3>
-
-      <div class="form-group">
-
-        <label>
-          ¿El horario de este equipo coincide con el
-          horario general del establecimiento?
-        </label>
-
-        <div class="radio-group">
-
-          <label>
-            <input
-              type="radio"
-              name="ventHorarioCoincide"
-              value="si">
-            Sí
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="ventHorarioCoincide"
-              value="no">
-            No
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="ventHorarioCoincide"
-              value="no_sabe">
-            No sabe
-          </label>
-
-        </div>
-
-      </div>
-
-
-      <!-- HORARIO PARTICULAR -->
-
-      <div
-        id="ventHorarioPropio"
-        class="hidden">
-
-        <div class="form-grid">
-
-          <div class="form-group">
-
-            <label for="ventHorasLV">
-              Horas de uso al día — lunes a viernes
-            </label>
-
-            <input
-              type="number"
-              id="ventHorasLV"
-              min="0"
-              max="24"
-              step="0.5"
-              placeholder="Ej. 10">
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="ventHorasSab">
-              Horas de uso — sábado
-            </label>
-
-            <input
-              type="number"
-              id="ventHorasSab"
-              min="0"
-              max="24"
-              step="0.5"
-              placeholder="Ej. 8">
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="ventHorasDom">
-              Horas de uso — domingo
-            </label>
-
-            <input
-              type="number"
-              id="ventHorasDom"
-              min="0"
-              max="24"
-              step="0.5"
-              placeholder="Ej. 0">
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- =========================================
-         BOTONES DEL MODAL
-    ========================================== -->
-
-    <div class="modal-footer">
-
-      <button
-        type="button"
-        class="secondary"
-        id="cancelarVentilacion">
-        Cancelar
-      </button>
-
-      <button
-        type="button"
-        class="primary"
-        id="guardarVentilacion">
-        Guardar equipo
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
 
 
   
