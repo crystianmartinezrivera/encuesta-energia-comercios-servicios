@@ -1701,7 +1701,104 @@
 
 }
 
-    
+/* =====================================================
+   MODAL - CALEFACCIÓN
+===================================================== */
+
+#modalCalefaccion {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 35, 70, 0.45);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+  z-index: 9999;
+}
+
+#modalCalefaccion.hidden {
+  display: none;
+}
+
+#modalCalefaccion .modal-content {
+  background: #ffffff;
+  width: min(1000px, 96vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+#modalCalefaccion .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #d9e2ec;
+
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  z-index: 2;
+}
+
+#modalCalefaccion .modal-header h2 {
+  margin: 0;
+  color: #063b72;
+  font-size: 1.45rem;
+}
+
+#modalCalefaccion .modal-close {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: #eef3f7;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  color: #25364a;
+}
+
+#modalCalefaccion .modal-body {
+  padding: 24px;
+}
+
+#modalCalefaccion .modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 18px 24px;
+  border-top: 1px solid #d9e2ec;
+
+  position: sticky;
+  bottom: 0;
+  background: #ffffff;
+  z-index: 2;
+}
+
+#modalCalefaccion .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
+}
+
+@media (max-width: 800px) {
+
+  #modalCalefaccion {
+    padding: 10px;
+  }
+
+  #modalCalefaccion .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+}    
     
 </style>
 <!-- =====================================================
@@ -18072,7 +18169,385 @@ window.editarVentilacion = function(index) {
   modalVentilacion.classList.remove("hidden");
 
 };
- 
+
+// =====================================================
+// B. CALEFACCIÓN DE ESPACIOS
+// =====================================================
+
+let equiposCalefaccion = [];
+let indiceCalefaccionEdicion = null;
+
+
+// -----------------------------------------------------
+// ELEMENTOS
+// -----------------------------------------------------
+
+const btnAgregarCalefaccion =
+  document.getElementById("btnAgregarCalefaccion");
+
+const modalCalefaccion =
+  document.getElementById("modalCalefaccion");
+
+const cerrarModalCalefaccion =
+  document.getElementById("cerrarModalCalefaccion");
+
+const cancelarCalefaccion =
+  document.getElementById("cancelarCalefaccion");
+
+const guardarCalefaccion =
+  document.getElementById("guardarCalefaccion");
+
+const tituloModalCalefaccion =
+  document.getElementById("tituloModalCalefaccion");
+
+
+// -----------------------------------------------------
+// CARGAR ÁREAS
+// -----------------------------------------------------
+
+function cargarAreasCalefaccion() {
+
+  const select =
+    document.getElementById("calefArea");
+
+  if (!select) return;
+
+  select.innerHTML =
+    '<option value="">Seleccione...</option>';
+
+  if (
+    typeof areasEstablecimiento !== "undefined" &&
+    Array.isArray(areasEstablecimiento)
+  ) {
+
+    areasEstablecimiento.forEach((area, index) => {
+
+      const option =
+        document.createElement("option");
+
+      const nombre =
+        area.nombre ||
+        area.area ||
+        area.tipo ||
+        area.descripcion ||
+        `Área ${index + 1}`;
+
+      option.value = nombre;
+      option.textContent = nombre;
+
+      select.appendChild(option);
+
+    });
+
+  }
+
+}
+
+
+// -----------------------------------------------------
+// CARGAR AÑOS
+// -----------------------------------------------------
+
+function cargarAniosCalefaccion() {
+
+  const select =
+    document.getElementById("calefAnioAdquisicion");
+
+  if (!select) return;
+
+  select.innerHTML =
+    '<option value="">Seleccione...</option>';
+
+  const actual =
+    new Date().getFullYear();
+
+  for (let anio = actual; anio >= 1950; anio--) {
+
+    const option =
+      document.createElement("option");
+
+    option.value = anio;
+    option.textContent = anio;
+
+    select.appendChild(option);
+
+  }
+
+}
+
+
+// -----------------------------------------------------
+// ABRIR
+// -----------------------------------------------------
+
+function abrirModalCalefaccion() {
+
+  indiceCalefaccionEdicion = null;
+
+  if (tituloModalCalefaccion) {
+
+    tituloModalCalefaccion.textContent =
+      "Agregar equipo de calefacción";
+
+  }
+
+  cargarAreasCalefaccion();
+  cargarAniosCalefaccion();
+
+  modalCalefaccion?.classList.remove("hidden");
+
+}
+
+
+btnAgregarCalefaccion?.addEventListener(
+  "click",
+  abrirModalCalefaccion
+);
+
+
+// -----------------------------------------------------
+// CERRAR
+// -----------------------------------------------------
+
+function cerrarModalEquipoCalefaccion() {
+
+  modalCalefaccion?.classList.add("hidden");
+
+  indiceCalefaccionEdicion = null;
+
+}
+
+
+cerrarModalCalefaccion?.addEventListener(
+  "click",
+  cerrarModalEquipoCalefaccion
+);
+
+cancelarCalefaccion?.addEventListener(
+  "click",
+  cerrarModalEquipoCalefaccion
+);
+
+
+// -----------------------------------------------------
+// TIPO "OTRO"
+// -----------------------------------------------------
+
+const calefTipo =
+  document.getElementById("calefTipo");
+
+const calefTipoOtroGrupo =
+  document.getElementById("calefTipoOtroGrupo");
+
+
+calefTipo?.addEventListener("change", () => {
+
+  calefTipoOtroGrupo?.classList.toggle(
+    "hidden",
+    calefTipo.value !== "otro"
+  );
+
+  if (calefTipo.value !== "otro") {
+
+    const campo =
+      document.getElementById("calefTipoOtro");
+
+    if (campo) campo.value = "";
+
+  }
+
+});
+
+
+// -----------------------------------------------------
+// ENERGÉTICO "OTRO"
+// -----------------------------------------------------
+
+const calefEnergetico =
+  document.getElementById("calefEnergetico");
+
+const calefEnergeticoOtroGrupo =
+  document.getElementById("calefEnergeticoOtroGrupo");
+
+
+calefEnergetico?.addEventListener("change", () => {
+
+  calefEnergeticoOtroGrupo?.classList.toggle(
+    "hidden",
+    calefEnergetico.value !== "otro"
+  );
+
+  if (calefEnergetico.value !== "otro") {
+
+    const campo =
+      document.getElementById("calefEnergeticoOtro");
+
+    if (campo) campo.value = "";
+
+  }
+
+});
+
+
+// -----------------------------------------------------
+// AÑO → ANTIGÜEDAD
+// -----------------------------------------------------
+
+const calefAnioAdquisicion =
+  document.getElementById("calefAnioAdquisicion");
+
+const calefAntiguedad =
+  document.getElementById("calefAntiguedad");
+
+
+calefAnioAdquisicion?.addEventListener(
+  "change",
+  () => {
+
+    const anio =
+      Number(calefAnioAdquisicion.value);
+
+    if (!anio) {
+
+      calefAntiguedad.value = "";
+      return;
+
+    }
+
+    calefAntiguedad.value =
+      Math.max(
+        0,
+        new Date().getFullYear() - anio
+      );
+
+  }
+);
+
+
+// -----------------------------------------------------
+// POTENCIA DESCONOCIDA
+// -----------------------------------------------------
+
+const calefPotencia =
+  document.getElementById("calefPotencia");
+
+const calefUnidadPotencia =
+  document.getElementById("calefUnidadPotencia");
+
+const calefPotenciaDesconocida =
+  document.getElementById("calefPotenciaDesconocida");
+
+const calefDatosTecnicos =
+  document.getElementById("calefDatosTecnicos");
+
+
+calefPotenciaDesconocida?.addEventListener(
+  "change",
+  () => {
+
+    const desconocida =
+      calefPotenciaDesconocida.checked;
+
+    if (desconocida) {
+
+      calefPotencia.value = "";
+      calefPotencia.disabled = true;
+
+      calefUnidadPotencia.disabled = true;
+
+      calefDatosTecnicos?.classList.remove("hidden");
+
+    } else {
+
+      calefPotencia.disabled = false;
+      calefUnidadPotencia.disabled = false;
+
+      calefDatosTecnicos?.classList.add("hidden");
+
+    }
+
+  }
+);
+
+
+// -----------------------------------------------------
+// TEMPERATURA DESCONOCIDA
+// -----------------------------------------------------
+
+const calefTemperaturaConsigna =
+  document.getElementById("calefTemperaturaConsigna");
+
+const calefTemperaturaDesconocida =
+  document.getElementById("calefTemperaturaDesconocida");
+
+
+calefTemperaturaDesconocida?.addEventListener(
+  "change",
+  () => {
+
+    if (calefTemperaturaDesconocida.checked) {
+
+      calefTemperaturaConsigna.value = "";
+      calefTemperaturaConsigna.disabled = true;
+
+    } else {
+
+      calefTemperaturaConsigna.disabled = false;
+
+    }
+
+  }
+);
+
+
+// -----------------------------------------------------
+// HORARIO GENERAL / PROPIO
+// -----------------------------------------------------
+
+const calefHorarioPropio =
+  document.getElementById("calefHorarioPropio");
+
+const radiosCalefHorario =
+  document.querySelectorAll(
+    'input[name="calefHorarioCoincide"]'
+  );
+
+
+radiosCalefHorario.forEach(radio => {
+
+  radio.addEventListener("change", () => {
+
+    if (
+      radio.checked &&
+      radio.value === "no"
+    ) {
+
+      calefHorarioPropio?.classList.remove("hidden");
+
+    } else if (radio.checked) {
+
+      calefHorarioPropio?.classList.add("hidden");
+
+      [
+        "calefHorasLV",
+        "calefHorasSab",
+        "calefHorasDom"
+      ].forEach(id => {
+
+        const campo =
+          document.getElementById(id);
+
+        if (campo) campo.value = "";
+
+      });
+
+    }
+
+  });
+
+});
+
+    
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
