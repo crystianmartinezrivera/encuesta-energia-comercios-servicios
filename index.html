@@ -18325,46 +18325,6 @@ function cargarEnergeticosCalefaccion() {
 
   if (!select) return;
 
-
-  // Limpiar lista
-  select.innerHTML =
-    '<option value="">Seleccione...</option>';
-
-
-  // Obtener los energéticos que ya fueron declarados
-  // en la sección de energía / facturación.
-
-  const energeticosDeclarados = [];
-
-
-  // ELECTRICIDAD
-  const usaElectricidad =
-    document.getElementById("usaElectricidad");
-
-  if (
-    usaElectricidad &&
-    usaElectricidad.checked
-  ) {
-
-    energeticosDeclarados.push({
-      value: "electricidad",
-      texto: "Electricidad"
-    });
-
-  }
-
-
-// -----------------------------------------------------
-// ENERGÉTICOS DECLARADOS EN EL ESTABLECIMIENTO
-// -----------------------------------------------------
-
-function cargarEnergeticosCalefaccion() {
-
-  const select =
-    document.getElementById("calefEnergetico");
-
-  if (!select) return;
-
   select.innerHTML =
     '<option value="">Seleccione...</option>';
 
@@ -18402,7 +18362,6 @@ function cargarEnergeticosCalefaccion() {
 
 }
 
-  
 // -----------------------------------------------------
 // AÑO → ANTIGÜEDAD
 // -----------------------------------------------------
