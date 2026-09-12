@@ -2093,6 +2093,72 @@
   #moduloRefrigeracion,#moduloEquiposOficina,#moduloElectromecanicos,#moduloSistemasTermicos,#moduloCoccion{padding:16px}
 }
 
+
+
+/* =====================================================
+   HOMOLOGACIÓN GENERAL - ACCIONES DE TABLAS / SECCIÓN 4
+===================================================== */
+.table-action,
+.cd-action-btn,
+.action-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:72px;
+  min-height:32px;
+  padding:6px 10px;
+  margin:2px;
+  border:1px solid #b9c7d2;
+  border-radius:7px;
+  background:#fff;
+  color:#174873;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.15;
+  cursor:pointer;
+  transition:background .15s ease,border-color .15s ease,color .15s ease;
+}
+.table-action:hover,
+.cd-action-btn:hover,
+.action-btn:hover{background:#f2f7fb;border-color:#8eabc0}
+.table-action.danger,
+.cd-action-btn.danger,
+.action-btn.delete{
+  color:#b33636;
+  border-color:#e0bcbc;
+}
+.table-action.danger:hover,
+.cd-action-btn.danger:hover,
+.action-btn.delete:hover{background:#fff4f4;border-color:#dba1a1}
+.action-btn.duplicate{color:#526779}
+
+#moduloEquiposEspecializados,
+#bloqueCalefaccion{
+  margin-top:24px;
+  padding:22px;
+  border:1px solid var(--borde);
+  border-radius:12px;
+  background:#fff;
+}
+
+#moduloEquiposEspecializados .question-block{
+  background:#f8fbfd;
+  border:1px solid #dce7ef;
+  border-radius:9px;
+  padding:16px;
+}
+
+.energy-source-note{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:7px;
+  background:#fff8e8;
+  border:1px solid #ead8a6;
+  color:#6b5b28;
+  font-size:12px;
+  line-height:1.4;
+}
+
 </style>
 <!-- =====================================================
    Fin de CSS
@@ -3445,12 +3511,37 @@
       class="hidden"
       style="margin-bottom:12px">
 
-      <button
-        type="button"
-        class="secondary"
-        id="btnAgregarCalefaccion">
-        + Agregar equipo de calefacción
-      </button>
+      <div class="cd-module-actions">
+        <button
+          type="button"
+          class="secondary"
+          id="btnAgregarCalefaccion">
+          + Agregar equipo de calefacción
+        </button>
+        <span id="resumenCalefaccion" class="cd-summary"></span>
+      </div>
+
+      <div id="sinCalefaccion" class="cd-empty">
+        Aún no se han agregado equipos de calefacción de espacios.
+      </div>
+
+      <div id="tablaCalefaccionContenedor" class="cd-table-wrap" style="display:none">
+        <table class="energy-table cd-table">
+          <thead>
+            <tr>
+              <th>Área atendida</th>
+              <th>Equipo</th>
+              <th>Energético</th>
+              <th class="num">Cantidad</th>
+              <th>Potencia / capacidad</th>
+              <th>Patrón de uso</th>
+              <th class="num">Consumo estimado</th>
+              <th class="acciones">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaCalefaccionBody"></tbody>
+        </table>
+      </div>
 
     </div>
 
@@ -3626,11 +3717,11 @@
 <section class="uso-card" id="moduloSistemasTermicos">
   <div class="uso-card-head">
     <div style="width:100%">
-      <h3>F. Sistemas térmicos y generación de calor</h3>
+      <h3>F. Sistemas térmicos y generación de calor para agua y procesos</h3>
 
       <div class="question-block" style="margin-top:14px">
         <div class="question-title">
-          ¿El establecimiento cuenta con calderas, calentadores, sistemas de vapor, sistemas solares térmicos o bombas de calor?
+          ¿El establecimiento cuenta con sistemas para calentamiento de agua, generación de vapor o producción de calor para procesos?
         </div>
 
         <div class="radio-group" style="min-height:auto; margin-top:10px">
@@ -3749,9 +3840,57 @@
 </section>
 
 <!-- =====================================================
-     H. EQUIPOS ESPECIALIZADOS POR ACTIVIDAD / OTROS
-     Se integrará posteriormente.
+     H. EQUIPOS ESPECIALIZADOS Y OTROS USOS FINALES
 ====================================================== -->
+<section class="uso-card" id="moduloEquiposEspecializados">
+  <div class="uso-card-head">
+    <div style="width:100%">
+      <h3>H. Equipos especializados y otros usos finales</h3>
+
+      <div class="question-block" style="margin-top:14px">
+        <div class="question-title">
+          ¿El establecimiento cuenta con equipos especializados propios de su actividad que no hayan sido registrados en los apartados anteriores?
+        </div>
+
+        <div class="radio-group" style="min-height:auto; margin-top:10px">
+          <label><input type="radio" name="usaEspecializados" value="si"> Sí</label>
+          <label><input type="radio" name="usaEspecializados" value="no"> No</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="especializadosContenido" class="cd-module-body hidden">
+    <div class="cd-module-actions">
+      <button type="button" class="secondary" id="btnAgregarEspecializado">
+        + Agregar equipo o grupo de equipos
+      </button>
+      <span id="resumenEspecializados" class="cd-summary"></span>
+    </div>
+
+    <div id="sinEspecializados" class="cd-empty">
+      Aún no se han agregado equipos especializados u otros usos finales.
+    </div>
+
+    <div id="tablaEspecializadosContenedor" class="cd-table-wrap" style="display:none">
+      <table class="energy-table cd-table">
+        <thead>
+          <tr>
+            <th>Equipo / sistema</th>
+            <th>Aplicación</th>
+            <th>Energético</th>
+            <th class="num">Cantidad</th>
+            <th>Potencia / capacidad</th>
+            <th>Patrón de uso</th>
+            <th class="num">Consumo estimado</th>
+            <th class="acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaEspecializadosBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
 
 
 <!-- =====================================================
@@ -4003,6 +4142,44 @@
 </div>
 
   
+
+<!-- =========================================
+     AYUDA - PÁGINA 4
+========================================== -->
+<div id="ayudaPagina4" class="hidden">
+
+  <div class="right-card green">
+    <h3>💡 ¿Qué son los usos finales?</h3>
+    <p>
+      Son las actividades o equipos en los que se utiliza la energía dentro del establecimiento,
+      por ejemplo iluminación, climatización, refrigeración, equipos eléctricos, calentamiento
+      de agua, procesos térmicos o cocción.
+    </p>
+  </div>
+
+  <div class="right-card blue">
+    <h3>▣ Tenga a la mano</h3>
+    <ul>
+      <li>⚙️ Placas de datos o fichas técnicas</li>
+      <li>🔢 Cantidad de equipos</li>
+      <li>⚡ Potencias o capacidades</li>
+      <li>🕒 Horarios aproximados de operación</li>
+      <li>📅 Antigüedad, cuando se conozca</li>
+      <li>🔥 Energético utilizado</li>
+    </ul>
+  </div>
+
+  <div class="right-card yellow">
+    <h3>☆ Importante</h3>
+    <p>
+      Registre conjuntamente equipos con características y patrones de operación similares.
+      Los energéticos disponibles en esta sección provienen del catálogo declarado previamente
+      para el establecimiento; aquí no se crean energéticos nuevos.
+    </p>
+  </div>
+
+</div>
+
 </aside>
 
   </div>
@@ -7640,8 +7817,95 @@
   </div>
 </div>
 
+
 <!-- =====================================================
-     MODAL F. SISTEMAS TÉRMICOS Y GENERACIÓN DE CALOR
+     MODAL B. CALEFACCIÓN DE ESPACIOS
+====================================================== -->
+<div id="modalCalefaccion" class="cd-modal hidden" aria-hidden="true">
+  <div class="cd-modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloModalCalefaccion">
+    <div class="cd-modal-header">
+      <h2 id="tituloModalCalefaccion">Agregar equipo de calefacción</h2>
+      <button type="button" class="cd-modal-close" id="cerrarModalCalefaccion" aria-label="Cerrar">×</button>
+    </div>
+    <div class="cd-modal-body">
+      <div class="cd-info-note">
+        Registre conjuntamente únicamente equipos del mismo tipo, energético y patrón de operación. Este apartado corresponde exclusivamente a calefacción de espacios.
+      </div>
+      <div class="cd-form-grid">
+        <div class="cd-form-group">
+          <label for="calArea">Área atendida <span class="req">*</span></label>
+          <select id="calArea"><option value="">Seleccione...</option></select>
+        </div>
+        <div class="cd-form-group">
+          <label for="calTipo">Tipo de equipo <span class="req">*</span></label>
+          <select id="calTipo">
+            <option value="">Seleccione...</option>
+            <option value="calefactor_electrico">Calefactor eléctrico</option>
+            <option value="calefactor_gas">Calefactor a gas</option>
+            <option value="radiador">Radiador / convector</option>
+            <option value="bomba_calor">Bomba de calor para climatización</option>
+            <option value="unidad_paquete">Unidad paquete / rooftop</option>
+            <option value="sistema_central">Sistema central de calefacción</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="cd-form-group hidden" id="calTipoOtroBox">
+          <label for="calTipoOtro">Especifique el equipo <span class="req">*</span></label>
+          <input id="calTipoOtro" type="text" maxlength="120" placeholder="Especifique">
+        </div>
+        <div class="cd-form-group">
+          <label for="calEnergetico">Energético <span class="req">*</span></label>
+          <select id="calEnergetico"><option value="">Seleccione...</option></select>
+          <small class="cd-help">La lista proviene de los energéticos declarados previamente.</small>
+        </div>
+        <div class="cd-form-group">
+          <label for="calCantidad">Número de equipos <span class="req">*</span></label>
+          <input id="calCantidad" type="number" min="1" step="1" placeholder="Ej. 3">
+        </div>
+        <div class="cd-form-group">
+          <label for="calPotencia">Potencia o capacidad por equipo</label>
+          <input id="calPotencia" type="number" min="0" step="0.01" placeholder="Ej. 2.5">
+        </div>
+        <div class="cd-form-group">
+          <label for="calUnidadPotencia">Unidad</label>
+          <select id="calUnidadPotencia">
+            <option value="">Seleccione...</option>
+            <option value="w">W</option>
+            <option value="kw">kW</option>
+            <option value="btu_h">BTU/h</option>
+            <option value="kcal_h">kcal/h</option>
+          </select>
+        </div>
+        <div class="cd-form-group">
+          <label for="calHorasDia">Horas de uso por día <span class="req">*</span></label>
+          <input id="calHorasDia" type="number" min="0" max="24" step="0.25" placeholder="Ej. 6">
+        </div>
+        <div class="cd-form-group">
+          <label for="calDiasSemana">Días por semana <span class="req">*</span></label>
+          <input id="calDiasSemana" type="number" min="0" max="7" step="1" placeholder="Ej. 5">
+        </div>
+        <div class="cd-form-group">
+          <label for="calSemanasAnio">Semanas por año <span class="req">*</span></label>
+          <input id="calSemanasAnio" type="number" min="0" max="52" step="1" value="20">
+        </div>
+        <div class="cd-form-group">
+          <label for="calTemperatura">Temperatura de consigna</label>
+          <div class="input-unit"><input id="calTemperatura" type="number" min="5" max="35" step="0.5" placeholder="Ej. 22"><span class="unit">°C</span></div>
+        </div>
+      </div>
+      <div id="calConsumoPreview" class="cd-calc-box" style="margin-top:18px">
+        Cuando el energético sea electricidad y se conozca la potencia, se calculará el consumo anual estimado.
+      </div>
+    </div>
+    <div class="cd-modal-footer">
+      <button type="button" class="secondary" id="cancelarCalefaccion">Cancelar</button>
+      <button type="button" class="primary" id="guardarCalefaccion">Guardar equipo</button>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     MODAL F. SISTEMAS TÉRMICOS PARA AGUA Y PROCESOS
 ====================================================== -->
 <div id="modalSistemaTermico" class="cd-modal hidden" aria-hidden="true">
   <div class="cd-modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloModalSistemaTermico">
@@ -7664,7 +7928,7 @@
             <option value="calentador">Calentador de agua</option>
             <option value="vapor">Generador de vapor / sistema de vapor</option>
             <option value="solar">Sistema solar térmico / calentador solar</option>
-            <option value="bomba_calor">Bomba de calor</option>
+            <option value="bomba_calor">Bomba de calor para agua / proceso</option>
             <option value="otro">Otro sistema térmico</option>
           </select>
         </div>
@@ -7683,14 +7947,6 @@
           <label for="termEnergetico">Energético que utiliza <span class="req">*</span></label>
           <select id="termEnergetico">
             <option value="">Seleccione...</option>
-            <option value="electricidad">Electricidad</option>
-            <option value="gas_natural">Gas natural</option>
-            <option value="gas_lp">Gas LP</option>
-            <option value="diesel">Diésel</option>
-            <option value="combustoleo">Combustóleo</option>
-            <option value="biomasa">Biomasa</option>
-            <option value="solar">Energía solar</option>
-            <option value="otro">Otro</option>
           </select>
         </div>
 
@@ -7929,12 +8185,6 @@
           <label for="cocEnergetico">Energético principal <span class="req">*</span></label>
           <select id="cocEnergetico">
             <option value="">Seleccione...</option>
-            <option value="electricidad">Electricidad</option>
-            <option value="gas_natural">Gas natural</option>
-            <option value="gas_lp">Gas LP</option>
-            <option value="lena">Leña</option>
-            <option value="carbon">Carbón</option>
-            <option value="otro">Otro</option>
           </select>
         </div>
 
@@ -8020,6 +8270,91 @@
     <div class="cd-modal-footer">
       <button type="button" class="secondary" id="cancelarCoccion">Cancelar</button>
       <button type="button" class="primary" id="guardarCoccion">Guardar equipo</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- =====================================================
+     MODAL H. EQUIPOS ESPECIALIZADOS Y OTROS USOS FINALES
+====================================================== -->
+<div id="modalEspecializado" class="cd-modal hidden" aria-hidden="true">
+  <div class="cd-modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloModalEspecializado">
+    <div class="cd-modal-header">
+      <h2 id="tituloModalEspecializado">Agregar equipo especializado</h2>
+      <button type="button" class="cd-modal-close" id="cerrarModalEspecializado" aria-label="Cerrar">×</button>
+    </div>
+    <div class="cd-modal-body">
+      <div class="cd-info-note">
+        Utilice este apartado para equipos propios de la actividad del establecimiento que no correspondan a iluminación, climatización, refrigeración, oficina, motores, sistemas térmicos o cocción.
+      </div>
+      <div class="cd-form-grid">
+        <div class="cd-form-group">
+          <label for="espTipo">Equipo o sistema <span class="req">*</span></label>
+          <select id="espTipo">
+            <option value="">Seleccione...</option>
+            <option value="lavanderia">Lavandería / secado / planchado</option>
+            <option value="medico">Equipo médico / diagnóstico</option>
+            <option value="esterilizacion">Esterilización especializada</option>
+            <option value="piscina_spa">Piscina / spa / hidromasaje</option>
+            <option value="audiovisual">Equipo audiovisual / recreativo</option>
+            <option value="taller">Equipo de taller / mantenimiento</option>
+            <option value="proceso">Equipo de proceso especializado</option>
+            <option value="otro">Otro equipo especializado</option>
+          </select>
+        </div>
+        <div class="cd-form-group hidden" id="espTipoOtroBox">
+          <label for="espTipoOtro">Especifique el equipo <span class="req">*</span></label>
+          <input id="espTipoOtro" type="text" maxlength="140" placeholder="Especifique">
+        </div>
+        <div class="cd-form-group full">
+          <label for="espAplicacion">Aplicación o servicio que realiza <span class="req">*</span></label>
+          <input id="espAplicacion" type="text" maxlength="180" placeholder="Ej. Lavado y secado de ropa del hotel">
+        </div>
+        <div class="cd-form-group">
+          <label for="espEnergetico">Energético <span class="req">*</span></label>
+          <select id="espEnergetico"><option value="">Seleccione...</option></select>
+          <small class="cd-help">Sólo se muestran energéticos declarados previamente.</small>
+        </div>
+        <div class="cd-form-group">
+          <label for="espCantidad">Número de equipos <span class="req">*</span></label>
+          <input id="espCantidad" type="number" min="1" step="1" placeholder="Ej. 2">
+        </div>
+        <div class="cd-form-group">
+          <label for="espPotencia">Potencia o capacidad por equipo</label>
+          <input id="espPotencia" type="number" min="0" step="0.01" placeholder="Ej. 5">
+        </div>
+        <div class="cd-form-group">
+          <label for="espUnidadPotencia">Unidad</label>
+          <select id="espUnidadPotencia">
+            <option value="">Seleccione...</option>
+            <option value="w">W</option>
+            <option value="kw">kW</option>
+            <option value="hp">HP</option>
+            <option value="btu_h">BTU/h</option>
+            <option value="kcal_h">kcal/h</option>
+          </select>
+        </div>
+        <div class="cd-form-group">
+          <label for="espHorasDia">Horas de uso por día <span class="req">*</span></label>
+          <input id="espHorasDia" type="number" min="0" max="24" step="0.25" placeholder="Ej. 4">
+        </div>
+        <div class="cd-form-group">
+          <label for="espDiasSemana">Días por semana <span class="req">*</span></label>
+          <input id="espDiasSemana" type="number" min="0" max="7" step="1" placeholder="Ej. 6">
+        </div>
+        <div class="cd-form-group">
+          <label for="espSemanasAnio">Semanas por año <span class="req">*</span></label>
+          <input id="espSemanasAnio" type="number" min="0" max="52" step="1" value="52">
+        </div>
+      </div>
+      <div id="espConsumoPreview" class="cd-calc-box" style="margin-top:18px">
+        Cuando el energético sea electricidad y se conozca la potencia, se calculará el consumo anual estimado.
+      </div>
+    </div>
+    <div class="cd-modal-footer">
+      <button type="button" class="secondary" id="cancelarEspecializado">Cancelar</button>
+      <button type="button" class="primary" id="guardarEspecializado">Guardar equipo</button>
     </div>
   </div>
 </div>
@@ -8274,7 +8609,7 @@ function calcularEdad(){
         <td>${i+1}</td>
         <td><select class="mini-select turno-de" data-i="${i}">${opcionesHora(t.de)}</select></td>
         <td><select class="mini-select turno-a" data-i="${i}">${opcionesHora(t.a)}</select></td>
-        <td><button type="button" class="secondary eliminar-turno" data-i="${i}" style="padding:7px 10px">Eliminar</button></td>
+        <td><button type="button" class="action-btn delete eliminar-turno" data-i="${i}">Eliminar</button></td>
       </tr>
     `).join("");
 
@@ -8428,6 +8763,14 @@ if(nombre === "facturacion"){
 
     });
 
+}
+
+// Página 4
+if(nombre === "usos"){
+  mostrarAyudaPagina(4);
+  sincronizarEnergeticosUsosFinales().catch(function(error){
+    console.error("No se pudieron sincronizar los energéticos de usos finales:", error);
+  });
 }
     
     window.scrollTo({top:0,behavior:"smooth"});
@@ -11053,21 +11396,17 @@ function renderizarAreas(){
       <td>
         <button
           type="button"
-          class="btn-area-editar"
+          class="action-btn edit btn-area-editar"
           data-index="${index}"
           title="Editar"
-        >
-          ✎
-        </button>
+        >Editar</button>
 
         <button
           type="button"
-          class="btn-area-eliminar"
+          class="action-btn delete btn-area-eliminar"
           data-index="${index}"
           title="Eliminar"
-        >
-          🗑
-        </button>
+        >Eliminar</button>
       </td>
     `;
 
@@ -11866,14 +12205,14 @@ function renderizarEnergeticos(){
       botonEliminar.type = "button";
 
       botonEliminar.className =
-        "btn-energetico-eliminar";
+        "action-btn delete btn-energetico-eliminar";
 
       botonEliminar.dataset.index = index;
 
       botonEliminar.title =
         "Eliminar energético";
 
-      botonEliminar.textContent = "🗑";
+      botonEliminar.textContent = "Eliminar";
 
 
       tdAcciones.appendChild(
@@ -12382,7 +12721,7 @@ function renderizarGeneracion(){
         <td>
           <button
             type="button"
-            class="btn-eliminar-generacion"
+            class="action-btn delete btn-eliminar-generacion"
             data-index="${index}"
             title="Eliminar"
           >
@@ -12742,7 +13081,7 @@ function renderizarPlantas(){
         <td>
           <button
             type="button"
-            class="btn-eliminar-planta"
+            class="action-btn delete btn-eliminar-planta"
             data-index="${index}"
             title="Eliminar"
           >
@@ -12842,69 +13181,7 @@ document.addEventListener("click", function(e){
 // G. MOSTRAR FACTURACIÓN SOLO SI USA ELECTRICIDAD
 // ======================================================
 
-function actualizarSeccionFacturacionElectrica(){
 
-  const seccion =
-    document.getElementById(
-      "seccionFacturacionElectrica"
-    );
-
-  if(!seccion){
-    return;
-  }
-
-
-  const usaElectricidad =
-    energeticosEstablecimiento.some(
-      function(energetico){
-
-        return energetico.codigo === "electricidad";
-
-      }
-    );
-
-
-  if(usaElectricidad){
-
-    seccion.classList.remove("hidden");
-
-  }else{
-
-    seccion.classList.add("hidden");
-
-    // Limpia información si se elimina electricidad.
-    const periodicidad =
-      document.getElementById("periodicidadFactura");
-
-    const otra =
-      document.getElementById("periodicidadOtra");
-
-    const otraBox =
-      document.getElementById("periodicidadOtraBox");
-
-    const medidores =
-      document.getElementById("numeroMedidores");
-
-
-    if(periodicidad){
-      periodicidad.value = "";
-    }
-
-    if(otra){
-      otra.value = "";
-    }
-
-    if(otraBox){
-      otraBox.classList.add("hidden");
-    }
-
-    if(medidores){
-      medidores.value = "1";
-    }
-
-  }
-
-}
 // ======================================================
 // G. OTRA PERIODICIDAD
 // ======================================================
@@ -13000,38 +13277,9 @@ function actualizarSeccionFacturacionElectrica(){
 // ======================================================
 
 function mostrarAyudaPagina(numero){
-const ayuda1 =
-    document.getElementById("ayudaPagina1");
-
-  const ayuda2 =
-    document.getElementById("ayudaPagina2");
-
-  const ayuda3 =
-    document.getElementById("ayudaPagina3");
-
-
-  if(!ayuda1 || !ayuda2 || !ayuda3){
-    return;
-  }
-
-
-  ayuda1.classList.add("hidden");
-  ayuda2.classList.add("hidden");
-  ayuda3.classList.add("hidden");
-
-
-  if(numero === 1){
-    ayuda1.classList.remove("hidden");
-  }
-
-  if(numero === 2){
-    ayuda2.classList.remove("hidden");
-  }
-
-  if(numero === 3){
-    ayuda3.classList.remove("hidden");
-  }
-
+  const ayudas = [1,2,3,4].map(n => document.getElementById(`ayudaPagina${n}`));
+  ayudas.forEach(el => el?.classList.add("hidden"));
+  document.getElementById(`ayudaPagina${numero}`)?.classList.remove("hidden");
 }
   
 
@@ -13781,38 +14029,7 @@ function renderizarModulosFacturacion(listaEnergeticos){
 // PÁGINA 3 - CARGAR ENERGÉTICOS DESDE SUPABASE
 // ======================================================
 
-async function cargarEnergeticosFacturacion(){
-  const encuestaId =
-    localStorage.getItem("encuesta_id");
 
-  if(!encuestaId){
-    throw new Error(
-      "No se encontró el identificador de la encuesta."
-    );
-  }
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("energeticos_establecimiento")
-      .select("codigo,nombre")
-      .eq(
-        "encuesta_id",
-        Number(encuestaId)
-      )
-      .order("id", {
-        ascending:true
-      });
-
-  if(error){
-    throw error;
-  }
-
-  return data || [];
-
-}
 
 
   // ======================================================
@@ -15027,25 +15244,21 @@ function renderizarFacturasEnergia(){
 
   <button
     type="button"
-    class="secondary btn-editar-factura"
+    class="action-btn edit btn-editar-factura"
     data-codigo="${codigo}"
     data-index="${index}"
     style="padding:6px 10px;"
     title="Editar factura"
-  >
-    ✏️
-  </button>
+  >Editar</button>
 
   <button
     type="button"
-    class="secondary btn-eliminar-factura"
+    class="action-btn delete btn-eliminar-factura"
     data-codigo="${codigo}"
     data-index="${index}"
     style="padding:6px 10px;"
     title="Eliminar factura"
-  >
-    🗑
-  </button>
+  >Eliminar</button>
 
 </td>
           `;
@@ -15083,25 +15296,21 @@ function renderizarFacturasEnergia(){
 
   <button
     type="button"
-    class="secondary btn-editar-factura"
+    class="action-btn edit btn-editar-factura"
     data-codigo="${codigo}"
     data-index="${index}"
     style="padding:6px 10px;"
     title="Editar factura"
-  >
-    ✏️
-  </button>
+  >Editar</button>
 
   <button
     type="button"
-    class="secondary btn-eliminar-factura"
+    class="action-btn delete btn-eliminar-factura"
     data-codigo="${codigo}"
     data-index="${index}"
     style="padding:6px 10px;"
     title="Eliminar factura"
-  >
-    🗑
-  </button>
+  >Eliminar</button>
 
 </td>
 
@@ -16956,6 +17165,7 @@ const tituloModalVentilacion =
 function abrirModalVentilacion() {
 
   indiceVentilacionEdicion = null;
+  if (typeof limpiarFormularioVentilacion === "function") limpiarFormularioVentilacion();
 
   if (tituloModalVentilacion) {
     tituloModalVentilacion.textContent =
@@ -18586,6 +18796,7 @@ function guardarEquipoRefrigeracionFn() {
   }
 
   const item = {
+    id: indiceRefrigeracionEdicion !== null && equiposRefrigeracion[indiceRefrigeracionEdicion]?.id ? equiposRefrigeracion[indiceRefrigeracionEdicion].id : generarIdUsoFinal("ref"),
     tipo,
     tipoOtro: tipo === "otro" ? tipoOtro : "",
     cantidad,
@@ -19354,16 +19565,12 @@ function actualizarTipoSistemaTermico() {
   }
 
   const energetico = document.getElementById("termEnergetico");
-
   if (energetico) {
+    energetico.disabled = false;
+    energetico.classList.remove("efg-disabled");
     if (tipo === "solar") {
-      energetico.value = "solar";
-      energetico.disabled = true;
-      energetico.classList.add("efg-disabled");
-    } else {
-      energetico.disabled = false;
-      energetico.classList.remove("efg-disabled");
-      if (energetico.value === "solar") energetico.value = "";
+      const existeSolar = Array.from(energetico.options).some(op => op.value === "solar");
+      if (existeSolar) energetico.value = "solar";
     }
   }
 
@@ -19497,11 +19704,7 @@ function abrirModalSistemaTermico(index = null, duplicar = false) {
     document.getElementById("termAislamiento").value = item.aislamiento || "";
     document.getElementById("termMantenimiento").value = item.mantenimiento || "";
 
-    if (item.tipo === "solar" && energetico) {
-      energetico.value = "solar";
-      energetico.disabled = true;
-      energetico.classList.add("efg-disabled");
-    }
+
   }
 
   const modal = document.getElementById("modalSistemaTermico");
@@ -19643,6 +19846,7 @@ function guardarSistemaTermicoFn() {
   const presion = presionRaw === "" ? null : Number(presionRaw);
 
   const item = {
+    id: indiceSistemaTermicoEdicion !== null && sistemasTermicos[indiceSistemaTermicoEdicion]?.id ? sistemasTermicos[indiceSistemaTermicoEdicion].id : generarIdUsoFinal("term"),
     tipo,
     tipoOtro: tipo === "otro" ? tipoOtro : "",
     cantidad,
@@ -19702,7 +19906,7 @@ function renderizarTablaSistemasTermicos() {
 
     tr.innerHTML = `
       <td>${escaparHTMLCD(nombreSistemaTermico(item))}</td>
-      <td>${escaparHTMLCD(nombreEnergeticoEFG(item.energetico, item.energeticoOtro))}</td>
+      <td>${escaparHTMLCD(nombreEnergeticoCatalogo(item.energetico))}</td>
       <td class="num">${Number(item.cantidad).toLocaleString("es-MX")}</td>
       <td>${escaparHTMLCD(capacidadSistemaTermicoTexto(item))}</td>
       <td>${escaparHTMLCD(temp)}</td>
@@ -20022,6 +20226,7 @@ function guardarCoccionFn() {
   }
 
   const item = {
+    id: indiceCoccionEdicion !== null && equiposCoccion[indiceCoccionEdicion]?.id ? equiposCoccion[indiceCoccionEdicion].id : generarIdUsoFinal("coc"),
     tipo,
     tipoOtro: tipo === "otro" ? tipoOtro : "",
     cantidad,
@@ -20078,7 +20283,7 @@ function renderizarTablaCoccion() {
 
     tr.innerHTML = `
       <td>${escaparHTMLCD(nombreEquipoCoccion(item))}</td>
-      <td>${escaparHTMLCD(nombreEnergeticoEFG(item.energetico, item.energeticoOtro))}</td>
+      <td>${escaparHTMLCD(nombreEnergeticoCatalogo(item.energetico))}</td>
       <td class="num">${Number(item.cantidad).toLocaleString("es-MX")}</td>
       <td>${escaparHTMLCD(capacidadCoccionTexto(item))}</td>
       <td>${Number(item.horasDia).toLocaleString("es-MX", {maximumFractionDigits:2})} h/día · ${item.diasSemana} días/sem · ${item.semanasAnio} sem/año</td>
@@ -20258,16 +20463,428 @@ document.addEventListener("keydown", e => {
   if (!document.getElementById("modalEquipoOficina")?.classList.contains("hidden")) cerrarModalEquipoOficinaFn();
 });
 
-// Navegación de la sección 4: simulación frontend sin base de datos.
+
+
+// =====================================================
+// SECCIÓN 4 - CAPA CANÓNICA, ENERGÉTICOS, CALEFACCIÓN Y H
+// =====================================================
+
+const STORAGE_USOS_FINALES_V2 = "encuesta_cys_usos_finales_v2";
+let equiposCalefaccion = [];
+let indiceCalefaccionEdicion = null;
+let equiposEspecializados = [];
+let indiceEspecializadoEdicion = null;
+
+function generarIdUsoFinal(prefijo = "uso") {
+  if (window.crypto && typeof window.crypto.randomUUID === "function") {
+    return `${prefijo}_${window.crypto.randomUUID()}`;
+  }
+  return `${prefijo}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
+
+function asegurarIdsUsoFinal(lista, prefijo) {
+  if (!Array.isArray(lista)) return [];
+  lista.forEach(item => {
+    if (item && !item.id) item.id = generarIdUsoFinal(prefijo);
+  });
+  return lista;
+}
+
+function catalogoEnergeticosUsosFinales() {
+  const origen = (typeof energeticosEstablecimiento !== "undefined" && Array.isArray(energeticosEstablecimiento))
+    ? energeticosEstablecimiento
+    : [];
+  const vistos = new Set();
+  return origen
+    .filter(e => e && e.codigo && !vistos.has(String(e.codigo)) && vistos.add(String(e.codigo)))
+    .map(e => ({ codigo: String(e.codigo), nombre: String(e.nombre || e.codigo) }));
+}
+
+async function sincronizarEnergeticosUsosFinales() {
+  let catalogo = catalogoEnergeticosUsosFinales();
+
+  if (!catalogo.length && typeof cargarEnergeticosFacturacion === "function") {
+    try {
+      const recuperados = await cargarEnergeticosFacturacion();
+      if (Array.isArray(recuperados) && typeof energeticosEstablecimiento !== "undefined") {
+        energeticosEstablecimiento = recuperados.map(e => ({codigo:e.codigo, nombre:e.nombre}));
+      }
+      catalogo = catalogoEnergeticosUsosFinales();
+    } catch (error) {
+      console.warn("No se pudo recuperar el catálogo de energéticos para usos finales.", error);
+    }
+  }
+
+  const ids = ["termEnergetico", "cocEnergetico", "calEnergetico", "espEnergetico"];
+  ids.forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    const valorActual = select.value;
+    select.innerHTML = '<option value="">Seleccione...</option>' + catalogo
+      .map(e => `<option value="${escaparHTMLCD(e.codigo)}">${escaparHTMLCD(e.nombre)}</option>`)
+      .join("");
+    if (catalogo.some(e => e.codigo === valorActual)) select.value = valorActual;
+  });
+
+  return catalogo;
+}
+
+function nombreEnergeticoCatalogo(codigo) {
+  const e = catalogoEnergeticosUsosFinales().find(x => x.codigo === codigo);
+  return e ? e.nombre : (codigo || "—");
+}
+
+function energeticoDisponible(codigo) {
+  return !!codigo && catalogoEnergeticosUsosFinales().some(e => e.codigo === codigo);
+}
+
+function guardarUsosFinalesCanonico() {
+  asegurarIdsUsoFinal(equiposAireAcondicionado, "ac");
+  asegurarIdsUsoFinal(equiposVentilacion, "vent");
+  asegurarIdsUsoFinal(equiposRefrigeracion, "ref");
+  asegurarIdsUsoFinal(equiposOficina, "ofi");
+  asegurarIdsUsoFinal(equiposElectromecanicos, "em");
+  asegurarIdsUsoFinal(sistemasTermicos, "term");
+  asegurarIdsUsoFinal(equiposCoccion, "coc");
+  asegurarIdsUsoFinal(equiposCalefaccion, "cal");
+  asegurarIdsUsoFinal(equiposEspecializados, "esp");
+
+  const datos = {
+    version: 2,
+    respuestas: {
+      acondAire: !!document.getElementById("acondAire")?.checked,
+      acondVentilacion: !!document.getElementById("acondVentilacion")?.checked,
+      acondCalefaccion: !!document.getElementById("acondCalefaccion")?.checked,
+      acondNinguno: !!document.getElementById("acondNinguno")?.checked,
+      usaRefrigeracion: valorRadioCD("usaRefrigeracion"),
+      usaEquiposOficina: valorRadioCD("usaEquiposOficina"),
+      usaElectromecanicos: valorRadioCD("usaElectromecanicos"),
+      usaSistemasTermicos: valorRadioCD("usaSistemasTermicos"),
+      usaCoccion: valorRadioCD("usaCoccion"),
+      usaEspecializados: valorRadioCD("usaEspecializados")
+    },
+    usos: {
+      iluminacion: (typeof gruposIluminacion !== "undefined" && Array.isArray(gruposIluminacion)) ? gruposIluminacion : [],
+      aireAcondicionado: equiposAireAcondicionado,
+      ventilacion: equiposVentilacion,
+      calefaccion: equiposCalefaccion,
+      refrigeracion: equiposRefrigeracion,
+      oficina: equiposOficina,
+      electromecanicos: equiposElectromecanicos,
+      sistemasTermicos,
+      coccion: equiposCoccion,
+      especializados: equiposEspecializados
+    },
+    energeticos: catalogoEnergeticosUsosFinales(),
+    fechaGuardado: new Date().toISOString()
+  };
+
+  localStorage.setItem(STORAGE_USOS_FINALES_V2, JSON.stringify(datos));
+}
+
+function cargarUsosFinalesCanonico() {
+  try {
+    const raw = localStorage.getItem(STORAGE_USOS_FINALES_V2);
+    if (!raw) return;
+    const datos = JSON.parse(raw);
+    equiposCalefaccion = asegurarIdsUsoFinal(datos?.usos?.calefaccion || [], "cal");
+    equiposEspecializados = asegurarIdsUsoFinal(datos?.usos?.especializados || [], "esp");
+    ["acondAire","acondVentilacion","acondCalefaccion","acondNinguno"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && Object.prototype.hasOwnProperty.call(datos?.respuestas || {}, id)) el.checked = !!datos.respuestas[id];
+    });
+    ponerRadioCD("usaEspecializados", datos?.respuestas?.usaEspecializados || "");
+    if (typeof actualizarAcondicionamiento === "function") actualizarAcondicionamiento();
+  } catch (error) {
+    console.warn("No se pudo recuperar la capa canónica de usos finales.", error);
+  }
+}
+
+function cargarAreasSelect(selectId) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  const actual = select.value;
+  const areas = (typeof areasEstablecimiento !== "undefined" && Array.isArray(areasEstablecimiento)) ? areasEstablecimiento : [];
+  const opciones = [];
+  areas.forEach(a => {
+    const nombre = String(a.nombre || a.tipo || "").trim();
+    if (nombre && !opciones.includes(nombre)) opciones.push(nombre);
+  });
+  select.innerHTML = '<option value="">Seleccione...</option>' + opciones
+    .map(nombre => `<option value="${escaparHTMLCD(nombre)}">${escaparHTMLCD(nombre)}</option>`).join("");
+  if (opciones.includes(actual)) select.value = actual;
+}
+
+// -----------------------------------------------------
+// Reparación: edición de aire acondicionado
+// -----------------------------------------------------
+window.editarAireAcondicionado = function(index) {
+  const item = equiposAireAcondicionado[index];
+  if (!item) return;
+  indiceAireAcondicionadoEdicion = index;
+  tituloModalAireAcondicionado.textContent = "Editar equipo de aire acondicionado";
+  limpiarFormularioAireAcondicionado();
+  cargarAreasAireAcondicionado();
+  cargarAniosAireAcondicionado();
+
+  const valores = {
+    acArea:item.area, acTipo:item.tipo, acTipoOtro:item.tipoOtro,
+    acCantidad:item.cantidad, acAnioAdquisicion:item.anioAdquisicion,
+    acAntiguedad:item.antiguedad, acCapacidad:item.capacidad,
+    acUnidadCapacidad:item.unidadCapacidad, acPotencia:item.potencia,
+    acUnidadPotencia:item.unidadPotencia, acIndicadorEficiencia:item.indicadorEficiencia,
+    acValorEficiencia:item.valorEficiencia, acMarca:item.marca, acModelo:item.modelo,
+    acVoltaje:item.voltaje, acCorriente:item.corriente, acDatosPlaca:item.datosPlaca,
+    acProporcionArea:item.proporcionArea, acTemperaturaConsigna:item.temperaturaConsigna,
+    acHorasLV:item.horasLV, acHorasSab:item.horasSab, acHorasDom:item.horasDom,
+    acCalidaInicio:item.calidaInicio, acCalidaFin:item.calidaFin,
+    acCalidaLV:item.calidaLV, acCalidaSab:item.calidaSab, acCalidaDom:item.calidaDom,
+    acFriaLV:item.friaLV, acFriaSab:item.friaSab, acFriaDom:item.friaDom
+  };
+  Object.entries(valores).forEach(([id,valor]) => { const el=document.getElementById(id); if(el) el.value=valor ?? ""; });
+  if (typeof acPotenciaDesconocida !== "undefined" && acPotenciaDesconocida) acPotenciaDesconocida.checked = !!item.potenciaDesconocida;
+  if (typeof acTemperaturaDesconocida !== "undefined" && acTemperaturaDesconocida) acTemperaturaDesconocida.checked = !!item.temperaturaDesconocida;
+  ponerRadioCD("acHorarioCoincide", item.horarioCoincide || "");
+  ponerRadioCD("acHorarioEstacional", item.horarioEstacional || "");
+  ["acTipo","acAnioAdquisicion","acPotencia","acHorarioCoincide","acHorarioEstacional"].forEach(id => document.getElementById(id)?.dispatchEvent(new Event("change",{bubbles:true})));
+  modalAireAcondicionado.classList.remove("hidden");
+};
+
+function limpiarFormularioVentilacion() {
+  ["ventArea","ventTipo","ventTipoOtro","ventCantidad","ventAnioAdquisicion","ventAntiguedad",
+   "ventPotencia","ventUnidadPotencia","ventMarca","ventModelo","ventCaudal","ventUnidadCaudal",
+   "ventVelocidades","ventHorasLV","ventHorasSab","ventHorasDom"].forEach(id => {
+    const el=document.getElementById(id); if(el) el.value="";
+  });
+  if (typeof ventPotenciaDesconocida !== "undefined" && ventPotenciaDesconocida) ventPotenciaDesconocida.checked=false;
+  ponerRadioCD("ventHorarioCoincide", "");
+  if (typeof limpiarDatosTecnicosVentilacion === "function") limpiarDatosTecnicosVentilacion();
+  if (typeof limpiarHorarioVentilacion === "function") limpiarHorarioVentilacion();
+  document.getElementById("ventTipoOtroBox")?.classList.add("hidden");
+}
+
+// -----------------------------------------------------
+// Reparación: edición de ventilación / extracción
+// -----------------------------------------------------
+window.editarVentilacion = function(index) {
+  const item = equiposVentilacion[index];
+  if (!item) return;
+  indiceVentilacionEdicion = index;
+  if (tituloModalVentilacion) tituloModalVentilacion.textContent = "Editar equipo de ventilación / extracción";
+  if (typeof limpiarFormularioVentilacion === "function") limpiarFormularioVentilacion();
+  cargarAreasVentilacion();
+  cargarAniosVentilacion();
+  const valores = {
+    ventArea:item.area, ventTipo:item.tipo, ventTipoOtro:item.tipoOtro,
+    ventCantidad:item.cantidad, ventAnioAdquisicion:item.anioAdquisicion,
+    ventAntiguedad:item.antiguedad, ventPotencia:item.potencia,
+    ventUnidadPotencia:item.unidadPotencia, ventMarca:item.marca,
+    ventModelo:item.modelo, ventCaudal:item.caudal, ventUnidadCaudal:item.unidadCaudal,
+    ventVelocidades:item.velocidades, ventHorasLV:item.horasLV,
+    ventHorasSab:item.horasSab, ventHorasDom:item.horasDom
+  };
+  Object.entries(valores).forEach(([id,valor]) => { const el=document.getElementById(id); if(el) el.value=valor ?? ""; });
+  if (typeof ventPotenciaDesconocida !== "undefined" && ventPotenciaDesconocida) ventPotenciaDesconocida.checked = !!item.potenciaDesconocida;
+  ponerRadioCD("ventHorarioCoincide", item.horarioCoincide || "");
+  ["ventTipo","ventAnioAdquisicion","ventPotencia"].forEach(id => document.getElementById(id)?.dispatchEvent(new Event("change",{bubbles:true})));
+  document.querySelectorAll('input[name="ventHorarioCoincide"]').forEach(el => el.dispatchEvent(new Event("change",{bubbles:true})));
+  modalVentilacion?.classList.remove("hidden");
+};
+
+// -----------------------------------------------------
+// B. CALEFACCIÓN DE ESPACIOS
+// -----------------------------------------------------
+const nombresCalefaccion = {
+  calefactor_electrico:"Calefactor eléctrico",
+  calefactor_gas:"Calefactor a gas",
+  radiador:"Radiador / convector",
+  bomba_calor:"Bomba de calor para climatización",
+  unidad_paquete:"Unidad paquete / rooftop",
+  sistema_central:"Sistema central de calefacción",
+  otro:"Otro"
+};
+
+function actualizarTipoCalefaccion() {
+  const tipo = document.getElementById("calTipo")?.value || "";
+  document.getElementById("calTipoOtroBox")?.classList.toggle("hidden", tipo !== "otro");
+  if (tipo !== "otro" && document.getElementById("calTipoOtro")) document.getElementById("calTipoOtro").value = "";
+}
+
+function consumoElectricoPorPatron(energetico, cantidad, potencia, unidad, horas, dias, semanas) {
+  if (energetico !== "electricidad") return null;
+  let kw = Number(potencia);
+  if (!Number.isFinite(kw) || kw <= 0) return null;
+  if (unidad === "w") kw /= 1000;
+  else if (unidad !== "kw") return null;
+  const vals = [cantidad,horas,dias,semanas].map(Number);
+  if (!vals.every(Number.isFinite)) return null;
+  return vals[0] * kw * vals[1] * vals[2] * vals[3];
+}
+
+function actualizarPreviewCalefaccion() {
+  const consumo = consumoElectricoPorPatron(
+    document.getElementById("calEnergetico")?.value,
+    document.getElementById("calCantidad")?.value,
+    document.getElementById("calPotencia")?.value,
+    document.getElementById("calUnidadPotencia")?.value,
+    document.getElementById("calHorasDia")?.value,
+    document.getElementById("calDiasSemana")?.value,
+    document.getElementById("calSemanasAnio")?.value
+  );
+  const box = document.getElementById("calConsumoPreview");
+  if (!box) return;
+  box.textContent = consumo === null
+    ? "Para energéticos combustibles se conserva el patrón de uso; la conversión se realizará posteriormente con la información de consumo/facturación."
+    : `Consumo eléctrico anual estimado del grupo: ${consumo.toLocaleString("es-MX",{maximumFractionDigits:1})} kWh/año.`;
+}
+
+async function abrirModalCalefaccion(index = null) {
+  indiceCalefaccionEdicion = index;
+  await sincronizarEnergeticosUsosFinales();
+  cargarAreasSelect("calArea");
+  ["calArea","calTipo","calTipoOtro","calEnergetico","calCantidad","calPotencia","calUnidadPotencia","calHorasDia","calDiasSemana","calTemperatura"].forEach(id => {
+    const el=document.getElementById(id); if(el) el.value="";
+  });
+  if (document.getElementById("calSemanasAnio")) document.getElementById("calSemanasAnio").value = 20;
+  const titulo=document.getElementById("tituloModalCalefaccion");
+  if(titulo) titulo.textContent=index===null?"Agregar equipo de calefacción":"Editar equipo de calefacción";
+  if(index!==null){
+    const item=equiposCalefaccion[index]; if(!item) return;
+    const vals={calArea:item.area,calTipo:item.tipo,calTipoOtro:item.tipoOtro,calEnergetico:item.energetico,calCantidad:item.cantidad,calPotencia:item.potencia,calUnidadPotencia:item.unidadPotencia,calHorasDia:item.horasDia,calDiasSemana:item.diasSemana,calSemanasAnio:item.semanasAnio,calTemperatura:item.temperatura};
+    Object.entries(vals).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v??"";});
+  }
+  actualizarTipoCalefaccion();
+  actualizarPreviewCalefaccion();
+  document.getElementById("modalCalefaccion")?.classList.remove("hidden");
+  document.getElementById("modalCalefaccion")?.setAttribute("aria-hidden","false");
+}
+
+function cerrarModalCalefaccionFn(){
+  document.getElementById("modalCalefaccion")?.classList.add("hidden");
+  document.getElementById("modalCalefaccion")?.setAttribute("aria-hidden","true");
+  indiceCalefaccionEdicion=null;
+}
+
+function guardarCalefaccionFn(){
+  const tipo=document.getElementById("calTipo")?.value||"";
+  const tipoOtro=(document.getElementById("calTipoOtro")?.value||"").trim();
+  const area=document.getElementById("calArea")?.value||"";
+  const energetico=document.getElementById("calEnergetico")?.value||"";
+  const cantidad=Number(document.getElementById("calCantidad")?.value);
+  const potencia=Number(document.getElementById("calPotencia")?.value);
+  const unidadPotencia=document.getElementById("calUnidadPotencia")?.value||"";
+  const horasDia=Number(document.getElementById("calHorasDia")?.value);
+  const diasSemana=Number(document.getElementById("calDiasSemana")?.value);
+  const semanasAnio=Number(document.getElementById("calSemanasAnio")?.value);
+  const temperatura=Number(document.getElementById("calTemperatura")?.value);
+  if(!area) return alert("Seleccione el área atendida.");
+  if(!tipo) return alert("Seleccione el tipo de equipo de calefacción.");
+  if(tipo==="otro"&&!tipoOtro) return alert("Especifique el equipo de calefacción.");
+  if(!energeticoDisponible(energetico)) return alert("Seleccione un energético previamente declarado para el establecimiento.");
+  if(!Number.isInteger(cantidad)||cantidad<1) return alert("Ingrese una cantidad válida de equipos.");
+  if(!Number.isFinite(horasDia)||horasDia<0||horasDia>24) return alert("Las horas por día deben estar entre 0 y 24.");
+  if(!Number.isInteger(diasSemana)||diasSemana<0||diasSemana>7) return alert("Los días por semana deben estar entre 0 y 7.");
+  if(!Number.isInteger(semanasAnio)||semanasAnio<0||semanasAnio>52) return alert("Las semanas por año deben estar entre 0 y 52.");
+  const consumoKWh=consumoElectricoPorPatron(energetico,cantidad,potencia,unidadPotencia,horasDia,diasSemana,semanasAnio);
+  const previo=indiceCalefaccionEdicion!==null?equiposCalefaccion[indiceCalefaccionEdicion]:null;
+  const item={id:previo?.id||generarIdUsoFinal("cal"),area,tipo,tipoOtro:tipo==="otro"?tipoOtro:"",energetico,cantidad,potencia:Number.isFinite(potencia)&&potencia>0?potencia:null,unidadPotencia,horasDia,diasSemana,semanasAnio,temperatura:Number.isFinite(temperatura)?temperatura:null,consumoKWh};
+  if(indiceCalefaccionEdicion===null)equiposCalefaccion.push(item);else equiposCalefaccion[indiceCalefaccionEdicion]=item;
+  renderizarTablaCalefaccion(); guardarUsosFinalesCanonico(); cerrarModalCalefaccionFn();
+}
+
+function renderizarTablaCalefaccion(){
+  const tbody=document.getElementById("tablaCalefaccionBody"),cont=document.getElementById("tablaCalefaccionContenedor"),vacio=document.getElementById("sinCalefaccion"),res=document.getElementById("resumenCalefaccion");
+  if(!tbody||!cont||!vacio)return; tbody.innerHTML="";
+  if(!equiposCalefaccion.length){cont.style.display="none";vacio.style.display="block";if(res)res.textContent="";return;}
+  cont.style.display="block";vacio.style.display="none";
+  equiposCalefaccion.forEach((i,index)=>{const tr=document.createElement("tr");const cap=i.potencia?`${Number(i.potencia).toLocaleString("es-MX",{maximumFractionDigits:2})} ${i.unidadPotencia||""}`:"—";const cons=i.consumoKWh!==null?`${Number(i.consumoKWh).toLocaleString("es-MX",{maximumFractionDigits:1})} kWh/año`:"—";tr.innerHTML=`<td>${escaparHTMLCD(i.area)}</td><td>${escaparHTMLCD(i.tipo==="otro"?(i.tipoOtro||"Otro"):(nombresCalefaccion[i.tipo]||i.tipo))}</td><td>${escaparHTMLCD(nombreEnergeticoCatalogo(i.energetico))}</td><td class="num">${i.cantidad}</td><td>${escaparHTMLCD(cap)}</td><td>${i.horasDia} h/día · ${i.diasSemana} días/sem · ${i.semanasAnio} sem/año</td><td class="num">${escaparHTMLCD(cons)}</td><td class="acciones"><button type="button" class="action-btn edit" onclick="editarCalefaccion(${index})">Editar</button><button type="button" class="action-btn delete" onclick="eliminarCalefaccion(${index})">Eliminar</button></td>`;tbody.appendChild(tr);});
+  if(res){const total=equiposCalefaccion.reduce((s,x)=>s+Number(x.cantidad||0),0);res.textContent=`${total} equipo${total===1?"":"s"} registrado${total===1?"":"s"}`;}
+}
+window.editarCalefaccion=index=>abrirModalCalefaccion(index);
+window.eliminarCalefaccion=function(index){if(!equiposCalefaccion[index])return;if(!confirm("¿Desea eliminar este equipo de calefacción?"))return;equiposCalefaccion.splice(index,1);renderizarTablaCalefaccion();guardarUsosFinalesCanonico();};
+
+// -----------------------------------------------------
+// H. EQUIPOS ESPECIALIZADOS Y OTROS USOS FINALES
+// -----------------------------------------------------
+const nombresEspecializados={lavanderia:"Lavandería / secado / planchado",medico:"Equipo médico / diagnóstico",esterilizacion:"Esterilización especializada",piscina_spa:"Piscina / spa / hidromasaje",audiovisual:"Equipo audiovisual / recreativo",taller:"Equipo de taller / mantenimiento",proceso:"Equipo de proceso especializado",otro:"Otro equipo especializado"};
+function actualizarVisibilidadEspecializados(){document.getElementById("especializadosContenido")?.classList.toggle("hidden",valorRadioCD("usaEspecializados")!=="si");}
+function actualizarTipoEspecializado(){const tipo=document.getElementById("espTipo")?.value||"";document.getElementById("espTipoOtroBox")?.classList.toggle("hidden",tipo!=="otro");if(tipo!=="otro"&&document.getElementById("espTipoOtro"))document.getElementById("espTipoOtro").value="";}
+function actualizarPreviewEspecializado(){const c=consumoElectricoPorPatron(document.getElementById("espEnergetico")?.value,document.getElementById("espCantidad")?.value,document.getElementById("espPotencia")?.value,document.getElementById("espUnidadPotencia")?.value,document.getElementById("espHorasDia")?.value,document.getElementById("espDiasSemana")?.value,document.getElementById("espSemanasAnio")?.value);const box=document.getElementById("espConsumoPreview");if(box)box.textContent=c===null?"Para energéticos no eléctricos se conserva el patrón de uso; el consumo se conciliará con la información de facturación.":`Consumo eléctrico anual estimado del grupo: ${c.toLocaleString("es-MX",{maximumFractionDigits:1})} kWh/año.`;}
+async function abrirModalEspecializado(index=null){indiceEspecializadoEdicion=index;await sincronizarEnergeticosUsosFinales();["espTipo","espTipoOtro","espAplicacion","espEnergetico","espCantidad","espPotencia","espUnidadPotencia","espHorasDia","espDiasSemana"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});if(document.getElementById("espSemanasAnio"))document.getElementById("espSemanasAnio").value=52;const tit=document.getElementById("tituloModalEspecializado");if(tit)tit.textContent=index===null?"Agregar equipo especializado":"Editar equipo especializado";if(index!==null){const i=equiposEspecializados[index];if(!i)return;const vals={espTipo:i.tipo,espTipoOtro:i.tipoOtro,espAplicacion:i.aplicacion,espEnergetico:i.energetico,espCantidad:i.cantidad,espPotencia:i.potencia,espUnidadPotencia:i.unidadPotencia,espHorasDia:i.horasDia,espDiasSemana:i.diasSemana,espSemanasAnio:i.semanasAnio};Object.entries(vals).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v??"";});}actualizarTipoEspecializado();actualizarPreviewEspecializado();document.getElementById("modalEspecializado")?.classList.remove("hidden");document.getElementById("modalEspecializado")?.setAttribute("aria-hidden","false");}
+function cerrarModalEspecializadoFn(){document.getElementById("modalEspecializado")?.classList.add("hidden");document.getElementById("modalEspecializado")?.setAttribute("aria-hidden","true");indiceEspecializadoEdicion=null;}
+function guardarEspecializadoFn(){const tipo=document.getElementById("espTipo")?.value||"";const tipoOtro=(document.getElementById("espTipoOtro")?.value||"").trim();const aplicacion=(document.getElementById("espAplicacion")?.value||"").trim();const energetico=document.getElementById("espEnergetico")?.value||"";const cantidad=Number(document.getElementById("espCantidad")?.value);const potencia=Number(document.getElementById("espPotencia")?.value);const unidadPotencia=document.getElementById("espUnidadPotencia")?.value||"";const horasDia=Number(document.getElementById("espHorasDia")?.value);const diasSemana=Number(document.getElementById("espDiasSemana")?.value);const semanasAnio=Number(document.getElementById("espSemanasAnio")?.value);if(!tipo)return alert("Seleccione el equipo o sistema.");if(tipo==="otro"&&!tipoOtro)return alert("Especifique el equipo o sistema.");if(!aplicacion)return alert("Describa la aplicación o servicio del equipo.");if(!energeticoDisponible(energetico))return alert("Seleccione un energético previamente declarado para el establecimiento.");if(!Number.isInteger(cantidad)||cantidad<1)return alert("Ingrese una cantidad válida.");if(!Number.isFinite(horasDia)||horasDia<0||horasDia>24)return alert("Las horas por día deben estar entre 0 y 24.");if(!Number.isInteger(diasSemana)||diasSemana<0||diasSemana>7)return alert("Los días por semana deben estar entre 0 y 7.");if(!Number.isInteger(semanasAnio)||semanasAnio<0||semanasAnio>52)return alert("Las semanas por año deben estar entre 0 y 52.");const consumoKWh=consumoElectricoPorPatron(energetico,cantidad,potencia,unidadPotencia,horasDia,diasSemana,semanasAnio);const previo=indiceEspecializadoEdicion!==null?equiposEspecializados[indiceEspecializadoEdicion]:null;const item={id:previo?.id||generarIdUsoFinal("esp"),tipo,tipoOtro:tipo==="otro"?tipoOtro:"",aplicacion,energetico,cantidad,potencia:Number.isFinite(potencia)&&potencia>0?potencia:null,unidadPotencia,horasDia,diasSemana,semanasAnio,consumoKWh};if(indiceEspecializadoEdicion===null)equiposEspecializados.push(item);else equiposEspecializados[indiceEspecializadoEdicion]=item;renderizarTablaEspecializados();guardarUsosFinalesCanonico();cerrarModalEspecializadoFn();}
+function renderizarTablaEspecializados(){const tbody=document.getElementById("tablaEspecializadosBody"),cont=document.getElementById("tablaEspecializadosContenedor"),vacio=document.getElementById("sinEspecializados"),res=document.getElementById("resumenEspecializados");if(!tbody||!cont||!vacio)return;tbody.innerHTML="";if(!equiposEspecializados.length){cont.style.display="none";vacio.style.display="block";if(res)res.textContent="";return;}cont.style.display="block";vacio.style.display="none";equiposEspecializados.forEach((i,index)=>{const tr=document.createElement("tr");const cap=i.potencia?`${Number(i.potencia).toLocaleString("es-MX",{maximumFractionDigits:2})} ${i.unidadPotencia||""}`:"—";const cons=i.consumoKWh!==null?`${Number(i.consumoKWh).toLocaleString("es-MX",{maximumFractionDigits:1})} kWh/año`:"—";tr.innerHTML=`<td>${escaparHTMLCD(i.tipo==="otro"?(i.tipoOtro||"Otro"):(nombresEspecializados[i.tipo]||i.tipo))}</td><td>${escaparHTMLCD(i.aplicacion)}</td><td>${escaparHTMLCD(nombreEnergeticoCatalogo(i.energetico))}</td><td class="num">${i.cantidad}</td><td>${escaparHTMLCD(cap)}</td><td>${i.horasDia} h/día · ${i.diasSemana} días/sem · ${i.semanasAnio} sem/año</td><td class="num">${escaparHTMLCD(cons)}</td><td class="acciones"><button type="button" class="action-btn edit" onclick="editarEspecializado(${index})">Editar</button><button type="button" class="action-btn delete" onclick="eliminarEspecializado(${index})">Eliminar</button></td>`;tbody.appendChild(tr);});if(res){const t=equiposEspecializados.reduce((s,x)=>s+Number(x.cantidad||0),0);res.textContent=`${t} equipo${t===1?"":"s"} registrado${t===1?"":"s"}`;}}
+window.editarEspecializado=index=>abrirModalEspecializado(index);
+window.eliminarEspecializado=function(index){if(!equiposEspecializados[index])return;if(!confirm("¿Desea eliminar este equipo especializado?"))return;equiposEspecializados.splice(index,1);renderizarTablaEspecializados();guardarUsosFinalesCanonico();};
+
+function validarUsosFinalesAntesDeContinuar(){
+  const errores=[];
+  if(document.getElementById("acondCalefaccion")?.checked && equiposCalefaccion.length===0) errores.push("Indicó calefacción de espacios, pero no registró ningún equipo.");
+  if(valorRadioCD("usaRefrigeracion")==="si" && equiposRefrigeracion.length===0) errores.push("Indicó refrigeración/conservación, pero no registró equipos.");
+  if(valorRadioCD("usaEquiposOficina")==="si" && equiposOficina.length===0) errores.push("Indicó equipos de oficina/electrónicos, pero no registró equipos.");
+  if(valorRadioCD("usaElectromecanicos")==="si" && equiposElectromecanicos.length===0) errores.push("Indicó motores o sistemas electromecánicos, pero no registró equipos.");
+  if(valorRadioCD("usaSistemasTermicos")==="si" && sistemasTermicos.length===0) errores.push("Indicó sistemas térmicos, pero no registró equipos.");
+  if(valorRadioCD("usaCoccion")==="si" && equiposCoccion.length===0) errores.push("Indicó cocción/preparación de alimentos, pero no registró equipos.");
+  if(valorRadioCD("usaEspecializados")==="si" && equiposEspecializados.length===0) errores.push("Indicó equipos especializados, pero no registró equipos.");
+
+  const revisarEnergeticos = [
+    ["calefacción",equiposCalefaccion], ["sistemas térmicos",sistemasTermicos],
+    ["cocción",equiposCoccion], ["equipos especializados",equiposEspecializados]
+  ];
+  revisarEnergeticos.forEach(([nombre,lista])=>{
+    const invalidos=(lista||[]).filter(i=>i.energetico && !energeticoDisponible(i.energetico));
+    if(invalidos.length) errores.push(`Hay ${invalidos.length} registro(s) de ${nombre} cuyo energético ya no está declarado. Edítelos antes de continuar.`);
+  });
+
+  if(errores.length){alert("Revise la sección 4 antes de continuar:\n\n• "+errores.join("\n• "));return false;}
+  return true;
+}
+
+// Eventos nuevos / corregidos
+
+["acondAire","acondVentilacion","acondCalefaccion","acondNinguno"].forEach(id => {
+  document.getElementById(id)?.addEventListener("change",()=>{
+    try { guardarUsosFinalesCanonico(); } catch(e) { console.warn(e); }
+  });
+});
+document.getElementById("btnAgregarCalefaccion")?.addEventListener("click",()=>abrirModalCalefaccion(null));
+document.getElementById("cerrarModalCalefaccion")?.addEventListener("click",cerrarModalCalefaccionFn);
+document.getElementById("cancelarCalefaccion")?.addEventListener("click",cerrarModalCalefaccionFn);
+document.getElementById("guardarCalefaccion")?.addEventListener("click",guardarCalefaccionFn);
+document.getElementById("calTipo")?.addEventListener("change",actualizarTipoCalefaccion);
+["calEnergetico","calCantidad","calPotencia","calUnidadPotencia","calHorasDia","calDiasSemana","calSemanasAnio"].forEach(id=>{document.getElementById(id)?.addEventListener("input",actualizarPreviewCalefaccion);document.getElementById(id)?.addEventListener("change",actualizarPreviewCalefaccion);});
+
+document.querySelectorAll('input[name="usaEspecializados"]').forEach(r=>r.addEventListener("change",()=>{actualizarVisibilidadEspecializados();guardarUsosFinalesCanonico();}));
+document.getElementById("btnAgregarEspecializado")?.addEventListener("click",()=>abrirModalEspecializado(null));
+document.getElementById("cerrarModalEspecializado")?.addEventListener("click",cerrarModalEspecializadoFn);
+document.getElementById("cancelarEspecializado")?.addEventListener("click",cerrarModalEspecializadoFn);
+document.getElementById("guardarEspecializado")?.addEventListener("click",guardarEspecializadoFn);
+document.getElementById("espTipo")?.addEventListener("change",actualizarTipoEspecializado);
+["espEnergetico","espCantidad","espPotencia","espUnidadPotencia","espHorasDia","espDiasSemana","espSemanasAnio"].forEach(id=>{document.getElementById(id)?.addEventListener("input",actualizarPreviewEspecializado);document.getElementById(id)?.addEventListener("change",actualizarPreviewEspecializado);});
+
+document.getElementById("modalCalefaccion")?.addEventListener("click",e=>{if(e.target===e.currentTarget)cerrarModalCalefaccionFn();});
+document.getElementById("modalEspecializado")?.addEventListener("click",e=>{if(e.target===e.currentTarget)cerrarModalEspecializadoFn();});
+
+// Conserva la edición y el guardado en un único snapshot después de cambios en tablas existentes.
+["guardarAireAcondicionado","guardarVentilacion","guardarRefrigeracion","guardarEquipoOficina","guardarElectromecanico","guardarSistemaTermico","guardarCoccion"].forEach(id=>{
+  document.getElementById(id)?.addEventListener("click",()=>setTimeout(()=>{try{guardarUsosFinalesCanonico();}catch(e){console.warn(e);}},0));
+});
+
+
+// Navegación de la sección 4.
 document.getElementById("btnUsosAnterior")?.addEventListener("click", () => {
   guardarUsosCDLocal();
   guardarUsosEFGLocal();
+  guardarUsosFinalesCanonico();
   mostrarVista("facturacion");
 });
 
-document.getElementById("btnUsosContinuar")?.addEventListener("click", () => {
+document.getElementById("btnUsosContinuar")?.addEventListener("click", async () => {
+  await sincronizarEnergeticosUsosFinales();
+  if (!validarUsosFinalesAntesDeContinuar()) return;
   guardarUsosCDLocal();
   guardarUsosEFGLocal();
+  guardarUsosFinalesCanonico();
   alert("La información de usos finales de energía se guardó correctamente.");
   mostrarVista("practicas");
 });
@@ -20287,6 +20904,13 @@ document.getElementById("btnUsosContinuar")?.addEventListener("click", () => {
 
   // Recupera los módulos E, F y G guardados localmente.
   cargarUsosEFGLocal();
+
+  // Recupera la capa canónica de usos finales (incluye calefacción y H).
+  cargarUsosFinalesCanonico();
+  actualizarVisibilidadEspecializados();
+  renderizarTablaCalefaccion();
+  renderizarTablaEspecializados();
+  sincronizarEnergeticosUsosFinales().catch(console.warn);
 
 </script>
  </body>
