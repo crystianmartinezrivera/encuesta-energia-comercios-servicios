@@ -2252,6 +2252,142 @@
 .scope-empty{padding:9px 10px;border:1px dashed #cad6e0;border-radius:7px;background:#fafcfd;color:#687b8c;font-size:11px;line-height:1.4;margin-bottom:10px}
 @media (max-width:700px){.scope-items,.scope-fields,.scope-time-row{grid-template-columns:1fr}}
 
+
+
+/* =====================================================
+   SECCIÓN 4 - HOMOLOGACIÓN VISUAL A–H
+===================================================== */
+#view-usos .uso-card{
+  margin:0 0 24px;
+  padding:22px;
+  border:1px solid var(--borde);
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 2px 8px rgba(0,59,112,.035);
+}
+
+#view-usos .uso-card-head h3{
+  margin:0;
+  color:#0b3770;
+  font-size:19px;
+  line-height:1.3;
+}
+
+#view-usos .question-block{
+  margin-top:14px !important;
+  padding:16px;
+  border:1px solid #dce7ef;
+  border-radius:9px;
+  background:#f8fbfd;
+}
+
+#view-usos .question-title{
+  color:#203348;
+  font-size:14px;
+  font-weight:700;
+  line-height:1.4;
+}
+
+#view-usos .uso-card-body,
+#view-usos .cd-module-body{
+  margin-top:16px;
+}
+
+#view-usos .uso-actions,
+#view-usos .cd-module-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+#view-usos .empty-module,
+#view-usos .cd-empty{
+  margin-top:12px;
+  padding:14px 16px;
+  border:1px dashed #b7c7d5;
+  border-radius:8px;
+  color:#607080;
+  background:#fbfcfd;
+  font-size:13px;
+}
+
+#view-usos .uso-summary,
+#view-usos .cd-summary{
+  color:#526779;
+  font-size:13px;
+  font-weight:700;
+}
+
+/* B. Acondicionamiento: cada sistema seleccionado se presenta como subtarjeta */
+#contenidoAcondicionamiento > #accionesAireAcondicionado,
+#contenidoAcondicionamiento > #accionesVentilacion,
+#contenidoAcondicionamiento > #accionesCalefaccion{
+  margin:14px 0 0 !important;
+  padding:17px;
+  border:1px solid #dce7ef;
+  border-radius:10px;
+  background:#fcfdfe;
+}
+
+#contenidoAcondicionamiento > #accionesAireAcondicionado::before,
+#contenidoAcondicionamiento > #accionesVentilacion::before,
+#contenidoAcondicionamiento > #accionesCalefaccion::before{
+  display:block;
+  margin:0 0 12px;
+  color:#0b3770;
+  font-size:15px;
+  font-weight:700;
+}
+#contenidoAcondicionamiento > #accionesAireAcondicionado::before{content:"Aire acondicionado o enfriamiento";}
+#contenidoAcondicionamiento > #accionesVentilacion::before{content:"Ventilación o extracción mecánica";}
+#contenidoAcondicionamiento > #accionesCalefaccion::before{content:"Calefacción de espacios";}
+
+/* Alcance de prácticas: filas de equipos discretos */
+.scope-equipment-list{
+  display:grid;
+  gap:9px;
+  margin-top:10px;
+}
+.scope-equipment-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:14px;
+  align-items:center;
+  padding:10px 12px;
+  border:1px solid #dce5ed;
+  border-radius:8px;
+  background:#fff;
+}
+.scope-equipment-row .scope-item{
+  margin:0;
+}
+.scope-qty{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  white-space:nowrap;
+  color:#526779;
+  font-size:12px;
+}
+.scope-qty input{
+  width:72px;
+  padding:8px 9px;
+  text-align:center;
+}
+.scope-auto-note{
+  margin-top:9px;
+  color:#607080;
+  font-size:11px;
+  line-height:1.4;
+}
+@media (max-width:700px){
+  .scope-equipment-row{grid-template-columns:1fr}
+  .scope-qty{padding-left:25px}
+}
+
 </style>
 <!-- =====================================================
    Fin de CSS
@@ -21609,44 +21745,44 @@ function participacionesTermicas(tipo){
 let alcancesPracticasCache = {};
 
 const CONFIG_ALCANCE_PRACTICAS = {
-  ILU_PRESENCIA:{grupo:"iluminacion",titulo:"Sensores de presencia u ocupación",fuente:"areas",horario:false},
-  ILU_TEMPORIZADORES:{grupo:"iluminacion",titulo:"Temporizadores",fuente:"areas",horario:true},
-  ILU_FOTOCELDAS:{grupo:"iluminacion",titulo:"Fotoceldas / sensores de luz natural",fuente:"areas",horario:false},
-  ILU_ATENUACION:{grupo:"iluminacion",titulo:"Atenuación o regulación automática",fuente:"areas",horario:false},
-  ILU_SECTORIZACION:{grupo:"iluminacion",titulo:"Sectorización de circuitos",fuente:"areas",horario:false},
-  ILU_BMS:{grupo:"iluminacion",titulo:"Programación mediante BMS",fuente:"areas",horario:true},
+  ILU_PRESENCIA:{grupo:"iluminacion",titulo:"Sensores de presencia u ocupación",fuente:"areas",tipo:"area_cobertura",horario:false},
+  ILU_TEMPORIZADORES:{grupo:"iluminacion",titulo:"Temporizadores",fuente:"areas",tipo:"area_cobertura",horario:true},
+  ILU_FOTOCELDAS:{grupo:"iluminacion",titulo:"Fotoceldas / sensores de luz natural",fuente:"areas",tipo:"area_cobertura",horario:false},
+  ILU_ATENUACION:{grupo:"iluminacion",titulo:"Atenuación o regulación automática",fuente:"areas",tipo:"area_cobertura",horario:false},
+  ILU_SECTORIZACION:{grupo:"iluminacion",titulo:"Sectorización de circuitos",fuente:"areas",tipo:"area_cobertura",horario:false},
+  ILU_BMS:{grupo:"iluminacion",titulo:"Programación mediante BMS",fuente:"areas",tipo:"area_cobertura",horario:true},
 
-  CLI_TERMOSTATO:{grupo:"climatizacion",titulo:"Termostatos programables",fuente:"climatizacion",horario:true},
-  CLI_ZONAS:{grupo:"climatizacion",titulo:"Control independiente por zonas",fuente:"climatizacion",horario:false},
-  CLI_HORARIO:{grupo:"climatizacion",titulo:"Programación horaria",fuente:"climatizacion",horario:true},
-  CLI_OCUPACION:{grupo:"climatizacion",titulo:"Sensores de ocupación",fuente:"climatizacion",horario:false},
-  CLI_TEMP_AUTO:{grupo:"climatizacion",titulo:"Control automático de temperatura",fuente:"climatizacion",horario:false},
+  CLI_TERMOSTATO:{grupo:"climatizacion",titulo:"Termostatos programables",fuente:"climatizacion",tipo:"equipos",horario:true},
+  CLI_ZONAS:{grupo:"climatizacion",titulo:"Control independiente por zonas",fuente:"climatizacion",tipo:"equipos",horario:false},
+  CLI_HORARIO:{grupo:"climatizacion",titulo:"Programación horaria",fuente:"climatizacion",tipo:"equipos",horario:true},
+  CLI_OCUPACION:{grupo:"climatizacion",titulo:"Sensores de ocupación",fuente:"climatizacion",tipo:"equipos",horario:false},
+  CLI_TEMP_AUTO:{grupo:"climatizacion",titulo:"Control automático de temperatura",fuente:"climatizacion",tipo:"equipos",horario:false},
 
-  MOT_VFD:{grupo:"motores",titulo:"Variadores de frecuencia / velocidad",fuente:"motores",horario:false},
-  MOT_ARRANQUE:{grupo:"motores",titulo:"Arrancadores suaves",fuente:"motores",horario:false},
-  MOT_ALTA_EF:{grupo:"motores",titulo:"Motores de alta eficiencia",fuente:"motores",horario:false},
-  MOT_AUTO_ONOFF:{grupo:"motores",titulo:"Control automático de encendido/apagado",fuente:"motores",horario:true},
-  MOT_HORARIO:{grupo:"motores",titulo:"Programación horaria",fuente:"motores",horario:true},
-  MOT_VARIABLE:{grupo:"motores",titulo:"Control por variable de proceso",fuente:"motores",horario:false},
-  MOT_SECUENCIA:{grupo:"motores",titulo:"Secuenciación de equipos",fuente:"motores",horario:false},
+  MOT_VFD:{grupo:"motores",titulo:"Variadores de frecuencia / velocidad",fuente:"motores",tipo:"equipos",horario:false},
+  MOT_ARRANQUE:{grupo:"motores",titulo:"Arrancadores suaves",fuente:"motores",tipo:"equipos",horario:false},
+  MOT_ALTA_EF:{grupo:"motores",titulo:"Motores de alta eficiencia",fuente:"motores",tipo:"equipos",horario:false},
+  MOT_AUTO_ONOFF:{grupo:"motores",titulo:"Control automático de encendido/apagado",fuente:"motores",tipo:"equipos",horario:true},
+  MOT_HORARIO:{grupo:"motores",titulo:"Programación horaria",fuente:"motores",tipo:"equipos",horario:true},
+  MOT_VARIABLE:{grupo:"motores",titulo:"Control por variable de proceso",fuente:"motores",tipo:"equipos",horario:false},
+  MOT_SECUENCIA:{grupo:"motores",titulo:"Secuenciación de equipos",fuente:"motores",tipo:"equipos",horario:false},
 
-  REF_TEMP_AUTO:{grupo:"refrigeracion",titulo:"Control automático de temperatura",fuente:"refrigeracion",horario:false},
-  REF_DESHIELO:{grupo:"refrigeracion",titulo:"Programación de deshielo",fuente:"refrigeracion",horario:true},
-  REF_VFD:{grupo:"refrigeracion",titulo:"Variadores de velocidad",fuente:"refrigeracion",horario:false},
-  REF_MONITOREO:{grupo:"refrigeracion",titulo:"Monitoreo de temperatura",fuente:"refrigeracion",horario:false},
-  REF_RECUP_CALOR:{grupo:"refrigeracion",titulo:"Recuperación de calor",fuente:"refrigeracion",horario:false},
+  REF_TEMP_AUTO:{grupo:"refrigeracion",titulo:"Control automático de temperatura",fuente:"refrigeracion",tipo:"equipos",horario:false},
+  REF_DESHIELO:{grupo:"refrigeracion",titulo:"Programación de deshielo",fuente:"refrigeracion",tipo:"equipos",horario:true},
+  REF_VFD:{grupo:"refrigeracion",titulo:"Variadores de velocidad",fuente:"refrigeracion",tipo:"equipos",horario:false},
+  REF_MONITOREO:{grupo:"refrigeracion",titulo:"Monitoreo de temperatura",fuente:"refrigeracion",tipo:"equipos",horario:false},
+  REF_RECUP_CALOR:{grupo:"refrigeracion",titulo:"Recuperación de calor",fuente:"refrigeracion",tipo:"equipos",horario:false},
 
-  TER_AISL_TUB:{grupo:"termicos",titulo:"Aislamiento térmico de tuberías",fuente:"termicos",horario:false},
-  TER_AISL_EQUIP:{grupo:"termicos",titulo:"Aislamiento de depósitos o equipos",fuente:"termicos",horario:false},
-  TER_ECONOMIZADOR:{grupo:"termicos",titulo:"Economizador",fuente:"termicos",horario:false},
-  TER_PRECAL:{grupo:"termicos",titulo:"Precalentamiento",fuente:"termicos",horario:false},
-  TER_CONDENSADOS:{grupo:"termicos",titulo:"Recuperación de condensados",fuente:"termicos",horario:false},
-  TER_RECUP_CALOR:{grupo:"termicos",titulo:"Recuperación de calor",fuente:"termicos",horario:false},
-  TER_TEMP_AUTO:{grupo:"termicos",titulo:"Control automático de temperatura",fuente:"termicos",horario:false},
-  TER_HORARIO:{grupo:"termicos",titulo:"Programación horaria",fuente:"termicos",horario:true},
-  TER_COMBUSTION:{grupo:"termicos",titulo:"Control o ajuste de combustión",fuente:"termicos",horario:false},
+  TER_AISL_TUB:{grupo:"termicos",titulo:"Aislamiento térmico de tuberías",fuente:"termicos",tipo:"equipos",horario:false},
+  TER_AISL_EQUIP:{grupo:"termicos",titulo:"Aislamiento de depósitos o equipos",fuente:"termicos",tipo:"equipos",horario:false},
+  TER_ECONOMIZADOR:{grupo:"termicos",titulo:"Economizador",fuente:"termicos",tipo:"equipos",horario:false},
+  TER_PRECAL:{grupo:"termicos",titulo:"Precalentamiento",fuente:"termicos",tipo:"equipos",horario:false},
+  TER_CONDENSADOS:{grupo:"termicos",titulo:"Recuperación de condensados",fuente:"termicos",tipo:"equipos",horario:false},
+  TER_RECUP_CALOR:{grupo:"termicos",titulo:"Recuperación de calor",fuente:"termicos",tipo:"equipos",horario:false},
+  TER_TEMP_AUTO:{grupo:"termicos",titulo:"Control automático de temperatura",fuente:"termicos",tipo:"equipos",horario:false},
+  TER_HORARIO:{grupo:"termicos",titulo:"Programación horaria",fuente:"termicos",tipo:"equipos",horario:true},
+  TER_COMBUSTION:{grupo:"termicos",titulo:"Control o ajuste de combustión",fuente:"termicos",tipo:"equipos",horario:false},
 
-  ELEC_SUBMED:{grupo:"electrico",titulo:"Submedición por áreas o sistemas",fuente:"areas",horario:false}
+  ELEC_SUBMED:{grupo:"electrico",titulo:"Submedición por áreas o sistemas",fuente:"areas",tipo:"areas_sin_cobertura",horario:false}
 };
 
 function claveAlcanceItem(prefijo, valor, indice){
@@ -21660,10 +21796,10 @@ function opcionesAlcancePractica(fuente){
     const nombres=[];
     areas.forEach((a,i)=>{
       const nombre=String(a?.nombre||a?.tipo||"").trim();
-      if(nombre && !nombres.some(x=>x.label===nombre)) nombres.push({id:claveAlcanceItem("area",nombre,i),label:nombre});
+      if(nombre && !nombres.some(x=>x.label===nombre)) nombres.push({id:claveAlcanceItem("area",nombre,i),label:nombre,cantidad:null});
     });
     if(!nombres.length && typeof gruposIluminacion!=="undefined" && Array.isArray(gruposIluminacion)){
-      gruposIluminacion.forEach((g,i)=>{const nombre=String(g?.area||"").trim();if(nombre&&!nombres.some(x=>x.label===nombre))nombres.push({id:claveAlcanceItem("area",nombre,i),label:nombre});});
+      gruposIluminacion.forEach((g,i)=>{const nombre=String(g?.area||"").trim();if(nombre&&!nombres.some(x=>x.label===nombre))nombres.push({id:claveAlcanceItem("area",nombre,i),label:nombre,cantidad:null});});
     }
     return nombres;
   }
@@ -21671,28 +21807,35 @@ function opcionesAlcancePractica(fuente){
     asegurarIdsUsoFinal?.(equiposElectromecanicos,"em");
     return (equiposElectromecanicos||[]).map((x,i)=>({
       id:String(x.id||`em_${i}`),
-      label:`${typeof nombreElectromecanico==="function"?nombreElectromecanico(x):(x.tipo||"Equipo")} · ${x.potencia??"—"} ${x.unidadPotencia||""}`.trim()
+      label:`${typeof nombreElectromecanico==="function"?nombreElectromecanico(x):(x.tipo||"Equipo")} · ${x.potencia??"—"} ${x.unidadPotencia||""}`.trim(),
+      cantidad:Math.max(1,Number(x.cantidad||1))
     }));
   }
   if(fuente==="refrigeracion"){
     asegurarIdsUsoFinal?.(equiposRefrigeracion,"ref");
     return (equiposRefrigeracion||[]).map((x,i)=>({
       id:String(x.id||`ref_${i}`),
-      label:`${typeof nombreRefrigeracion==="function"?nombreRefrigeracion(x):(x.tipo||"Equipo")} · ${x.cantidad||1} equipo${Number(x.cantidad||1)===1?"":"s"}`
+      label:`${typeof nombreRefrigeracion==="function"?nombreRefrigeracion(x):(x.tipo||"Equipo")} · ${x.cantidad||1} equipo${Number(x.cantidad||1)===1?"":"s"}`,
+      cantidad:Math.max(1,Number(x.cantidad||1))
     }));
   }
   if(fuente==="termicos"){
     asegurarIdsUsoFinal?.(sistemasTermicos,"term");
     return (sistemasTermicos||[]).map((x,i)=>({
       id:String(x.id||`term_${i}`),
-      label:`${typeof nombreSistemaTermico==="function"?nombreSistemaTermico(x):(x.tipo||"Sistema")} · ${nombreEnergeticoCatalogo?.(x.energetico)||x.energetico||"sin energético"}`
+      label:`${typeof nombreSistemaTermico==="function"?nombreSistemaTermico(x):(x.tipo||"Sistema")} · ${nombreEnergeticoCatalogo?.(x.energetico)||x.energetico||"sin energético"}`,
+      cantidad:Math.max(1,Number(x.cantidad||1))
     }));
   }
   if(fuente==="climatizacion"){
     const out=[];
     const agregar=(lista,prefijo,nombreFn)=>{
       asegurarIdsUsoFinal?.(lista,prefijo);
-      (lista||[]).forEach((x,i)=>out.push({id:String(x.id||`${prefijo}_${i}`),label:nombreFn(x,i)}));
+      (lista||[]).forEach((x,i)=>out.push({
+        id:String(x.id||`${prefijo}_${i}`),
+        label:nombreFn(x,i),
+        cantidad:Math.max(1,Number(x.cantidad||1))
+      }));
     };
     agregar(equiposAireAcondicionado,"ac",x=>`Aire acondicionado · ${x.area||x.tipo||"equipo"}`);
     agregar(equiposVentilacion,"vent",x=>`Ventilación / extracción · ${x.area||x.tipo||"equipo"}`);
@@ -21706,11 +21849,16 @@ function capturarAlcancesDesdeDOM(){
   document.querySelectorAll(".prac-scope-detail[data-practica-scope]").forEach(box=>{
     const id=box.dataset.practicaScope;
     const items=[...box.querySelectorAll('input[data-scope-item]:checked')].map(x=>x.value);
+    const cantidades={};
+    box.querySelectorAll('input[data-scope-cantidad]').forEach(inp=>{
+      const itemId=inp.dataset.scopeCantidad;
+      if(itemId && inp.value!=="") cantidades[itemId]=Number(inp.value);
+    });
     const cobertura=box.querySelector('[data-scope-cobertura]')?.value||"";
     const coincide=box.querySelector('[data-scope-coincide]')?.value||"";
     const inicio=box.querySelector('[data-scope-inicio]')?.value||"";
     const fin=box.querySelector('[data-scope-fin]')?.value||"";
-    alcancesPracticasCache[id]={items,cobertura,coincide,inicio,fin};
+    alcancesPracticasCache[id]={items,cantidades,cobertura,coincide,inicio,fin};
   });
 }
 
@@ -21734,31 +21882,60 @@ function renderizarAlcancesPracticas(){
 
     const guardado=alcancesPracticasCache[id]||{};
     const seleccionados=new Set(Array.isArray(guardado.items)?guardado.items:[]);
+    const cantidadesGuardadas=guardado.cantidades||{};
     const opciones=opcionesAlcancePractica(cfg.fuente);
     const detalle=document.createElement("div");
     detalle.className="prac-scope-detail";
     detalle.dataset.practicaScope=id;
 
-    const lista=opciones.length
-      ? `<div class="scope-items">${opciones.map(o=>`<label class="scope-item"><input type="checkbox" data-scope-item value="${escaparHTMLCD(o.id)}"${seleccionados.has(o.id)?" checked":""}> ${escaparHTMLCD(o.label)}</label>`).join("")}</div>`
-      : `<div class="scope-empty">No hay áreas o equipos registrados para asociar esta medida. Puede conservar la práctica seleccionada y completar el alcance cuando exista información previa.</div>`;
+    let lista="";
+    if(!opciones.length){
+      lista=`<div class="scope-empty">No hay áreas o equipos registrados para asociar esta medida. Puede conservar la práctica seleccionada y completar el alcance cuando exista información previa.</div>`;
+    }else if(cfg.tipo==="equipos"){
+      lista=`<div class="scope-equipment-list">${opciones.map(o=>{
+        const cantidad=Math.max(1,Number(o.cantidad||1));
+        const marcado=seleccionados.has(o.id);
+        const valorCantidad=cantidadesGuardadas[o.id] ?? (marcado && cantidad===1 ? 1 : "");
+        return `<div class="scope-equipment-row">
+          <label class="scope-item"><input type="checkbox" data-scope-item value="${escaparHTMLCD(o.id)}"${marcado?" checked":""}> ${escaparHTMLCD(o.label)}</label>
+          ${cantidad>1 ? `<div class="scope-qty"><span>Con la medida:</span><input type="number" min="1" max="${cantidad}" step="1" data-scope-cantidad="${escaparHTMLCD(o.id)}" value="${marcado?escaparHTMLCD(String(valorCantidad)):""}"${marcado?"":" disabled"}><span>de ${cantidad}</span></div>` : `<div class="scope-qty"><span>1 de 1</span></div>`}
+        </div>`;
+      }).join("")}</div><div class="scope-auto-note">Cuando un registro representa varias unidades iguales, indique cuántas cuentan con la medida. El porcentaje de penetración se calculará automáticamente; no necesita estimarlo.</div>`;
+    }else{
+      lista=`<div class="scope-items">${opciones.map(o=>`<label class="scope-item"><input type="checkbox" data-scope-item value="${escaparHTMLCD(o.id)}"${seleccionados.has(o.id)?" checked":""}> ${escaparHTMLCD(o.label)}</label>`).join("")}</div>`;
+    }
 
-    const textoFuente=cfg.fuente==="areas" ? "Seleccione las áreas donde se aplica." : "Seleccione los equipos o sistemas donde se aplica.";
+    const textoFuente=cfg.tipo==="equipos"
+      ? "Seleccione los equipos o sistemas donde se aplica la medida."
+      : "Seleccione las áreas donde se aplica.";
+    const notaCobertura=cfg.tipo==="area_cobertura"
+      ? " La cobertura se refiere al porcentaje aproximado de luminarias o elementos del uso final dentro de las áreas seleccionadas que realmente están controlados por la medida."
+      : "";
+
     detalle.innerHTML=`
       <h5>${escaparHTMLCD(cfg.titulo)} · alcance de aplicación</h5>
-      <p class="scope-note">${textoFuente} La cobertura evita asumir que la medida aplica al 100 % del uso final.</p>
+      <p class="scope-note">${textoFuente}${notaCobertura}</p>
       ${lista}
       <div class="scope-fields">
-        <div class="scope-field">
-          <label>Cobertura aproximada</label>
-          <select data-scope-cobertura>${coberturaOpciones(guardado.cobertura||"")}</select>
-        </div>
+        ${cfg.tipo==="area_cobertura" ? `<div class="scope-field"><label>Cobertura aproximada en las áreas seleccionadas</label><select data-scope-cobertura>${coberturaOpciones(guardado.cobertura||"")}</select></div>` : ""}
         ${cfg.horario ? `<div class="scope-field"><label>¿El horario programado coincide con el horario registrado previamente?</label><select data-scope-coincide><option value="">Seleccione...</option><option value="si"${guardado.coincide==="si"?" selected":""}>Sí</option><option value="no"${guardado.coincide==="no"?" selected":""}>No</option><option value="no_sabe"${guardado.coincide==="no_sabe"?" selected":""}>No sabe</option></select></div>` : ""}
       </div>
       ${cfg.horario ? `<div class="scope-time-row${guardado.coincide==="no"?"":" hidden"}" data-scope-horario-extra><div class="scope-field"><label>Hora aproximada de activación</label><input type="time" data-scope-inicio value="${escaparHTMLCD(guardado.inicio||"")}"></div><div class="scope-field"><label>Hora aproximada de desactivación</label><input type="time" data-scope-fin value="${escaparHTMLCD(guardado.fin||"")}"></div></div>` : ""}`;
     zona.appendChild(detalle);
 
-    detalle.querySelectorAll('input[data-scope-item],select[data-scope-cobertura],input[data-scope-inicio],input[data-scope-fin]').forEach(el=>{
+    detalle.querySelectorAll('input[data-scope-item]').forEach(ch=>{
+      ch.addEventListener("change",()=>{
+        const fila=ch.closest('.scope-equipment-row');
+        const qty=fila?.querySelector('input[data-scope-cantidad]');
+        if(qty){
+          qty.disabled=!ch.checked;
+          if(!ch.checked) qty.value="";
+          else if(!qty.value) qty.value="1";
+        }
+        capturarAlcancesDesdeDOM();guardarPracticasLocal();
+      });
+    });
+    detalle.querySelectorAll('input[data-scope-cantidad],select[data-scope-cobertura],input[data-scope-inicio],input[data-scope-fin]').forEach(el=>{
       el.addEventListener("change",()=>{capturarAlcancesDesdeDOM();guardarPracticasLocal();});
     });
     const coincide=detalle.querySelector('[data-scope-coincide]');
@@ -21783,7 +21960,21 @@ function validarAlcancesPracticas(){
     if(opciones.length && (!Array.isArray(datos.items)||datos.items.length===0)){
       alert(`Indique dónde se aplica la medida: ${cfg.titulo}.`); chk.scrollIntoView({behavior:"smooth",block:"center"}); return false;
     }
-    if(!datos.cobertura){alert(`Indique la cobertura aproximada de: ${cfg.titulo}.`); return false;}
+    if(cfg.tipo==="area_cobertura" && !datos.cobertura){
+      alert(`Indique la cobertura aproximada de: ${cfg.titulo}.`); return false;
+    }
+    if(cfg.tipo==="equipos" && Array.isArray(datos.items)){
+      for(const itemId of datos.items){
+        const op=opciones.find(o=>o.id===itemId);
+        const total=Math.max(1,Number(op?.cantidad||1));
+        if(total>1){
+          const n=Number(datos.cantidades?.[itemId]);
+          if(!Number.isInteger(n)||n<1||n>total){
+            alert(`Indique cuántos equipos cuentan con la medida ${cfg.titulo} (máximo ${total}).`); return false;
+          }
+        }
+      }
+    }
     if(cfg.horario && !datos.coincide){alert(`Indique si el horario de ${cfg.titulo} coincide con el registrado previamente.`); return false;}
     if(cfg.horario && datos.coincide==="no" && (!datos.inicio||!datos.fin)){
       alert(`Indique las horas aproximadas de activación y desactivación de: ${cfg.titulo}.`); return false;
