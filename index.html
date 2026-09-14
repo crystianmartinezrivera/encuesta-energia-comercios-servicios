@@ -21855,7 +21855,8 @@ function capturarAlcancesDesdeDOM(){
       if(itemId && inp.value!=="") cantidades[itemId]=Number(inp.value);
     });
     const cobertura=box.querySelector('[data-scope-cobertura]')?.value||"";
-    const coincide=box.querySelector('[data-scope-coincide]')?.value||"";
+    const coincideEl=box.querySelector('[data-scope-coincide]');
+    const coincide=coincideEl ? (coincideEl.value || "si") : "";
     const inicio=box.querySelector('[data-scope-inicio]')?.value||"";
     const fin=box.querySelector('[data-scope-fin]')?.value||"";
     alcancesPracticasCache[id]={items,cantidades,cobertura,coincide,inicio,fin};
@@ -21918,7 +21919,7 @@ function renderizarAlcancesPracticas(){
       ${lista}
       <div class="scope-fields">
         ${cfg.tipo==="area_cobertura" ? `<div class="scope-field"><label>Cobertura aproximada en las áreas seleccionadas</label><select data-scope-cobertura>${coberturaOpciones(guardado.cobertura||"")}</select></div>` : ""}
-        ${cfg.horario ? `<div class="scope-field"><label>¿El horario programado coincide con el horario registrado previamente?</label><select data-scope-coincide><option value="">Seleccione...</option><option value="si"${guardado.coincide==="si"?" selected":""}>Sí</option><option value="no"${guardado.coincide==="no"?" selected":""}>No</option><option value="no_sabe"${guardado.coincide==="no_sabe"?" selected":""}>No sabe</option></select></div>` : ""}
+        ${cfg.horario ? `<div class="scope-field"><label>¿La medida opera con un horario diferente al registrado previamente?</label><select data-scope-coincide><option value="si"${(!guardado.coincide || guardado.coincide==="si")?" selected":""}>No, utiliza el horario ya registrado</option><option value="no"${guardado.coincide==="no"?" selected":""}>Sí, utiliza un horario diferente</option><option value="no_sabe"${guardado.coincide==="no_sabe"?" selected":""}>No sabe</option></select><small class="cd-help">Se toma como referencia el horario capturado previamente. Sólo indique otro horario cuando esta medida tenga una programación distinta.</small></div>` : ""}
       </div>
       ${cfg.horario ? `<div class="scope-time-row${guardado.coincide==="no"?"":" hidden"}" data-scope-horario-extra><div class="scope-field"><label>Hora aproximada de activación</label><input type="time" data-scope-inicio value="${escaparHTMLCD(guardado.inicio||"")}"></div><div class="scope-field"><label>Hora aproximada de desactivación</label><input type="time" data-scope-fin value="${escaparHTMLCD(guardado.fin||"")}"></div></div>` : ""}`;
     zona.appendChild(detalle);
@@ -21975,7 +21976,7 @@ function validarAlcancesPracticas(){
         }
       }
     }
-    if(cfg.horario && !datos.coincide){alert(`Indique si el horario de ${cfg.titulo} coincide con el registrado previamente.`); return false;}
+    if(cfg.horario && !datos.coincide) datos.coincide="si";
     if(cfg.horario && datos.coincide==="no" && (!datos.inicio||!datos.fin)){
       alert(`Indique las horas aproximadas de activación y desactivación de: ${cfg.titulo}.`); return false;
     }
