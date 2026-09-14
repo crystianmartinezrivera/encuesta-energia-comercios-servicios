@@ -2159,6 +2159,83 @@
   line-height:1.4;
 }
 
+
+/* =====================================================
+   SECCIÓN 5 - PRÁCTICAS DE EFICIENCIA ENERGÉTICA
+===================================================== */
+#view-practicas{min-width:0}
+.prac-intro{
+  margin-bottom:22px;padding:15px 17px;border:1px solid #cfe1f3;
+  border-radius:9px;background:#f5faff;color:#334f68;font-size:13px;line-height:1.55;
+}
+.prac-section{
+  margin:0 0 24px;padding:22px;border:1px solid var(--borde);
+  border-radius:12px;background:#fff;
+}
+.prac-section-title{
+  margin:0 0 8px;color:#0b3770;font-size:20px;line-height:1.25;
+}
+.prac-section-desc{margin:0 0 18px;color:#607080;font-size:13px;line-height:1.5}
+.prac-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.prac-card{
+  min-width:0;padding:18px;border:1px solid #dce7ef;border-radius:10px;background:#f9fbfd;
+}
+.prac-card.full{grid-column:1/-1}
+.prac-card h4{margin:0 0 12px;color:#0b4f92;font-size:15px}
+.prac-card-note{margin:-4px 0 12px;color:#66798a;font-size:12px;line-height:1.4}
+.prac-check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}
+.prac-check{
+  display:flex;align-items:flex-start;gap:8px;min-width:0;
+  font-size:13px;font-weight:400;line-height:1.35;cursor:pointer;
+}
+.prac-check input[type="checkbox"]{width:auto;margin-top:2px;flex-shrink:0;accent-color:var(--verde)}
+.prac-other{margin-top:12px}
+.prac-other input{width:100%}
+.prac-empty{
+  padding:15px 16px;border:1px dashed #b7c7d5;border-radius:8px;
+  background:#fbfcfd;color:#607080;font-size:13px;line-height:1.45;
+}
+.prac-thermal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.prac-percent-box{
+  margin-top:14px;padding-top:14px;border-top:1px solid #e1e8ee;
+}
+.prac-percent-box h5{margin:0 0 10px;color:#203348;font-size:13px}
+.prac-percent-row{
+  display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:12px;
+  align-items:center;margin-bottom:8px;
+}
+.prac-percent-row label{font-weight:400;line-height:1.3}
+.prac-percent-row .input-unit input{padding:9px 10px}
+.prac-percent-row .unit{padding:9px 10px;min-width:42px}
+.prac-total{
+  margin-top:8px;text-align:right;font-size:12px;font-weight:700;color:#526779;
+}
+.prac-select-main{margin-top:16px;max-width:620px}
+.prac-select-main label{display:block;margin-bottom:7px}
+.prac-warning{
+  margin-top:12px;padding:10px 12px;border-radius:7px;background:#fff8e8;
+  color:#77551a;font-size:12px;line-height:1.45;
+}
+.prac-actions{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:28px;padding-top:24px;border-top:1px solid #dce5ed;
+}
+.prac-actions-right{display:flex;gap:10px;margin-left:auto}
+.prac-status{
+  display:inline-flex;align-items:center;min-height:34px;padding:7px 10px;
+  border-radius:7px;background:#f2faf5;color:#285b40;font-size:12px;font-weight:700;
+}
+@media (max-width:900px){
+  .prac-grid,.prac-thermal-grid{grid-template-columns:1fr}
+  .prac-card.full{grid-column:auto}
+}
+@media (max-width:650px){
+  .prac-check-grid{grid-template-columns:1fr}
+  .prac-percent-row{grid-template-columns:1fr}
+  .prac-actions{align-items:stretch;flex-direction:column}
+  .prac-actions-right{margin-left:0;display:grid;grid-template-columns:1fr}
+}
+
 </style>
 <!-- =====================================================
    Fin de CSS
@@ -3927,23 +4004,326 @@
 ====================================================== -->
 
 
+
 <!-- =====================================================
      SECCIÓN 5
 ====================================================== -->
+<div id="view-practicas" class="survey-view hidden">
 
-<div
-  id="view-practicas"
-  class="survey-view hidden">
+  <h1 class="section-title">5. Prácticas de eficiencia energética</h1>
 
-  <h1 class="section-title">
-    5. Prácticas de eficiencia energética
-  </h1>
+  <div class="prac-intro">
+    Esta sección identifica el uso de la energía térmica, los controles y prácticas de eficiencia
+    actualmente implementados, las acciones de gestión de la energía y las principales barreras para
+    realizar mejoras. Las preguntas se muestran de acuerdo con los equipos y usos finales registrados
+    previamente, por lo que no es necesario volver a capturar sus características técnicas.
+  </div>
 
-  <div class="placeholder">
-    Esta sección se programará posteriormente.
+  <!-- A. USO DE ENERGÍA TÉRMICA -->
+  <section class="prac-section" id="practicasTermicas">
+    <h3 class="prac-section-title">A. Uso y aprovechamiento de la energía térmica</h3>
+    <p class="prac-section-desc">
+      Indique para qué actividades se utiliza el agua caliente o el vapor. Si lo conoce, puede estimar
+      la participación de cada uso; los porcentajes son opcionales, pero cuando se capturen deben sumar 100%.
+    </p>
+
+    <div id="pracTermicaSinAplicacion" class="prac-empty hidden">
+      No se identificaron sistemas de agua caliente o vapor en los usos finales registrados. Este bloque no requiere captura.
+    </div>
+
+    <div class="prac-thermal-grid" id="pracTermicaContenido">
+      <div class="prac-card" id="pracAguaCalienteCard">
+        <h4>Agua caliente</h4>
+        <p class="prac-card-note">Seleccione todos los usos que correspondan.</p>
+        <div class="prac-check-grid" id="pracAguaCalienteChecks">
+          <label class="prac-check"><input type="checkbox" data-termico="agua" value="duchas"> Duchas</label>
+          <label class="prac-check"><input type="checkbox" data-termico="agua" value="lavanderia"> Lavandería / lavado de ropa</label>
+          <label class="prac-check"><input type="checkbox" data-termico="agua" value="vajilla"> Lavado de vajilla o utensilios</label>
+          <label class="prac-check"><input type="checkbox" data-termico="agua" value="limpieza"> Limpieza</label>
+          <label class="prac-check"><input type="checkbox" data-termico="agua" value="coccion"> Preparación o cocción de alimentos</label>
+          <label class="prac-check"><input type="checkbox" data-termico="agua" value="proceso"> Procesos propios de la actividad</label>
+          <label class="prac-check"><input type="checkbox" data-termico="agua" value="otro"> Otro uso</label>
+        </div>
+        <div class="prac-other hidden" id="pracAguaOtroBox">
+          <input id="pracAguaOtro" type="text" maxlength="120" placeholder="Especifique otro uso del agua caliente">
+        </div>
+        <div class="prac-percent-box hidden" id="pracAguaPorcentajes">
+          <h5>Distribución aproximada del uso de agua caliente</h5>
+          <div id="pracAguaPorcentajesBody"></div>
+          <div class="prac-total" id="pracAguaTotal">Total capturado: 0%</div>
+        </div>
+      </div>
+
+      <div class="prac-card" id="pracVaporCard">
+        <h4>Vapor</h4>
+        <p class="prac-card-note">Seleccione todos los usos que correspondan.</p>
+        <div class="prac-check-grid" id="pracVaporChecks">
+          <label class="prac-check"><input type="checkbox" data-termico="vapor" value="calentamiento_agua"> Calentamiento de agua</label>
+          <label class="prac-check"><input type="checkbox" data-termico="vapor" value="lavanderia"> Lavandería</label>
+          <label class="prac-check"><input type="checkbox" data-termico="vapor" value="coccion"> Cocción / preparación de alimentos</label>
+          <label class="prac-check"><input type="checkbox" data-termico="vapor" value="limpieza"> Limpieza</label>
+          <label class="prac-check"><input type="checkbox" data-termico="vapor" value="esterilizacion"> Esterilización</label>
+          <label class="prac-check"><input type="checkbox" data-termico="vapor" value="proceso"> Procesos propios de la actividad</label>
+          <label class="prac-check"><input type="checkbox" data-termico="vapor" value="otro"> Otro uso</label>
+        </div>
+        <div class="prac-other hidden" id="pracVaporOtroBox">
+          <input id="pracVaporOtro" type="text" maxlength="120" placeholder="Especifique otro uso del vapor">
+        </div>
+        <div class="prac-percent-box hidden" id="pracVaporPorcentajes">
+          <h5>Distribución aproximada del uso de vapor</h5>
+          <div id="pracVaporPorcentajesBody"></div>
+          <div class="prac-total" id="pracVaporTotal">Total capturado: 0%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- B. TECNOLOGÍAS Y CONTROLES -->
+  <section class="prac-section">
+    <h3 class="prac-section-title">B. Tecnologías, controles y prácticas de eficiencia energética</h3>
+    <p class="prac-section-desc">
+      Seleccione únicamente las medidas que actualmente se utilizan en el establecimiento. Los grupos se muestran
+      sólo cuando el uso final correspondiente fue identificado previamente.
+    </p>
+
+    <div class="prac-grid">
+
+      <div class="prac-card" id="pracCardIluminacion">
+        <h4>Iluminación</h4>
+        <div class="prac-check-grid">
+          <label class="prac-check"><input type="checkbox" data-practica-id="ILU_APAGADO"> Apagado cuando la iluminación no se requiere</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ILU_NATURAL"> Aprovechamiento de iluminación natural</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ILU_PRESENCIA"> Sensores de presencia u ocupación</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ILU_TEMPORIZADORES"> Temporizadores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ILU_FOTOCELDAS"> Fotoceldas / sensores de luz natural</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ILU_ATENUACION"> Atenuación o regulación automática</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ILU_SECTORIZACION"> Sectorización de circuitos</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ILU_BMS"> Programación mediante sistema de control o BMS</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ILU_MANTENIMIENTO"> Limpieza y mantenimiento periódico de luminarias</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ILU_NINGUNA" data-exclusiva="iluminacion"> Ninguna de las anteriores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ILU_OTRA" data-otro-target="pracOtroIluminacion"> Otra</label>
+        </div>
+        <div class="prac-other hidden" id="pracOtroIluminacionBox"><input id="pracOtroIluminacion" maxlength="140" placeholder="Especifique otra práctica de iluminación"></div>
+      </div>
+
+      <div class="prac-card hidden" id="pracCardClimatizacion">
+        <h4>Aire acondicionado, calefacción y ventilación</h4>
+        <div class="prac-check-grid">
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_TERMOSTATO"> Termostatos programables</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_ZONAS"> Control independiente por zonas</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_HORARIO"> Programación horaria</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_OCUPACION"> Sensores de ocupación</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_VFD_VENT"> Variadores de velocidad en ventiladores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_VFD_BOMBAS"> Variadores de velocidad en bombas asociadas</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_TEMP_AUTO"> Control automático de temperatura</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_MANT_PREV"> Mantenimiento preventivo periódico</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_FILTROS"> Limpieza de filtros e intercambiadores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_DUCTOS"> Sellado y mantenimiento de ductos</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_AISLAMIENTO"> Aislamiento térmico de ductos</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_PROTECCION_SOLAR"> Protección solar: persianas, películas o toldos</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_NINGUNA" data-exclusiva="climatizacion"> Ninguna de las anteriores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="CLI_OTRA" data-otro-target="pracOtroClimatizacion"> Otra</label>
+        </div>
+        <div class="prac-other hidden" id="pracOtroClimatizacionBox"><input id="pracOtroClimatizacion" maxlength="140" placeholder="Especifique otra práctica de climatización"></div>
+      </div>
+
+      <div class="prac-card hidden" id="pracCardElectromecanicos">
+        <h4>Motores y sistemas electromecánicos</h4>
+        <div class="prac-check-grid">
+          <label class="prac-check"><input type="checkbox" data-practica-id="MOT_VFD"> Variadores de frecuencia / velocidad</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="MOT_ARRANQUE"> Arrancadores suaves</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="MOT_ALTA_EF"> Motores de alta eficiencia</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="MOT_AUTO_ONOFF"> Control automático de encendido/apagado</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="MOT_HORARIO"> Programación horaria</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="MOT_VARIABLE"> Control por presión, flujo, nivel u otra variable</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="MOT_SECUENCIA"> Secuenciación de equipos</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="MOT_MANT"> Mantenimiento preventivo</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="MOT_NINGUNA" data-exclusiva="electromecanicos"> Ninguna de las anteriores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="MOT_OTRA" data-otro-target="pracOtroMotores"> Otra</label>
+        </div>
+        <div class="prac-other hidden" id="pracOtroMotoresBox"><input id="pracOtroMotores" maxlength="140" placeholder="Especifique otra práctica en motores"></div>
+      </div>
+
+      <div class="prac-card hidden" id="pracCardRefrigeracion">
+        <h4>Refrigeración y conservación</h4>
+        <div class="prac-check-grid">
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_TEMP_AUTO"> Control automático de temperatura</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_DESHIELO"> Programación de deshielo</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_CONDENSADORES"> Limpieza y mantenimiento de condensadores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_SELLOS"> Revisión periódica de empaques y sellos</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_CORTINAS"> Cortinas o puertas en exhibidores refrigerados</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_VFD"> Variadores de velocidad en compresores o ventiladores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_MONITOREO"> Monitoreo de temperatura</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_RECUP_CALOR"> Recuperación de calor</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_MANT"> Mantenimiento preventivo</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_ENFRIAR_ALIMENTOS"> Enfriar alimentos antes de refrigerarlos</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_NINGUNA" data-exclusiva="refrigeracion"> Ninguna de las anteriores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="REF_OTRA" data-otro-target="pracOtroRefrigeracion"> Otra</label>
+        </div>
+        <div class="prac-other hidden" id="pracOtroRefrigeracionBox"><input id="pracOtroRefrigeracion" maxlength="140" placeholder="Especifique otra práctica de refrigeración"></div>
+      </div>
+
+      <div class="prac-card hidden" id="pracCardTermicos">
+        <h4>Sistemas térmicos y generación de calor</h4>
+        <div class="prac-check-grid">
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_AISL_TUB"> Aislamiento térmico de tuberías</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_AISL_EQUIP"> Aislamiento de depósitos o equipos</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_ECONOMIZADOR"> Economizador</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_PRECAL"> Precalentamiento</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_CONDENSADOS"> Recuperación de condensados</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_RECUP_CALOR"> Recuperación de calor</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_TEMP_AUTO"> Control automático de temperatura</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_HORARIO"> Programación horaria</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_MANT"> Mantenimiento periódico</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_COMBUSTION"> Control o ajuste de combustión</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_NINGUNA" data-exclusiva="termicos"> Ninguna de las anteriores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="TER_OTRA" data-otro-target="pracOtroTermicos"> Otra</label>
+        </div>
+        <div class="prac-other hidden" id="pracOtroTermicosBox"><input id="pracOtroTermicos" maxlength="140" placeholder="Especifique otra práctica en sistemas térmicos"></div>
+      </div>
+
+      <div class="prac-card hidden" id="pracCardCoccion">
+        <h4>Cocción y preparación de alimentos</h4>
+        <div class="prac-check-grid">
+          <label class="prac-check"><input type="checkbox" data-practica-id="COC_APAGADO"> Apagado de equipos fuera del horario de uso</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="COC_DEMANDA"> Encendido únicamente conforme a demanda</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="COC_MANT"> Mantenimiento periódico</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="COC_EQUIP_EF"> Uso de equipos de alta eficiencia</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="COC_TEMP_AUTO"> Control automático de temperatura</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="COC_RECUP_CALOR"> Recuperación de calor</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="COC_BUENAS_PRACT"> Buenas prácticas de operación</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="COC_NINGUNA" data-exclusiva="coccion"> Ninguna de las anteriores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="COC_OTRA" data-otro-target="pracOtroCoccion"> Otra</label>
+        </div>
+        <div class="prac-other hidden" id="pracOtroCoccionBox"><input id="pracOtroCoccion" maxlength="140" placeholder="Especifique otra práctica en cocción"></div>
+      </div>
+
+      <div class="prac-card hidden" id="pracCardOficina">
+        <h4>Equipos de oficina, comunicación y electrónicos</h4>
+        <div class="prac-check-grid">
+          <label class="prac-check"><input type="checkbox" data-practica-id="OFI_AHORRO"> Configuración de modo ahorro de energía</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="OFI_SUSPENSION"> Suspensión automática</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="OFI_APAGADO"> Apagado fuera del horario de operación</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="OFI_TEMPORIZADORES"> Temporizadores o contactos inteligentes</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="OFI_CENTRAL"> Administración centralizada de equipos</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="OFI_COMPRA_EF"> Adquisición basada en criterios de eficiencia energética</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="OFI_NINGUNA" data-exclusiva="oficina"> Ninguna de las anteriores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="OFI_OTRA" data-otro-target="pracOtroOficina"> Otra</label>
+        </div>
+        <div class="prac-other hidden" id="pracOtroOficinaBox"><input id="pracOtroOficina" maxlength="140" placeholder="Especifique otra práctica en equipos de oficina"></div>
+      </div>
+
+      <div class="prac-card hidden" id="pracCardElectrico">
+        <h4>Sistemas eléctricos y gestión de la demanda</h4>
+        <div class="prac-check-grid">
+          <label class="prac-check"><input type="checkbox" data-practica-id="ELEC_FP"> Corrección o control del factor de potencia</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ELEC_DEMANDA"> Control de demanda máxima / picos de demanda</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ELEC_SUBMED"> Submedición por áreas o sistemas</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ELEC_PROGRAMACION"> Programación o desplazamiento de cargas</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ELEC_CALIDAD"> Monitoreo de calidad de energía</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ELEC_AUTO"> Desconexión o control automático de cargas</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ELEC_NINGUNA" data-exclusiva="electrico"> Ninguna de las anteriores</label>
+          <label class="prac-check"><input type="checkbox" data-practica-id="ELEC_OTRA" data-otro-target="pracOtroElectrico"> Otra</label>
+        </div>
+        <div class="prac-other hidden" id="pracOtroElectricoBox"><input id="pracOtroElectrico" maxlength="140" placeholder="Especifique otra medida en sistemas eléctricos"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- C. GESTIÓN DE ENERGÍA -->
+  <section class="prac-section">
+    <h3 class="prac-section-title">C. Gestión de la energía</h3>
+    <p class="prac-section-desc">
+      Indique las acciones formales o sistemáticas que actualmente realiza el establecimiento para administrar
+      o mejorar su desempeño energético.
+    </p>
+    <div class="prac-card full">
+      <div class="prac-check-grid">
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_SEGUIMIENTO"> Seguimiento periódico del consumo energético</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_INDICADORES"> Indicadores de consumo o desempeño energético</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_METAS"> Metas de ahorro de energía</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_RESPONSABLE"> Responsable de energía o mantenimiento energético</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_MANTENIMIENTO"> Programa de mantenimiento preventivo</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_CAPACITACION"> Capacitación al personal</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_CONCIENTIZACION"> Campañas de concientización</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_DIAGNOSTICO"> Diagnóstico energético</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_AUDITORIA"> Auditoría energética</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_SGEN"> Sistema de gestión de la energía</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_COMPRA"> Criterios de eficiencia energética para compra de equipos</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_SUBMEDICION"> Monitoreo mediante medidores o submedidores</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_BMS"> BMS / sistema de gestión del edificio</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_NINGUNA" id="gesNinguna"> Ninguna de las anteriores</label>
+        <label class="prac-check"><input type="checkbox" data-gestion-id="GES_OTRA" data-otro-target="pracOtroGestion"> Otra</label>
+      </div>
+      <div class="prac-other hidden" id="pracOtroGestionBox"><input id="pracOtroGestion" maxlength="140" placeholder="Especifique otra acción de gestión"></div>
+
+      <div class="prac-select-main hidden" id="pracDiagnosticoAntiguedadBox">
+        <label for="pracDiagnosticoAntiguedad">¿Cuándo se realizó el diagnóstico energético más reciente?</label>
+        <select id="pracDiagnosticoAntiguedad">
+          <option value="">Seleccione...</option>
+          <option value="menos_1">Menos de un año</option>
+          <option value="1_3">Entre 1 y 3 años</option>
+          <option value="mas_3">Más de 3 años</option>
+          <option value="no_sabe">No sabe</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- D. BARRERAS -->
+  <section class="prac-section">
+    <h3 class="prac-section-title">D. Barreras para mejorar la eficiencia energética</h3>
+    <p class="prac-section-desc">
+      Seleccione todas las barreras que actualmente dificultan implementar medidas de eficiencia energética.
+      Después identifique la principal.
+    </p>
+
+    <div class="prac-card full">
+      <div class="prac-check-grid" id="pracBarrerasGrid">
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_RECURSOS"> Falta de recursos financieros</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_COSTO_INICIAL"> Alto costo inicial de las tecnologías</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_INFO"> Falta de información sobre oportunidades de ahorro</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_CONOCIMIENTO"> Falta de conocimiento técnico</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_PERSONAL_CAP"> Falta de personal capacitado</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_TIEMPO"> Falta de tiempo o personal para implementar acciones</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_JUSTIFICAR"> Dificultad para justificar la inversión</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_RETORNO"> Periodos de recuperación considerados demasiado largos</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_OTRAS_INVERSIONES"> Prioridad a otras inversiones</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_ARRENDADO"> Instalaciones arrendadas</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_INFRA"> Restricciones del inmueble o infraestructura</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_VIDA_UTIL"> Equipos aún dentro de su vida útil</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_FINANCIAMIENTO"> Dificultad para acceder a financiamiento</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_DIRECCION"> Falta de interés o prioridad de la dirección</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_INCERTIDUMBRE"> Incertidumbre sobre los ahorros esperados</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_NINGUNA" id="barNinguna"> No identifica barreras</label>
+        <label class="prac-check"><input type="checkbox" data-barrera-id="BAR_OTRA" data-otro-target="pracOtraBarrera"> Otra</label>
+      </div>
+
+      <div class="prac-other hidden" id="pracOtraBarreraBox">
+        <input id="pracOtraBarrera" maxlength="140" placeholder="Especifique otra barrera">
+      </div>
+
+      <div class="prac-select-main" id="pracBarreraPrincipalBox">
+        <label for="pracBarreraPrincipal">De las barreras seleccionadas, ¿cuál considera la principal?</label>
+        <select id="pracBarreraPrincipal">
+          <option value="">Seleccione primero una o más barreras...</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <div class="prac-actions">
+    <button type="button" class="secondary" id="btnPracticasAnterior">← Anterior</button>
+    <span class="prac-status hidden" id="pracGuardadoEstado">Información guardada</span>
+    <div class="prac-actions-right">
+      <button type="button" class="secondary" id="btnGuardarPracticas">Guardar avance</button>
+      <button type="button" class="primary" id="btnPracticasContinuar">Guardar y continuar →</button>
+    </div>
   </div>
 
 </div>
+
 
 
 <!-- =====================================================
@@ -4178,6 +4558,38 @@
     </p>
   </div>
 
+</div>
+
+
+<!-- =========================================
+     AYUDA - PÁGINA 5
+========================================== -->
+<div id="ayudaPagina5" class="hidden">
+  <div class="right-card green">
+    <h3>💡 ¿Por qué es importante?</h3>
+    <p>
+      Las prácticas de operación, los controles automáticos y la gestión de la energía permiten
+      identificar oportunidades de ahorro que no dependen únicamente de sustituir equipos.
+    </p>
+  </div>
+
+  <div class="right-card blue">
+    <h3>▣ Considere</h3>
+    <ul>
+      <li>✓ Seleccione sólo medidas que actualmente se aplican.</li>
+      <li>⚙️ Los grupos visibles dependen de los equipos registrados previamente.</li>
+      <li>📊 Los porcentajes de usos térmicos son opcionales.</li>
+      <li>💡 Puede registrar más de una barrera.</li>
+    </ul>
+  </div>
+
+  <div class="right-card yellow">
+    <h3>☆ Importante</h3>
+    <p>
+      No marque una medida sólo porque el equipo tenga esa capacidad. Indique únicamente controles,
+      prácticas o acciones que realmente estén implementados en el establecimiento.
+    </p>
+  </div>
 </div>
 
 </aside>
@@ -8772,6 +9184,16 @@ if(nombre === "usos"){
     console.error("No se pudieron sincronizar los energéticos de usos finales:", error);
   });
 }
+
+// Página 5
+if(nombre === "practicas"){
+  mostrarAyudaPagina(5);
+  try {
+    prepararSeccionPracticas();
+  } catch(error) {
+    console.error("No se pudo preparar la sección de prácticas:", error);
+  }
+}
     
     window.scrollTo({top:0,behavior:"smooth"});
   }
@@ -13277,7 +13699,7 @@ function actualizarSeccionFacturacionElectrica(){
 // ======================================================
 
 function mostrarAyudaPagina(numero){
-  const ayudas = [1,2,3,4].map(n => document.getElementById(`ayudaPagina${n}`));
+  const ayudas = [1,2,3,4,5].map(n => document.getElementById(`ayudaPagina${n}`));
   ayudas.forEach(el => el?.classList.add("hidden"));
   document.getElementById(`ayudaPagina${numero}`)?.classList.remove("hidden");
 }
@@ -20890,6 +21312,473 @@ document.getElementById("btnUsosContinuar")?.addEventListener("click", async () 
 });
 
 
+
+// =====================================================
+// SECCIÓN 5 - PRÁCTICAS DE EFICIENCIA ENERGÉTICA
+// =====================================================
+const STORAGE_PRACTICAS_V1 = "encuesta_cys_practicas_eficiencia_v1";
+
+const etiquetasTermicas = {
+  agua: {
+    duchas:"Duchas",
+    lavanderia:"Lavandería / lavado de ropa",
+    vajilla:"Lavado de vajilla o utensilios",
+    limpieza:"Limpieza",
+    coccion:"Preparación o cocción de alimentos",
+    proceso:"Procesos propios de la actividad",
+    otro:"Otro uso"
+  },
+  vapor: {
+    calentamiento_agua:"Calentamiento de agua",
+    lavanderia:"Lavandería",
+    coccion:"Cocción / preparación de alimentos",
+    limpieza:"Limpieza",
+    esterilizacion:"Esterilización",
+    proceso:"Procesos propios de la actividad",
+    otro:"Otro uso"
+  }
+};
+
+const etiquetasBarreras = {
+  BAR_RECURSOS:"Falta de recursos financieros",
+  BAR_COSTO_INICIAL:"Alto costo inicial de las tecnologías",
+  BAR_INFO:"Falta de información sobre oportunidades de ahorro",
+  BAR_CONOCIMIENTO:"Falta de conocimiento técnico",
+  BAR_PERSONAL_CAP:"Falta de personal capacitado",
+  BAR_TIEMPO:"Falta de tiempo o personal para implementar acciones",
+  BAR_JUSTIFICAR:"Dificultad para justificar la inversión",
+  BAR_RETORNO:"Periodos de recuperación considerados demasiado largos",
+  BAR_OTRAS_INVERSIONES:"Prioridad a otras inversiones",
+  BAR_ARRENDADO:"Instalaciones arrendadas",
+  BAR_INFRA:"Restricciones del inmueble o infraestructura",
+  BAR_VIDA_UTIL:"Equipos aún dentro de su vida útil",
+  BAR_FINANCIAMIENTO:"Dificultad para acceder a financiamiento",
+  BAR_DIRECCION:"Falta de interés o prioridad de la dirección",
+  BAR_INCERTIDUMBRE:"Incertidumbre sobre los ahorros esperados",
+  BAR_NINGUNA:"No identifica barreras",
+  BAR_OTRA:"Otra"
+};
+
+function hayListaConDatos(lista){
+  return Array.isArray(lista) && lista.length > 0;
+}
+
+function contextoPracticas(){
+  const termicos = (typeof sistemasTermicos !== "undefined" && Array.isArray(sistemasTermicos)) ? sistemasTermicos : [];
+  const tiposTermicos = new Set(termicos.map(x => String(x?.tipo || "")));
+  const tieneAguaCaliente = termicos.length > 0 && ["caldera","calentador","solar","bomba_calor","otro"].some(t => tiposTermicos.has(t));
+  const tieneVapor = tiposTermicos.has("vapor") || tiposTermicos.has("caldera");
+  const tieneClimatizacion =
+    hayListaConDatos(typeof equiposAireAcondicionado !== "undefined" ? equiposAireAcondicionado : []) ||
+    hayListaConDatos(typeof equiposVentilacion !== "undefined" ? equiposVentilacion : []) ||
+    hayListaConDatos(typeof equiposCalefaccion !== "undefined" ? equiposCalefaccion : []) ||
+    !!document.getElementById("acondAire")?.checked ||
+    !!document.getElementById("acondVentilacion")?.checked ||
+    !!document.getElementById("acondCalefaccion")?.checked;
+
+  const catalogo = (typeof catalogoEnergeticosUsosFinales === "function") ? catalogoEnergeticosUsosFinales() : [];
+  const tieneElectricidad = catalogo.some(e => e.codigo === "electricidad");
+
+  return {
+    tieneAguaCaliente,
+    tieneVapor,
+    tieneClimatizacion,
+    tieneElectromecanicos: hayListaConDatos(typeof equiposElectromecanicos !== "undefined" ? equiposElectromecanicos : []) || valorRadioCD("usaElectromecanicos")==="si",
+    tieneRefrigeracion: hayListaConDatos(typeof equiposRefrigeracion !== "undefined" ? equiposRefrigeracion : []) || valorRadioCD("usaRefrigeracion")==="si",
+    tieneTermicos: termicos.length > 0 || valorRadioCD("usaSistemasTermicos")==="si",
+    tieneCoccion: hayListaConDatos(typeof equiposCoccion !== "undefined" ? equiposCoccion : []) || valorRadioCD("usaCoccion")==="si",
+    tieneOficina: hayListaConDatos(typeof equiposOficina !== "undefined" ? equiposOficina : []) || valorRadioCD("usaEquiposOficina")==="si",
+    tieneElectricidad
+  };
+}
+
+function prepararSeccionPracticas(){
+  const ctx = contextoPracticas();
+
+  document.getElementById("pracCardClimatizacion")?.classList.toggle("hidden", !ctx.tieneClimatizacion);
+  document.getElementById("pracCardElectromecanicos")?.classList.toggle("hidden", !ctx.tieneElectromecanicos);
+  document.getElementById("pracCardRefrigeracion")?.classList.toggle("hidden", !ctx.tieneRefrigeracion);
+  document.getElementById("pracCardTermicos")?.classList.toggle("hidden", !ctx.tieneTermicos);
+  document.getElementById("pracCardCoccion")?.classList.toggle("hidden", !ctx.tieneCoccion);
+  document.getElementById("pracCardOficina")?.classList.toggle("hidden", !ctx.tieneOficina);
+  document.getElementById("pracCardElectrico")?.classList.toggle("hidden", !ctx.tieneElectricidad);
+
+  const sinTermicos = !ctx.tieneAguaCaliente && !ctx.tieneVapor;
+  document.getElementById("pracTermicaSinAplicacion")?.classList.toggle("hidden", !sinTermicos);
+  document.getElementById("pracTermicaContenido")?.classList.toggle("hidden", sinTermicos);
+  document.getElementById("pracAguaCalienteCard")?.classList.toggle("hidden", !ctx.tieneAguaCaliente);
+  document.getElementById("pracVaporCard")?.classList.toggle("hidden", !ctx.tieneVapor);
+
+  // Esta práctica sólo tiene sentido si también existe cocción/preparación de alimentos.
+  const enfriar = document.querySelector('[data-practica-id="REF_ENFRIAR_ALIMENTOS"]')?.closest("label");
+  if(enfriar) enfriar.classList.toggle("hidden", !ctx.tieneCoccion);
+
+  actualizarOtrosPracticas();
+  actualizarDiagnosticoPracticas();
+  renderizarPorcentajesTermicos("agua");
+  renderizarPorcentajesTermicos("vapor");
+  actualizarBarreraPrincipal();
+}
+
+function checkboxesTermicos(tipo){
+  return [...document.querySelectorAll(`input[data-termico="${tipo}"]`)];
+}
+
+function seleccionTermica(tipo){
+  return checkboxesTermicos(tipo).filter(x=>x.checked).map(x=>x.value);
+}
+
+function renderizarPorcentajesTermicos(tipo){
+  const seleccion = seleccionTermica(tipo);
+  const box = document.getElementById(tipo==="agua" ? "pracAguaPorcentajes" : "pracVaporPorcentajes");
+  const body = document.getElementById(tipo==="agua" ? "pracAguaPorcentajesBody" : "pracVaporPorcentajesBody");
+  if(!box || !body) return;
+
+  const anteriores = {};
+  body.querySelectorAll("input[data-participacion]").forEach(i => anteriores[i.dataset.participacion] = i.value);
+
+  box.classList.toggle("hidden", seleccion.length===0);
+  body.innerHTML = "";
+
+  seleccion.forEach(valor => {
+    const etiqueta = valor==="otro"
+      ? ((document.getElementById(tipo==="agua" ? "pracAguaOtro" : "pracVaporOtro")?.value || "").trim() || "Otro uso")
+      : (etiquetasTermicas[tipo]?.[valor] || valor);
+    const row = document.createElement("div");
+    row.className = "prac-percent-row";
+    row.innerHTML = `
+      <label>${escaparHTMLCD(etiqueta)}</label>
+      <div class="input-unit">
+        <input type="number" min="0" max="100" step="0.1"
+          data-participacion="${escaparHTMLCD(valor)}"
+          data-participacion-tipo="${tipo}"
+          value="${escaparHTMLCD(anteriores[valor] ?? "")}"
+          placeholder="0">
+        <span class="unit">%</span>
+      </div>`;
+    body.appendChild(row);
+  });
+
+  body.querySelectorAll("input[data-participacion]").forEach(i=>{
+    i.addEventListener("input",()=>actualizarTotalTermico(tipo));
+    i.addEventListener("change",guardarPracticasLocal);
+  });
+  actualizarTotalTermico(tipo);
+}
+
+function actualizarTotalTermico(tipo){
+  const body = document.getElementById(tipo==="agua" ? "pracAguaPorcentajesBody" : "pracVaporPorcentajesBody");
+  const totalBox = document.getElementById(tipo==="agua" ? "pracAguaTotal" : "pracVaporTotal");
+  if(!body || !totalBox) return;
+  const vals=[...body.querySelectorAll("input[data-participacion]")].map(i=>Number(i.value||0));
+  const total=vals.reduce((a,b)=>a+(Number.isFinite(b)?b:0),0);
+  totalBox.textContent=`Total capturado: ${total.toLocaleString("es-MX",{maximumFractionDigits:1})}%`;
+  totalBox.style.color = total>0 && Math.abs(total-100)>0.1 ? "#b36b00" : "#285b40";
+}
+
+function actualizarOtrosPracticas(){
+  document.querySelectorAll("input[data-otro-target]").forEach(chk=>{
+    const id=chk.dataset.otroTarget;
+    document.getElementById(id+"Box")?.classList.toggle("hidden", !chk.checked);
+    if(!chk.checked){
+      const inp=document.getElementById(id);
+      if(inp) inp.value="";
+    }
+  });
+  const aguaOtro=checkboxesTermicos("agua").find(x=>x.value==="otro")?.checked;
+  const vaporOtro=checkboxesTermicos("vapor").find(x=>x.value==="otro")?.checked;
+  document.getElementById("pracAguaOtroBox")?.classList.toggle("hidden", !aguaOtro);
+  document.getElementById("pracVaporOtroBox")?.classList.toggle("hidden", !vaporOtro);
+}
+
+function aplicarExclusividadPracticas(chk){
+  if(chk.dataset.exclusiva){
+    const card=chk.closest(".prac-card");
+    if(!card) return;
+    if(chk.checked){
+      card.querySelectorAll('input[type="checkbox"][data-practica-id]').forEach(o=>{ if(o!==chk) o.checked=false; });
+    }
+  } else if(chk.dataset.practicaId){
+    const card=chk.closest(".prac-card");
+    card?.querySelectorAll('input[data-exclusiva]').forEach(o=>{ if(chk.checked) o.checked=false; });
+  }
+}
+
+function actualizarDiagnosticoPracticas(){
+  const diag=document.querySelector('[data-gestion-id="GES_DIAGNOSTICO"]');
+  const box=document.getElementById("pracDiagnosticoAntiguedadBox");
+  box?.classList.toggle("hidden", !diag?.checked);
+  if(!diag?.checked && document.getElementById("pracDiagnosticoAntiguedad")){
+    document.getElementById("pracDiagnosticoAntiguedad").value="";
+  }
+}
+
+function aplicarExclusividadGestion(chk){
+  const ning=document.getElementById("gesNinguna");
+  if(!ning) return;
+  if(chk===ning && ning.checked){
+    document.querySelectorAll('input[data-gestion-id]').forEach(o=>{if(o!==ning)o.checked=false;});
+  } else if(chk.checked){
+    ning.checked=false;
+  }
+}
+
+function aplicarExclusividadBarreras(chk){
+  const ning=document.getElementById("barNinguna");
+  if(!ning) return;
+  if(chk===ning && ning.checked){
+    document.querySelectorAll('input[data-barrera-id]').forEach(o=>{if(o!==ning)o.checked=false;});
+  } else if(chk.checked){
+    ning.checked=false;
+  }
+}
+
+function actualizarBarreraPrincipal(){
+  const select=document.getElementById("pracBarreraPrincipal");
+  if(!select) return;
+  const actual=select.value;
+  const seleccion=[...document.querySelectorAll('input[data-barrera-id]:checked')].map(x=>x.dataset.barreraId);
+  const candidatas=seleccion.filter(x=>x!=="BAR_NINGUNA");
+  select.innerHTML = candidatas.length
+    ? '<option value="">Seleccione...</option>'+candidatas.map(id=>`<option value="${id}">${escaparHTMLCD(id==="BAR_OTRA" ? ((document.getElementById("pracOtraBarrera")?.value||"").trim()||"Otra") : (etiquetasBarreras[id]||id))}</option>`).join("")
+    : '<option value="">No aplica</option>';
+  select.disabled = candidatas.length===0;
+  if(candidatas.includes(actual)) select.value=actual;
+}
+
+function valoresChecks(selector, atributo){
+  return [...document.querySelectorAll(selector)].filter(x=>x.checked).map(x=>x.dataset[atributo]);
+}
+
+function participacionesTermicas(tipo){
+  const body=document.getElementById(tipo==="agua" ? "pracAguaPorcentajesBody" : "pracVaporPorcentajesBody");
+  const obj={};
+  body?.querySelectorAll("input[data-participacion]").forEach(i=>{
+    if(i.value!=="") obj[i.dataset.participacion]=Number(i.value);
+  });
+  return obj;
+}
+
+function obtenerDatosPracticas(){
+  return {
+    version:1,
+    contexto:contextoPracticas(),
+    termicos:{
+      agua:{
+        usos:seleccionTermica("agua"),
+        otro:(document.getElementById("pracAguaOtro")?.value||"").trim(),
+        participacion:participacionesTermicas("agua")
+      },
+      vapor:{
+        usos:seleccionTermica("vapor"),
+        otro:(document.getElementById("pracVaporOtro")?.value||"").trim(),
+        participacion:participacionesTermicas("vapor")
+      }
+    },
+    practicas:valoresChecks('input[data-practica-id]','practicaId'),
+    gestion:valoresChecks('input[data-gestion-id]','gestionId'),
+    otros:{
+      iluminacion:(document.getElementById("pracOtroIluminacion")?.value||"").trim(),
+      climatizacion:(document.getElementById("pracOtroClimatizacion")?.value||"").trim(),
+      motores:(document.getElementById("pracOtroMotores")?.value||"").trim(),
+      refrigeracion:(document.getElementById("pracOtroRefrigeracion")?.value||"").trim(),
+      termicos:(document.getElementById("pracOtroTermicos")?.value||"").trim(),
+      coccion:(document.getElementById("pracOtroCoccion")?.value||"").trim(),
+      oficina:(document.getElementById("pracOtroOficina")?.value||"").trim(),
+      electrico:(document.getElementById("pracOtroElectrico")?.value||"").trim(),
+      gestion:(document.getElementById("pracOtroGestion")?.value||"").trim()
+    },
+    diagnosticoAntiguedad:document.getElementById("pracDiagnosticoAntiguedad")?.value||"",
+    barreras:valoresChecks('input[data-barrera-id]','barreraId'),
+    barreraOtra:(document.getElementById("pracOtraBarrera")?.value||"").trim(),
+    barreraPrincipal:document.getElementById("pracBarreraPrincipal")?.value||"",
+    fechaGuardado:new Date().toISOString()
+  };
+}
+
+function guardarPracticasLocal(mostrarEstado=false){
+  try{
+    localStorage.setItem(STORAGE_PRACTICAS_V1,JSON.stringify(obtenerDatosPracticas()));
+    if(mostrarEstado){
+      const estado=document.getElementById("pracGuardadoEstado");
+      estado?.classList.remove("hidden");
+      setTimeout(()=>estado?.classList.add("hidden"),1800);
+    }
+  }catch(e){console.warn("No se pudo guardar la sección 5.",e);}
+}
+
+function marcarPorData(selector,atributo,valores){
+  const set=new Set(Array.isArray(valores)?valores:[]);
+  document.querySelectorAll(selector).forEach(x=>x.checked=set.has(x.dataset[atributo]));
+}
+
+function restaurarParticipaciones(tipo,obj){
+  renderizarPorcentajesTermicos(tipo);
+  const body=document.getElementById(tipo==="agua" ? "pracAguaPorcentajesBody" : "pracVaporPorcentajesBody");
+  Object.entries(obj||{}).forEach(([k,v])=>{
+    const i=body?.querySelector(`input[data-participacion="${CSS.escape(k)}"]`);
+    if(i) i.value=v;
+  });
+  actualizarTotalTermico(tipo);
+}
+
+function cargarPracticasLocal(){
+  try{
+    const raw=localStorage.getItem(STORAGE_PRACTICAS_V1);
+    prepararSeccionPracticas();
+    if(!raw) return;
+    const d=JSON.parse(raw);
+
+    ["agua","vapor"].forEach(tipo=>{
+      const usos=d?.termicos?.[tipo]?.usos||[];
+      const set=new Set(usos);
+      checkboxesTermicos(tipo).forEach(x=>x.checked=set.has(x.value));
+    });
+    if(document.getElementById("pracAguaOtro")) document.getElementById("pracAguaOtro").value=d?.termicos?.agua?.otro||"";
+    if(document.getElementById("pracVaporOtro")) document.getElementById("pracVaporOtro").value=d?.termicos?.vapor?.otro||"";
+
+    marcarPorData('input[data-practica-id]','practicaId',d.practicas);
+    marcarPorData('input[data-gestion-id]','gestionId',d.gestion);
+    marcarPorData('input[data-barrera-id]','barreraId',d.barreras);
+
+    const otros=d.otros||{};
+    const mapaOtros={
+      pracOtroIluminacion:"iluminacion", pracOtroClimatizacion:"climatizacion",
+      pracOtroMotores:"motores", pracOtroRefrigeracion:"refrigeracion",
+      pracOtroTermicos:"termicos", pracOtroCoccion:"coccion",
+      pracOtroOficina:"oficina", pracOtroElectrico:"electrico",
+      pracOtroGestion:"gestion"
+    };
+    Object.entries(mapaOtros).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.value=otros[k]||"";});
+    if(document.getElementById("pracOtraBarrera")) document.getElementById("pracOtraBarrera").value=d.barreraOtra||"";
+    if(document.getElementById("pracDiagnosticoAntiguedad")) document.getElementById("pracDiagnosticoAntiguedad").value=d.diagnosticoAntiguedad||"";
+
+    actualizarOtrosPracticas();
+    actualizarDiagnosticoPracticas();
+    restaurarParticipaciones("agua",d?.termicos?.agua?.participacion||{});
+    restaurarParticipaciones("vapor",d?.termicos?.vapor?.participacion||{});
+    actualizarBarreraPrincipal();
+    if(document.getElementById("pracBarreraPrincipal")) document.getElementById("pracBarreraPrincipal").value=d.barreraPrincipal||"";
+  }catch(e){console.warn("No se pudo recuperar la sección 5.",e);}
+}
+
+function validarPorcentajesTermicos(tipo,nombre){
+  const part=participacionesTermicas(tipo);
+  const valores=Object.values(part).filter(v=>Number.isFinite(v));
+  if(!valores.length) return true;
+  if(valores.some(v=>v<0||v>100)){
+    alert(`Revise los porcentajes de ${nombre}: cada valor debe estar entre 0 y 100%.`);
+    return false;
+  }
+  const seleccion=seleccionTermica(tipo);
+  if(Object.keys(part).length!==seleccion.length){
+    alert(`Si captura la distribución de ${nombre}, indique un porcentaje para cada uso seleccionado.`);
+    return false;
+  }
+  const total=valores.reduce((a,b)=>a+b,0);
+  if(Math.abs(total-100)>0.1){
+    alert(`La distribución de ${nombre} debe sumar 100%. Actualmente suma ${total.toLocaleString("es-MX",{maximumFractionDigits:1})}%.`);
+    return false;
+  }
+  return true;
+}
+
+function validarPracticasAntesDeContinuar(){
+  if(!validarPorcentajesTermicos("agua","agua caliente")) return false;
+  if(!validarPorcentajesTermicos("vapor","vapor")) return false;
+
+  const aguaOtro=checkboxesTermicos("agua").find(x=>x.value==="otro");
+  if(aguaOtro?.checked && !(document.getElementById("pracAguaOtro")?.value||"").trim()){
+    alert("Especifique el otro uso de agua caliente."); return false;
+  }
+  const vaporOtro=checkboxesTermicos("vapor").find(x=>x.value==="otro");
+  if(vaporOtro?.checked && !(document.getElementById("pracVaporOtro")?.value||"").trim()){
+    alert("Especifique el otro uso de vapor."); return false;
+  }
+
+  for(const chk of document.querySelectorAll('input[data-otro-target]:checked')){
+    const id=chk.dataset.otroTarget;
+    if(!(document.getElementById(id)?.value||"").trim()){
+      alert("Especifique la opción 'Otra' seleccionada antes de continuar.");
+      document.getElementById(id)?.focus();
+      return false;
+    }
+  }
+
+  const diag=document.querySelector('[data-gestion-id="GES_DIAGNOSTICO"]');
+  if(diag?.checked && !document.getElementById("pracDiagnosticoAntiguedad")?.value){
+    alert("Indique cuándo se realizó el diagnóstico energético más reciente."); return false;
+  }
+
+  const barreras=[...document.querySelectorAll('input[data-barrera-id]:checked')].map(x=>x.dataset.barreraId);
+  if(barreras.includes("BAR_OTRA") && !(document.getElementById("pracOtraBarrera")?.value||"").trim()){
+    alert("Especifique la otra barrera seleccionada."); return false;
+  }
+  const candidatas=barreras.filter(x=>x!=="BAR_NINGUNA");
+  if(candidatas.length && !document.getElementById("pracBarreraPrincipal")?.value){
+    alert("Seleccione cuál de las barreras identificadas considera la principal."); return false;
+  }
+  return true;
+}
+
+// Eventos - sección 5
+document.querySelectorAll('input[data-termico]').forEach(chk=>{
+  chk.addEventListener("change",()=>{
+    actualizarOtrosPracticas();
+    renderizarPorcentajesTermicos(chk.dataset.termico);
+    guardarPracticasLocal();
+  });
+});
+["pracAguaOtro","pracVaporOtro"].forEach(id=>document.getElementById(id)?.addEventListener("input",()=>{
+  renderizarPorcentajesTermicos(id==="pracAguaOtro"?"agua":"vapor");
+  guardarPracticasLocal();
+}));
+
+document.querySelectorAll('input[data-practica-id]').forEach(chk=>{
+  chk.addEventListener("change",()=>{
+    aplicarExclusividadPracticas(chk);
+    actualizarOtrosPracticas();
+    guardarPracticasLocal();
+  });
+});
+document.querySelectorAll('input[data-gestion-id]').forEach(chk=>{
+  chk.addEventListener("change",()=>{
+    aplicarExclusividadGestion(chk);
+    actualizarOtrosPracticas();
+    actualizarDiagnosticoPracticas();
+    guardarPracticasLocal();
+  });
+});
+document.querySelectorAll('input[data-barrera-id]').forEach(chk=>{
+  chk.addEventListener("change",()=>{
+    aplicarExclusividadBarreras(chk);
+    actualizarOtrosPracticas();
+    actualizarBarreraPrincipal();
+    guardarPracticasLocal();
+  });
+});
+document.querySelectorAll('#view-practicas input[type="text"], #view-practicas select').forEach(el=>{
+  el.addEventListener("change",()=>{
+    if(el.id==="pracOtraBarrera") actualizarBarreraPrincipal();
+    guardarPracticasLocal();
+  });
+});
+document.getElementById("pracBarreraPrincipal")?.addEventListener("change",guardarPracticasLocal);
+document.getElementById("pracDiagnosticoAntiguedad")?.addEventListener("change",guardarPracticasLocal);
+
+document.getElementById("btnGuardarPracticas")?.addEventListener("click",()=>guardarPracticasLocal(true));
+document.getElementById("btnPracticasAnterior")?.addEventListener("click",()=>{
+  guardarPracticasLocal();
+  mostrarVista("usos");
+});
+document.getElementById("btnPracticasContinuar")?.addEventListener("click",()=>{
+  if(!validarPracticasAntesDeContinuar()) return;
+  guardarPracticasLocal();
+  alert("La información de prácticas de eficiencia energética se guardó correctamente.");
+  mostrarVista("revision");
+});
+
+
   // ======================================================
   // INICIALIZACIÓN
   // ======================================================
@@ -20911,6 +21800,7 @@ document.getElementById("btnUsosContinuar")?.addEventListener("click", async () 
   renderizarTablaCalefaccion();
   renderizarTablaEspecializados();
   sincronizarEnergeticosUsosFinales().catch(console.warn);
+  cargarPracticasLocal();
 
 </script>
  </body>
