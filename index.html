@@ -2236,6 +2236,22 @@
   .prac-actions-right{margin-left:0;display:grid;grid-template-columns:1fr}
 }
 
+/* Alcance y cobertura de medidas seleccionadas */
+.prac-scope-zone{margin-top:16px;display:grid;gap:12px}
+.prac-scope-detail{padding:14px 15px;border:1px solid #cfdde8;border-radius:9px;background:#fff}
+.prac-scope-detail h5{margin:0 0 5px;color:#174873;font-size:13px}
+.prac-scope-detail .scope-note{margin:0 0 11px;color:#687b8c;font-size:11px;line-height:1.4}
+.scope-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;margin-bottom:12px}
+.scope-item{display:flex;align-items:flex-start;gap:7px;font-size:12px;font-weight:400;line-height:1.3;cursor:pointer}
+.scope-item input{width:auto;margin-top:2px;flex-shrink:0;accent-color:var(--verde)}
+.scope-fields{display:grid;grid-template-columns:minmax(180px,.75fr) minmax(230px,1.25fr);gap:12px 16px;align-items:end}
+.scope-field label{display:block;margin-bottom:6px;font-size:12px}
+.scope-field select,.scope-field input{width:100%}
+.scope-time-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.scope-time-row.hidden{display:none}
+.scope-empty{padding:9px 10px;border:1px dashed #cad6e0;border-radius:7px;background:#fafcfd;color:#687b8c;font-size:11px;line-height:1.4;margin-bottom:10px}
+@media (max-width:700px){.scope-items,.scope-fields,.scope-time-row{grid-template-columns:1fr}}
+
 </style>
 <!-- =====================================================
    Fin de CSS
@@ -4107,6 +4123,7 @@
           <label class="prac-check"><input type="checkbox" data-practica-id="ILU_OTRA" data-otro-target="pracOtroIluminacion"> Otra</label>
         </div>
         <div class="prac-other hidden" id="pracOtroIluminacionBox"><input id="pracOtroIluminacion" maxlength="140" placeholder="Especifique otra práctica de iluminación"></div>
+        <div class="prac-scope-zone" data-scope-zone="iluminacion"></div>
       </div>
 
       <div class="prac-card hidden" id="pracCardClimatizacion">
@@ -4128,6 +4145,7 @@
           <label class="prac-check"><input type="checkbox" data-practica-id="CLI_OTRA" data-otro-target="pracOtroClimatizacion"> Otra</label>
         </div>
         <div class="prac-other hidden" id="pracOtroClimatizacionBox"><input id="pracOtroClimatizacion" maxlength="140" placeholder="Especifique otra práctica de climatización"></div>
+        <div class="prac-scope-zone" data-scope-zone="climatizacion"></div>
       </div>
 
       <div class="prac-card hidden" id="pracCardElectromecanicos">
@@ -4145,6 +4163,7 @@
           <label class="prac-check"><input type="checkbox" data-practica-id="MOT_OTRA" data-otro-target="pracOtroMotores"> Otra</label>
         </div>
         <div class="prac-other hidden" id="pracOtroMotoresBox"><input id="pracOtroMotores" maxlength="140" placeholder="Especifique otra práctica en motores"></div>
+        <div class="prac-scope-zone" data-scope-zone="motores"></div>
       </div>
 
       <div class="prac-card hidden" id="pracCardRefrigeracion">
@@ -4164,6 +4183,7 @@
           <label class="prac-check"><input type="checkbox" data-practica-id="REF_OTRA" data-otro-target="pracOtroRefrigeracion"> Otra</label>
         </div>
         <div class="prac-other hidden" id="pracOtroRefrigeracionBox"><input id="pracOtroRefrigeracion" maxlength="140" placeholder="Especifique otra práctica de refrigeración"></div>
+        <div class="prac-scope-zone" data-scope-zone="refrigeracion"></div>
       </div>
 
       <div class="prac-card hidden" id="pracCardTermicos">
@@ -4183,6 +4203,7 @@
           <label class="prac-check"><input type="checkbox" data-practica-id="TER_OTRA" data-otro-target="pracOtroTermicos"> Otra</label>
         </div>
         <div class="prac-other hidden" id="pracOtroTermicosBox"><input id="pracOtroTermicos" maxlength="140" placeholder="Especifique otra práctica en sistemas térmicos"></div>
+        <div class="prac-scope-zone" data-scope-zone="termicos"></div>
       </div>
 
       <div class="prac-card hidden" id="pracCardCoccion">
@@ -4229,6 +4250,7 @@
           <label class="prac-check"><input type="checkbox" data-practica-id="ELEC_OTRA" data-otro-target="pracOtroElectrico"> Otra</label>
         </div>
         <div class="prac-other hidden" id="pracOtroElectricoBox"><input id="pracOtroElectrico" maxlength="140" placeholder="Especifique otra medida en sistemas eléctricos"></div>
+        <div class="prac-scope-zone" data-scope-zone="electrico"></div>
       </div>
 
     </div>
@@ -21438,6 +21460,7 @@ function prepararSeccionPracticas(){
   renderizarPorcentajesTermicos("agua");
   renderizarPorcentajesTermicos("vapor");
   actualizarBarreraPrincipal();
+  renderizarAlcancesPracticas();
 }
 
 function checkboxesTermicos(tipo){
@@ -21579,6 +21602,196 @@ function participacionesTermicas(tipo){
   return obj;
 }
 
+
+// -----------------------------------------------------
+// SECCIÓN 5 - ALCANCE Y COBERTURA DE MEDIDAS
+// -----------------------------------------------------
+let alcancesPracticasCache = {};
+
+const CONFIG_ALCANCE_PRACTICAS = {
+  ILU_PRESENCIA:{grupo:"iluminacion",titulo:"Sensores de presencia u ocupación",fuente:"areas",horario:false},
+  ILU_TEMPORIZADORES:{grupo:"iluminacion",titulo:"Temporizadores",fuente:"areas",horario:true},
+  ILU_FOTOCELDAS:{grupo:"iluminacion",titulo:"Fotoceldas / sensores de luz natural",fuente:"areas",horario:false},
+  ILU_ATENUACION:{grupo:"iluminacion",titulo:"Atenuación o regulación automática",fuente:"areas",horario:false},
+  ILU_SECTORIZACION:{grupo:"iluminacion",titulo:"Sectorización de circuitos",fuente:"areas",horario:false},
+  ILU_BMS:{grupo:"iluminacion",titulo:"Programación mediante BMS",fuente:"areas",horario:true},
+
+  CLI_TERMOSTATO:{grupo:"climatizacion",titulo:"Termostatos programables",fuente:"climatizacion",horario:true},
+  CLI_ZONAS:{grupo:"climatizacion",titulo:"Control independiente por zonas",fuente:"climatizacion",horario:false},
+  CLI_HORARIO:{grupo:"climatizacion",titulo:"Programación horaria",fuente:"climatizacion",horario:true},
+  CLI_OCUPACION:{grupo:"climatizacion",titulo:"Sensores de ocupación",fuente:"climatizacion",horario:false},
+  CLI_TEMP_AUTO:{grupo:"climatizacion",titulo:"Control automático de temperatura",fuente:"climatizacion",horario:false},
+
+  MOT_VFD:{grupo:"motores",titulo:"Variadores de frecuencia / velocidad",fuente:"motores",horario:false},
+  MOT_ARRANQUE:{grupo:"motores",titulo:"Arrancadores suaves",fuente:"motores",horario:false},
+  MOT_ALTA_EF:{grupo:"motores",titulo:"Motores de alta eficiencia",fuente:"motores",horario:false},
+  MOT_AUTO_ONOFF:{grupo:"motores",titulo:"Control automático de encendido/apagado",fuente:"motores",horario:true},
+  MOT_HORARIO:{grupo:"motores",titulo:"Programación horaria",fuente:"motores",horario:true},
+  MOT_VARIABLE:{grupo:"motores",titulo:"Control por variable de proceso",fuente:"motores",horario:false},
+  MOT_SECUENCIA:{grupo:"motores",titulo:"Secuenciación de equipos",fuente:"motores",horario:false},
+
+  REF_TEMP_AUTO:{grupo:"refrigeracion",titulo:"Control automático de temperatura",fuente:"refrigeracion",horario:false},
+  REF_DESHIELO:{grupo:"refrigeracion",titulo:"Programación de deshielo",fuente:"refrigeracion",horario:true},
+  REF_VFD:{grupo:"refrigeracion",titulo:"Variadores de velocidad",fuente:"refrigeracion",horario:false},
+  REF_MONITOREO:{grupo:"refrigeracion",titulo:"Monitoreo de temperatura",fuente:"refrigeracion",horario:false},
+  REF_RECUP_CALOR:{grupo:"refrigeracion",titulo:"Recuperación de calor",fuente:"refrigeracion",horario:false},
+
+  TER_AISL_TUB:{grupo:"termicos",titulo:"Aislamiento térmico de tuberías",fuente:"termicos",horario:false},
+  TER_AISL_EQUIP:{grupo:"termicos",titulo:"Aislamiento de depósitos o equipos",fuente:"termicos",horario:false},
+  TER_ECONOMIZADOR:{grupo:"termicos",titulo:"Economizador",fuente:"termicos",horario:false},
+  TER_PRECAL:{grupo:"termicos",titulo:"Precalentamiento",fuente:"termicos",horario:false},
+  TER_CONDENSADOS:{grupo:"termicos",titulo:"Recuperación de condensados",fuente:"termicos",horario:false},
+  TER_RECUP_CALOR:{grupo:"termicos",titulo:"Recuperación de calor",fuente:"termicos",horario:false},
+  TER_TEMP_AUTO:{grupo:"termicos",titulo:"Control automático de temperatura",fuente:"termicos",horario:false},
+  TER_HORARIO:{grupo:"termicos",titulo:"Programación horaria",fuente:"termicos",horario:true},
+  TER_COMBUSTION:{grupo:"termicos",titulo:"Control o ajuste de combustión",fuente:"termicos",horario:false},
+
+  ELEC_SUBMED:{grupo:"electrico",titulo:"Submedición por áreas o sistemas",fuente:"areas",horario:false}
+};
+
+function claveAlcanceItem(prefijo, valor, indice){
+  const limpio=String(valor||"").trim().toLowerCase().replace(/[^a-z0-9áéíóúñ_-]+/gi,"_").slice(0,60);
+  return `${prefijo}_${limpio||indice}`;
+}
+
+function opcionesAlcancePractica(fuente){
+  if(fuente==="areas"){
+    const areas=(typeof areasEstablecimiento!=="undefined" && Array.isArray(areasEstablecimiento)) ? areasEstablecimiento : [];
+    const nombres=[];
+    areas.forEach((a,i)=>{
+      const nombre=String(a?.nombre||a?.tipo||"").trim();
+      if(nombre && !nombres.some(x=>x.label===nombre)) nombres.push({id:claveAlcanceItem("area",nombre,i),label:nombre});
+    });
+    if(!nombres.length && typeof gruposIluminacion!=="undefined" && Array.isArray(gruposIluminacion)){
+      gruposIluminacion.forEach((g,i)=>{const nombre=String(g?.area||"").trim();if(nombre&&!nombres.some(x=>x.label===nombre))nombres.push({id:claveAlcanceItem("area",nombre,i),label:nombre});});
+    }
+    return nombres;
+  }
+  if(fuente==="motores"){
+    asegurarIdsUsoFinal?.(equiposElectromecanicos,"em");
+    return (equiposElectromecanicos||[]).map((x,i)=>({
+      id:String(x.id||`em_${i}`),
+      label:`${typeof nombreElectromecanico==="function"?nombreElectromecanico(x):(x.tipo||"Equipo")} · ${x.potencia??"—"} ${x.unidadPotencia||""}`.trim()
+    }));
+  }
+  if(fuente==="refrigeracion"){
+    asegurarIdsUsoFinal?.(equiposRefrigeracion,"ref");
+    return (equiposRefrigeracion||[]).map((x,i)=>({
+      id:String(x.id||`ref_${i}`),
+      label:`${typeof nombreRefrigeracion==="function"?nombreRefrigeracion(x):(x.tipo||"Equipo")} · ${x.cantidad||1} equipo${Number(x.cantidad||1)===1?"":"s"}`
+    }));
+  }
+  if(fuente==="termicos"){
+    asegurarIdsUsoFinal?.(sistemasTermicos,"term");
+    return (sistemasTermicos||[]).map((x,i)=>({
+      id:String(x.id||`term_${i}`),
+      label:`${typeof nombreSistemaTermico==="function"?nombreSistemaTermico(x):(x.tipo||"Sistema")} · ${nombreEnergeticoCatalogo?.(x.energetico)||x.energetico||"sin energético"}`
+    }));
+  }
+  if(fuente==="climatizacion"){
+    const out=[];
+    const agregar=(lista,prefijo,nombreFn)=>{
+      asegurarIdsUsoFinal?.(lista,prefijo);
+      (lista||[]).forEach((x,i)=>out.push({id:String(x.id||`${prefijo}_${i}`),label:nombreFn(x,i)}));
+    };
+    agregar(equiposAireAcondicionado,"ac",x=>`Aire acondicionado · ${x.area||x.tipo||"equipo"}`);
+    agregar(equiposVentilacion,"vent",x=>`Ventilación / extracción · ${x.area||x.tipo||"equipo"}`);
+    agregar(equiposCalefaccion,"cal",x=>`Calefacción · ${x.area||x.tipo||"equipo"}`);
+    return out;
+  }
+  return [];
+}
+
+function capturarAlcancesDesdeDOM(){
+  document.querySelectorAll(".prac-scope-detail[data-practica-scope]").forEach(box=>{
+    const id=box.dataset.practicaScope;
+    const items=[...box.querySelectorAll('input[data-scope-item]:checked')].map(x=>x.value);
+    const cobertura=box.querySelector('[data-scope-cobertura]')?.value||"";
+    const coincide=box.querySelector('[data-scope-coincide]')?.value||"";
+    const inicio=box.querySelector('[data-scope-inicio]')?.value||"";
+    const fin=box.querySelector('[data-scope-fin]')?.value||"";
+    alcancesPracticasCache[id]={items,cobertura,coincide,inicio,fin};
+  });
+}
+
+function coberturaOpciones(valor){
+  const opciones=[
+    ["","Seleccione..."],["menos_25","Menos del 25 %"],["25_50","25 a 50 %"],
+    ["51_75","51 a 75 %"],["mas_75","Más del 75 %"],["100","100 %"],["no_sabe","No sabe"]
+  ];
+  return opciones.map(([v,t])=>`<option value="${v}"${v===valor?" selected":""}>${t}</option>`).join("");
+}
+
+function renderizarAlcancesPracticas(){
+  capturarAlcancesDesdeDOM();
+  document.querySelectorAll('[data-scope-zone]').forEach(z=>z.innerHTML="");
+
+  Object.entries(CONFIG_ALCANCE_PRACTICAS).forEach(([id,cfg])=>{
+    const chk=document.querySelector(`input[data-practica-id="${id}"]`);
+    if(!chk?.checked) return;
+    const zona=document.querySelector(`[data-scope-zone="${cfg.grupo}"]`);
+    if(!zona || zona.closest(".prac-card")?.classList.contains("hidden")) return;
+
+    const guardado=alcancesPracticasCache[id]||{};
+    const seleccionados=new Set(Array.isArray(guardado.items)?guardado.items:[]);
+    const opciones=opcionesAlcancePractica(cfg.fuente);
+    const detalle=document.createElement("div");
+    detalle.className="prac-scope-detail";
+    detalle.dataset.practicaScope=id;
+
+    const lista=opciones.length
+      ? `<div class="scope-items">${opciones.map(o=>`<label class="scope-item"><input type="checkbox" data-scope-item value="${escaparHTMLCD(o.id)}"${seleccionados.has(o.id)?" checked":""}> ${escaparHTMLCD(o.label)}</label>`).join("")}</div>`
+      : `<div class="scope-empty">No hay áreas o equipos registrados para asociar esta medida. Puede conservar la práctica seleccionada y completar el alcance cuando exista información previa.</div>`;
+
+    const textoFuente=cfg.fuente==="areas" ? "Seleccione las áreas donde se aplica." : "Seleccione los equipos o sistemas donde se aplica.";
+    detalle.innerHTML=`
+      <h5>${escaparHTMLCD(cfg.titulo)} · alcance de aplicación</h5>
+      <p class="scope-note">${textoFuente} La cobertura evita asumir que la medida aplica al 100 % del uso final.</p>
+      ${lista}
+      <div class="scope-fields">
+        <div class="scope-field">
+          <label>Cobertura aproximada</label>
+          <select data-scope-cobertura>${coberturaOpciones(guardado.cobertura||"")}</select>
+        </div>
+        ${cfg.horario ? `<div class="scope-field"><label>¿El horario programado coincide con el horario registrado previamente?</label><select data-scope-coincide><option value="">Seleccione...</option><option value="si"${guardado.coincide==="si"?" selected":""}>Sí</option><option value="no"${guardado.coincide==="no"?" selected":""}>No</option><option value="no_sabe"${guardado.coincide==="no_sabe"?" selected":""}>No sabe</option></select></div>` : ""}
+      </div>
+      ${cfg.horario ? `<div class="scope-time-row${guardado.coincide==="no"?"":" hidden"}" data-scope-horario-extra><div class="scope-field"><label>Hora aproximada de activación</label><input type="time" data-scope-inicio value="${escaparHTMLCD(guardado.inicio||"")}"></div><div class="scope-field"><label>Hora aproximada de desactivación</label><input type="time" data-scope-fin value="${escaparHTMLCD(guardado.fin||"")}"></div></div>` : ""}`;
+    zona.appendChild(detalle);
+
+    detalle.querySelectorAll('input[data-scope-item],select[data-scope-cobertura],input[data-scope-inicio],input[data-scope-fin]').forEach(el=>{
+      el.addEventListener("change",()=>{capturarAlcancesDesdeDOM();guardarPracticasLocal();});
+    });
+    const coincide=detalle.querySelector('[data-scope-coincide]');
+    coincide?.addEventListener("change",()=>{
+      detalle.querySelector('[data-scope-horario-extra]')?.classList.toggle("hidden",coincide.value!=="no");
+      if(coincide.value!=="no"){
+        const a=detalle.querySelector('[data-scope-inicio]'); const b=detalle.querySelector('[data-scope-fin]');
+        if(a)a.value=""; if(b)b.value="";
+      }
+      capturarAlcancesDesdeDOM();guardarPracticasLocal();
+    });
+  });
+}
+
+function validarAlcancesPracticas(){
+  capturarAlcancesDesdeDOM();
+  for(const [id,cfg] of Object.entries(CONFIG_ALCANCE_PRACTICAS)){
+    const chk=document.querySelector(`input[data-practica-id="${id}"]`);
+    if(!chk?.checked) continue;
+    const datos=alcancesPracticasCache[id]||{};
+    const opciones=opcionesAlcancePractica(cfg.fuente);
+    if(opciones.length && (!Array.isArray(datos.items)||datos.items.length===0)){
+      alert(`Indique dónde se aplica la medida: ${cfg.titulo}.`); chk.scrollIntoView({behavior:"smooth",block:"center"}); return false;
+    }
+    if(!datos.cobertura){alert(`Indique la cobertura aproximada de: ${cfg.titulo}.`); return false;}
+    if(cfg.horario && !datos.coincide){alert(`Indique si el horario de ${cfg.titulo} coincide con el registrado previamente.`); return false;}
+    if(cfg.horario && datos.coincide==="no" && (!datos.inicio||!datos.fin)){
+      alert(`Indique las horas aproximadas de activación y desactivación de: ${cfg.titulo}.`); return false;
+    }
+  }
+  return true;
+}
+
 function obtenerDatosPracticas(){
   return {
     version:1,
@@ -21612,6 +21825,7 @@ function obtenerDatosPracticas(){
     barreras:valoresChecks('input[data-barrera-id]','barreraId'),
     barreraOtra:(document.getElementById("pracOtraBarrera")?.value||"").trim(),
     barreraPrincipal:document.getElementById("pracBarreraPrincipal")?.value||"",
+    alcances:(capturarAlcancesDesdeDOM(), JSON.parse(JSON.stringify(alcancesPracticasCache))),
     fechaGuardado:new Date().toISOString()
   };
 }
@@ -21648,6 +21862,7 @@ function cargarPracticasLocal(){
     prepararSeccionPracticas();
     if(!raw) return;
     const d=JSON.parse(raw);
+    alcancesPracticasCache = (d && d.alcances && typeof d.alcances === "object") ? d.alcances : {};
 
     ["agua","vapor"].forEach(tipo=>{
       const usos=d?.termicos?.[tipo]?.usos||[];
@@ -21679,6 +21894,7 @@ function cargarPracticasLocal(){
     restaurarParticipaciones("vapor",d?.termicos?.vapor?.participacion||{});
     actualizarBarreraPrincipal();
     if(document.getElementById("pracBarreraPrincipal")) document.getElementById("pracBarreraPrincipal").value=d.barreraPrincipal||"";
+    renderizarAlcancesPracticas();
   }catch(e){console.warn("No se pudo recuperar la sección 5.",e);}
 }
 
@@ -21738,6 +21954,7 @@ function validarPracticasAntesDeContinuar(){
   if(candidatas.length && !document.getElementById("pracBarreraPrincipal")?.value){
     alert("Seleccione cuál de las barreras identificadas considera la principal."); return false;
   }
+  if(!validarAlcancesPracticas()) return false;
   return true;
 }
 
@@ -21758,6 +21975,7 @@ document.querySelectorAll('input[data-practica-id]').forEach(chk=>{
   chk.addEventListener("change",()=>{
     aplicarExclusividadPracticas(chk);
     actualizarOtrosPracticas();
+    renderizarAlcancesPracticas();
     guardarPracticasLocal();
   });
 });
