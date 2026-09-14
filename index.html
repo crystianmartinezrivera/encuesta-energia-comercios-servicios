@@ -2299,6 +2299,9 @@
 
 <!-- APLICACIÓN -->
 <section id="vistaEncuesta" class="page hidden">
+  <div id="avisoModoLocal" class="hidden" style="max-width:1600px;margin:12px auto 0;padding:10px 16px;border:1px solid #e2c879;background:#fff8e8;border-radius:8px;color:#775a00;font-size:13px;">
+    La conexión con la base de datos no está disponible. Puede continuar trabajando; el avance se guardará localmente en este navegador.
+  </div>
   <div class="app-shell">
 
     <!-- MENÚ IZQUIERDO -->
@@ -8772,7 +8775,7 @@
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2'"></script>
 <script>
   const STORAGE_KEY = "encuestaEnergiaComerciosServicios_v1";
 
@@ -8797,10 +8800,16 @@ const SUPABASE_PUBLISHABLE_KEY =
 // - UPDATE
 // - SELECT
 const supabaseClient =
-  supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
+  (window.supabase && typeof window.supabase.createClient === "function")
+    ? window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      )
+    : null;
+
+if(!supabaseClient){
+  console.warn("Supabase no está disponible. La encuesta continuará funcionando con guardado local.");
+}
 
   // ======================================================
 // USUARIO ANÓNIMO
@@ -8810,6 +8819,17 @@ const supabaseClient =
 // El encuestado no verá pantalla de login.
 
 async function obtenerUsuarioAnonimo(){
+
+  if(!supabaseClient){
+    let localId = localStorage.getItem("encuesta_cys_usuario_local");
+    if(!localId){
+      localId = (window.crypto && typeof window.crypto.randomUUID === "function")
+        ? window.crypto.randomUUID()
+        : `local_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+      localStorage.setItem("encuesta_cys_usuario_local", localId);
+    }
+    return localId;
+  }
 
   // Revisamos si ya existe una sesión activa.
   const {
@@ -21801,6 +21821,10 @@ document.getElementById("btnPracticasContinuar")?.addEventListener("click",()=>{
   renderizarTablaEspecializados();
   sincronizarEnergeticosUsosFinales().catch(console.warn);
   cargarPracticasLocal();
+
+  if(!supabaseClient){
+    document.getElementById("avisoModoLocal")?.classList.remove("hidden");
+  }
 
 </script>
  </body>
