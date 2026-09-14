@@ -2533,6 +2533,16 @@
   .admin-panel-actions{justify-content:flex-start}
 }
 
+
+/* Clasificación jerárquica de actividad */
+#campoGiroDetalle .field-help{
+  max-width:560px;
+}
+#giroGrupo,
+#giro{
+  min-height:42px;
+}
+
 </style>
 <!-- =====================================================
    Fin de CSS
@@ -2637,7 +2647,7 @@
 
       <!-- VISTA 1 -->
       <div id="view-datos" class="survey-view">
-        <h1 class="section-title">1. Información general y operación del establecimiento</h1>
+        <h1 class="section-title">1. Información general y operación</h1>
 
         <div class="info-banner">
           ⓘ Por favor proporcione la información solicitada. Los campos marcados con
@@ -2656,27 +2666,34 @@
               </div>
 
               <div class="field">
-                <label>Giro comercial <span class="req">*</span></label>
-                <select id="giro" required>
+                <label>Subsector de actividad <span class="req">*</span></label>
+                <select id="giroGrupo" required>
                   <option value="">Seleccione una opción</option>
-                  <option value="1">Tiendas de abarrotes</option>
-                  <option value="2">Tiendas de autoservicio / supermercados</option>
-                  <option value="3">Tiendas departamentales</option>
-                  <option value="4">Tiendas de conveniencia</option>
-                  <option value="5">Alimentos</option>
-                  <option value="6">Hoteles</option>
-                  <option value="7">Restaurantes</option>
-                  <option value="8">Hospitales</option>
-                  <option value="9">Escuelas</option>
-                  <option value="10">Bodegas</option>
-                  <option value="11">Cines / instalaciones recreativas</option>
-                  <option value="12">Otro</option>
+                  <option value="comercio_minorista">Comercio minorista</option>
+                  <option value="comercio_mayorista">Comercio mayorista</option>
+                  <option value="restaurantes">Restaurantes, bares y cafeterías</option>
+                  <option value="salud">Servicios de salud</option>
+                  <option value="educacion">Educación</option>
+                  <option value="alojamiento">Alojamiento</option>
+                  <option value="oficinas">Oficinas</option>
+                  <option value="otros_servicios">Otros servicios</option>
+                  <option value="otro">Otro</option>
                 </select>
               </div>
 
+              <div class="field" id="campoGiroDetalle">
+                <label>Actividad principal <span class="req">*</span></label>
+                <select id="giro" required disabled>
+                  <option value="">Seleccione primero el subsector</option>
+                </select>
+                <small class="field-help">
+                  Seleccione la actividad que mejor describa al establecimiento. Esta clasificación se utilizará posteriormente para el análisis por subsector.
+                </small>
+              </div>
+
               <div class="field hidden" id="campoOtroGiro">
-                <label>Si selecciona “Otro”, especifique el giro <span class="req">*</span></label>
-                <input id="otroGiro" type="text" placeholder="Especifique el giro comercial">
+                <label>Si selecciona “Otro”, especifique la actividad <span class="req">*</span></label>
+                <input id="otroGiro" type="text" placeholder="Especifique la actividad principal">
               </div>
 
               <div class="field">
@@ -4737,18 +4754,17 @@
 
     <div class="right-card blue">
 
-      <h3>Ejemplos de giro comercial</h3>
+      <h3>Clasificación de la actividad</h3>
 
       <ul>
-        <li>🏨 Hoteles</li>
-        <li>🍴 Restaurantes</li>
-        <li>🏬 Tiendas departamentales</li>
-        <li>🏪 Tiendas de conveniencia</li>
-        <li>🛒 Supermercados</li>
-        <li>✚ Hospitales</li>
-        <li>🏫 Escuelas</li>
-        <li>▣ Bodegas</li>
-        <li>🎬 Cines / Recreativos</li>
+        <li>🛒 Comercio minorista</li>
+        <li>📦 Comercio mayorista</li>
+        <li>🍴 Restaurantes, bares y cafeterías</li>
+        <li>✚ Servicios de salud</li>
+        <li>🏫 Educación</li>
+        <li>🏨 Alojamiento</li>
+        <li>🏢 Oficinas</li>
+        <li>🎬 Otros servicios</li>
         <li>⊕ Otro</li>
       </ul>
 
@@ -9338,10 +9354,172 @@ async function obtenerUsuarioAnonimo(){
     if(el) el.checked = true;
   }
 
+
+  // =====================================================
+  // CLASIFICACIÓN DE SUBSECTOR Y ACTIVIDAD PRINCIPAL
+  // =====================================================
+  const GIROS_POR_GRUPO = {
+    comercio_minorista: [
+      ["101","Abarrotes"],
+      ["102","Autoservicio / supermercado"],
+      ["103","Tienda departamental"],
+      ["104","Tienda de conveniencia"]
+    ],
+    comercio_mayorista: [
+      ["201","Distribuidora / bodega mayorista"],
+      ["202","Mayorista de alimentos"],
+      ["203","Mayorista de otros productos"]
+    ],
+    restaurantes: [
+      ["301","Restaurante"],
+      ["302","Cafetería"],
+      ["303","Bar / cantina"],
+      ["304","Preparación de alimentos"]
+    ],
+    salud: [
+      ["401","Hospital"],
+      ["402","Clínica"],
+      ["403","Consultorio"],
+      ["404","Laboratorio"]
+    ],
+    educacion: [
+      ["501","Escuela"],
+      ["502","Universidad"],
+      ["503","Centro de capacitación"]
+    ],
+    alojamiento: [
+      ["601","Hotel"],
+      ["602","Motel"],
+      ["603","Hostal / casa de huéspedes"]
+    ],
+    oficinas: [
+      ["701","Oficina administrativa"],
+      ["702","Oficina profesional"],
+      ["703","Oficina corporativa"],
+      ["704","Oficina gubernamental"]
+    ],
+    otros_servicios: [
+      ["801","Cine / recreación"],
+      ["802","Servicios personales"],
+      ["803","Almacenamiento"]
+    ]
+  };
+
+  const GIRO_GRUPO_NOMBRES = {
+    comercio_minorista:"Comercio minorista",
+    comercio_mayorista:"Comercio mayorista",
+    restaurantes:"Restaurantes, bares y cafeterías",
+    salud:"Servicios de salud",
+    educacion:"Educación",
+    alojamiento:"Alojamiento",
+    oficinas:"Oficinas",
+    otros_servicios:"Otros servicios",
+    otro:"Otro"
+  };
+
+  // Permite recuperar avances creados antes de esta clasificación.
+  const GIROS_ANTERIORES_A_NUEVOS = {
+    "1":"101",  // Tiendas de abarrotes
+    "2":"102",  // Autoservicio / supermercados
+    "3":"103",  // Departamentales
+    "4":"104",  // Conveniencia
+    "5":"304",  // Antiguo "Alimentos" -> Preparación de alimentos
+    "6":"601",  // Hoteles
+    "7":"301",  // Restaurantes
+    "8":"401",  // Hospitales
+    "9":"501",  // Escuelas
+    "10":"803", // Antiguas bodegas -> Almacenamiento
+    "11":"801", // Cines / recreativos
+    "12":"999"  // Otro
+  };
+
+  function grupoDesdeGiroCodigo(codigo){
+    const c = String(codigo || "");
+    if(c === "999") return "otro";
+    for(const [grupo,opciones] of Object.entries(GIROS_POR_GRUPO)){
+      if(opciones.some(([valor]) => valor === c)) return grupo;
+    }
+    return "";
+  }
+
+  function nombreGiroCodigo(codigo){
+    const c = String(codigo || "");
+    if(c === "999") return document.getElementById("otroGiro")?.value?.trim() || "Otro";
+    for(const opciones of Object.values(GIROS_POR_GRUPO)){
+      const encontrado = opciones.find(([valor]) => valor === c);
+      if(encontrado) return encontrado[1];
+    }
+    return "";
+  }
+
+  function cargarOpcionesGiroDetalle(grupo, valorSeleccionado=""){
+    const select = document.getElementById("giro");
+    const campoDetalle = document.getElementById("campoGiroDetalle");
+    const campoOtro = document.getElementById("campoOtroGiro");
+    const otro = document.getElementById("otroGiro");
+    if(!select || !campoDetalle || !campoOtro || !otro) return;
+
+    if(grupo === "otro"){
+      select.innerHTML = '<option value="999" selected>Otro</option>';
+      select.value = "999";
+      select.disabled = true;
+      select.required = false;
+      campoDetalle.classList.add("hidden");
+      campoOtro.classList.remove("hidden");
+      otro.required = true;
+      return;
+    }
+
+    campoOtro.classList.add("hidden");
+    otro.required = false;
+
+    if(!grupo || !GIROS_POR_GRUPO[grupo]){
+      campoDetalle.classList.remove("hidden");
+      select.innerHTML = '<option value="">Seleccione primero el subsector</option>';
+      select.value = "";
+      select.disabled = true;
+      select.required = true;
+      return;
+    }
+
+    campoDetalle.classList.remove("hidden");
+    select.disabled = false;
+    select.required = true;
+    select.innerHTML = '<option value="">Seleccione la actividad principal</option>' +
+      GIROS_POR_GRUPO[grupo]
+        .map(([valor,texto]) => `<option value="${valor}">${texto}</option>`)
+        .join("");
+
+    if(valorSeleccionado && [...select.options].some(o=>o.value===String(valorSeleccionado))){
+      select.value = String(valorSeleccionado);
+    }
+  }
+
+  function actualizarGiroGrupo(){
+    const grupo = document.getElementById("giroGrupo")?.value || "";
+    cargarOpcionesGiroDetalle(grupo);
+    actualizarOtroGiro();
+  }
+
+  function establecerGiroDesdeCodigo(codigoOriginal){
+    let codigo = String(codigoOriginal || "");
+    if(GIROS_ANTERIORES_A_NUEVOS[codigo]){
+      codigo = GIROS_ANTERIORES_A_NUEVOS[codigo];
+    }
+    const grupo = grupoDesdeGiroCodigo(codigo);
+    const grupoSelect = document.getElementById("giroGrupo");
+    if(grupoSelect) grupoSelect.value = grupo;
+    cargarOpcionesGiroDetalle(grupo,codigo);
+    actualizarOtroGiro();
+  }
+
   function recolectarDatos(){
     return {
       nombreEstablecimiento: document.getElementById("nombreEstablecimiento").value,
+      giroGrupo: document.getElementById("giroGrupo")?.value || "",
+      giroGrupoNombre: GIRO_GRUPO_NOMBRES[document.getElementById("giroGrupo")?.value || ""] || "",
       giro: document.getElementById("giro").value,
+      giroNombre: nombreGiroCodigo(document.getElementById("giro").value),
       otroGiro: document.getElementById("otroGiro").value,
       anioInicio: document.getElementById("anioInicio").value,
       anioConstruccion: document.getElementById("anioConstruccion").value,
@@ -9382,7 +9560,7 @@ async function obtenerUsuarioAnonimo(){
       const d = JSON.parse(raw);
 
       const ids = [
-        "nombreEstablecimiento","giro","otroGiro","anioInicio","anioConstruccion",
+        "nombreEstablecimiento","otroGiro","anioInicio","anioConstruccion",
         "estado","municipio","cp","horasOperacion","empleadosTotal",
         "empleadosMin","empleadosMax","empleadosCompleto","empleadosParcial"
       ];
@@ -9392,6 +9570,8 @@ async function obtenerUsuarioAnonimo(){
           document.getElementById(id).value = d[id];
         }
       });
+
+      establecerGiroDesdeCodigo(d.giro || "");
 
       setRadio("turnos",d.turnosRespuesta);
       setRadio("variaEmpleados",d.variaEmpleados);
@@ -9433,9 +9613,10 @@ function calcularEdad(){
   
 
   function actualizarOtroGiro(){
-    const esOtro = document.getElementById("giro").value === "12";
-    document.getElementById("campoOtroGiro").classList.toggle("hidden",!esOtro);
-    document.getElementById("otroGiro").required = esOtro;
+    const grupo = document.getElementById("giroGrupo")?.value || "";
+    const esOtro = grupo === "otro" || document.getElementById("giro")?.value === "999";
+    document.getElementById("campoOtroGiro")?.classList.toggle("hidden",!esOtro);
+    if(document.getElementById("otroGiro")) document.getElementById("otroGiro").required = esOtro;
   }
 
   function abrirModal(id){
@@ -9568,7 +9749,8 @@ function calcularEdad(){
     cerrarModal("modalParcial");
   });
 
-  document.getElementById("giro").addEventListener("change",actualizarOtroGiro);
+  document.getElementById("giroGrupo")?.addEventListener("change",actualizarGiroGrupo);
+  document.getElementById("giro")?.addEventListener("change",actualizarOtroGiro);
   document.getElementById("anioInicio").addEventListener("change", calcularEdad);
   document.getElementById("anioConstruccion").addEventListener("change",calcularEdad);
 
@@ -11714,7 +11896,7 @@ async function guardarEncuestaSupabase(){
         : null,
 
     giro_otro:
-      document.getElementById("giro").value === "12"
+      document.getElementById("giro").value === "999"
         ? document.getElementById("otroGiro").value.trim()
         : null,
 
