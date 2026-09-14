@@ -247,7 +247,7 @@
     }
 
     .progress-fill{
-      width:14%;
+      width:20%;
       height:100%;
       background:#49b54a;
       border-radius:999px;
@@ -2388,6 +2388,151 @@
   .scope-qty{padding-left:25px}
 }
 
+
+
+/* =====================================================
+   SECCIONES 6 Y 7 - EVALUACIÓN PILOTO Y RESULTADOS
+===================================================== */
+.pilot-intro,
+.results-warning{
+  padding:16px 18px;
+  border:1px solid #cfe1f3;
+  border-radius:10px;
+  background:#f5faff;
+  color:#334f68;
+  line-height:1.55;
+  margin-bottom:22px;
+}
+.pilot-eval-card{
+  display:grid;
+  grid-template-columns:84px minmax(0,1fr);
+  gap:20px;
+  align-items:start;
+  padding:24px;
+  border:1px solid var(--borde);
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 6px 18px rgba(0,59,112,.06);
+}
+.pilot-eval-icon,
+.final-confirmation-icon{
+  width:68px;
+  height:68px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:var(--verde-claro);
+  color:var(--verde);
+  font-size:30px;
+  font-weight:800;
+}
+.pilot-eval-content h3{color:var(--azul);margin:0 0 10px;font-size:20px}
+.pilot-eval-content p{color:#526779;line-height:1.55;margin-bottom:18px}
+.pilot-link-button{display:inline-flex;text-decoration:none;align-items:center;justify-content:center}
+.pilot-confirm-box{
+  margin-top:18px;
+  padding:14px 16px;
+  border:1px solid #dce7ef;
+  border-radius:9px;
+  background:#f8fbfd;
+}
+.pilot-confirm-label{display:flex;gap:10px;align-items:flex-start;font-weight:700;cursor:pointer}
+.pilot-confirm-label input{width:auto;margin-top:2px}
+.pilot-confirm-box small{display:block;margin:8px 0 0 25px;color:#6b7b89;line-height:1.4}
+.pilot-note,
+.results-method-note{
+  margin-top:18px;
+  padding:14px 16px;
+  border-left:4px solid #a57f2c;
+  border-radius:7px;
+  background:#fff9ed;
+  color:#5d5134;
+  line-height:1.5;
+}
+#btnEvaluacionContinuar:disabled{opacity:.48;cursor:not-allowed;box-shadow:none}
+.results-warning{border-color:#ead9a4;background:#fffaf0;color:#5d5134}
+.results-summary-card,
+.results-main-section,
+.results-barrier-card{
+  margin-bottom:20px;
+  padding:22px;
+  border:1px solid var(--borde);
+  border-radius:13px;
+  background:#fff;
+}
+.results-summary-card h3,
+.results-main-section h3,
+.results-barrier-card h3{margin:0 0 14px;color:#0b3770;font-size:19px}
+.results-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.results-kpi{padding:15px;border:1px solid #dce7ef;border-radius:10px;background:#f8fbfd}
+.results-kpi strong{display:block;font-size:24px;color:#0b4f92;margin-bottom:4px}
+.results-kpi span{font-size:12px;color:#607080;line-height:1.3}
+.results-context{margin-top:16px;padding-top:14px;border-top:1px solid #e6edf2;color:#526779;font-size:13px;line-height:1.55}
+.results-section-head p{margin:-6px 0 15px;color:#607080;font-size:13px;line-height:1.45}
+.results-list{display:grid;gap:12px}
+.result-item{display:grid;grid-template-columns:126px minmax(0,1fr);gap:14px;padding:15px;border:1px solid #dce5ed;border-radius:10px;background:#fbfcfd}
+.result-badge{align-self:start;text-align:center;padding:6px 8px;border-radius:999px;font-size:11px;font-weight:800}
+.result-badge.high{background:#fff0f0;color:#a93a3a}
+.result-badge.medium{background:#fff7e4;color:#946400}
+.result-badge.good{background:#edf7f1;color:#176b43}
+.result-item h4{margin:0 0 5px;color:#203348;font-size:15px}
+.result-item p{margin:0;color:#526779;font-size:13px;line-height:1.5}
+.results-empty{padding:16px;border:1px dashed #b7c7d5;border-radius:9px;color:#607080;background:#fbfcfd}
+.results-barrier-card{background:#f8fbfd}
+.results-barrier-card p{margin:0;color:#526779;line-height:1.5}
+.final-confirmation{
+  margin-top:24px;
+  padding:30px 24px;
+  text-align:center;
+  border:1px solid #cfe5d7;
+  border-radius:14px;
+  background:#f4fbf6;
+}
+.final-confirmation-icon{margin:0 auto 14px}
+.final-confirmation h2{color:#176b43;margin:0 0 10px}
+.final-confirmation p{max-width:720px;margin:0 auto;color:#486455;line-height:1.55}
+.final-meta{margin:14px 0 18px;font-size:13px;color:#607080}
+@media(max-width:900px){.results-kpis{grid-template-columns:1fr 1fr}.pilot-eval-card{grid-template-columns:1fr}.pilot-eval-icon{margin:auto}.result-item{grid-template-columns:1fr}}
+@media(max-width:520px){.results-kpis{grid-template-columns:1fr}}
+
+
+/* =====================================================
+   ADMINISTRACIÓN / CIERRE PÚBLICO
+===================================================== */
+.app-shell.admin-mode{
+  grid-template-columns:minmax(0,1fr);
+  max-width:1380px;
+}
+.app-shell.admin-mode > .sidebar,
+.app-shell.admin-mode > .rightbar{display:none !important}
+.admin-panel-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--borde);
+}
+.admin-panel-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.admin-only-view{
+  padding-bottom:28px;
+}
+#confirmacionFinalPublica{
+  border:1px solid #cfe5d7;
+  background:#f7fbf8;
+}
+@media(max-width:760px){
+  .admin-panel-head{flex-direction:column}
+  .admin-panel-actions{justify-content:flex-start}
+}
+
 </style>
 <!-- =====================================================
    Fin de CSS
@@ -2408,6 +2553,7 @@
     <button type="button">? Ayuda</button>
     <button type="button">✉ Contacto</button>
     <button type="button" id="btnGuardarHeader">💾 Guardar avance</button>
+    <button type="button" id="btnAdminHeader">🔐 Administrador</button>
   </div>
 </header>
 
@@ -2460,23 +2606,21 @@
     <aside class="sidebar">
       <div class="progress-card">
         <h3>Progreso de la encuesta</h3>
-        <small id="textoProgreso">1 de 7 secciones</small>
+        <small id="textoProgreso">1 de 5 secciones</small>
         <div class="progress-row">
           <div class="progress-track">
             <div class="progress-fill" id="barraProgreso"></div>
           </div>
-          <strong id="porcentajeProgreso">14%</strong>
+          <strong id="porcentajeProgreso">20%</strong>
         </div>
       </div>
 
       <nav class="menu">
-        <button class="menu-item active" data-view="datos">1. Datos generales y operación</button>
-        <button class="menu-item" data-view="energia">2. Energía y características energéticas</button>
-        <button class="menu-item" data-view="facturacion">3. Facturación de energía</button>
-        <button class="menu-item" data-view="usos">4. Usos finales de energía</button>
-        <button class="menu-item" data-view="practicas">5. Prácticas de eficiencia energética</button>
-        <button class="menu-item" data-view="revision">6. Revisión de la información</button>
-        <button class="menu-item" data-view="finalizar">7. Finalizar encuesta</button>
+        <button class="menu-item active" data-view="datos">1. Información general y operación</button>
+        <button class="menu-item" data-view="energia">2. Características físicas y energéticas</button>
+        <button class="menu-item" data-view="facturacion">3. Facturación y consumo de energía</button>
+        <button class="menu-item" data-view="usos">4. Equipos y usos finales de energía</button>
+        <button class="menu-item" data-view="practicas">5. Prácticas y gestión de la eficiencia energética</button>
       </nav>
 
       <div class="conf-card">
@@ -2493,7 +2637,7 @@
 
       <!-- VISTA 1 -->
       <div id="view-datos" class="survey-view">
-        <h1 class="section-title">1. Datos generales y operación del establecimiento</h1>
+        <h1 class="section-title">1. Información general y operación del establecimiento</h1>
 
         <div class="info-banner">
           ⓘ Por favor proporcione la información solicitada. Los campos marcados con
@@ -2668,7 +2812,7 @@
       <!-- RESTO DE VISTAS, POR AHORA COMO BASE -->
       <div id="view-energia" class="survey-view hidden">
       <h1 class="section-title">
-  2. Energía y características energéticas
+  2. Características físicas y energéticas
 </h1>
 
 <div class="energy-page">
@@ -3423,7 +3567,7 @@
 <div id="view-facturacion" class="survey-view hidden">
 
   <h1 class="section-title">
-    3. Facturación de energía
+    3. Facturación y consumo de energía
   </h1>
 
   <div class="info-banner">
@@ -3457,7 +3601,7 @@
 
 </div>
      <div id="view-usos" class="survey-view hidden">
-  <h1 class="section-title">4. Usos finales de energía</h1>
+  <h1 class="section-title">4. Equipos y usos finales de energía</h1>
 
   <div class="info-banner usos-intro">
     ⓘ Registre los principales equipos consumidores de energía. La encuesta utiliza
@@ -4165,7 +4309,7 @@
 ====================================================== -->
 <div id="view-practicas" class="survey-view hidden">
 
-  <h1 class="section-title">5. Prácticas de eficiencia energética</h1>
+  <h1 class="section-title">5. Prácticas y gestión de la eficiencia energética</h1>
 
   <div class="prac-intro">
     Esta sección identifica el uso de la energía térmica, los controles y prácticas de eficiencia
@@ -4479,49 +4623,89 @@
     <span class="prac-status hidden" id="pracGuardadoEstado">Información guardada</span>
     <div class="prac-actions-right">
       <button type="button" class="secondary" id="btnGuardarPracticas">Guardar avance</button>
-      <button type="button" class="primary" id="btnPracticasContinuar">Guardar y continuar →</button>
+      <button type="button" class="primary" id="btnPracticasContinuar">Finalizar encuesta</button>
     </div>
   </div>
 
+  <section id="confirmacionFinalPublica" class="final-confirmation hidden" style="margin-top:22px">
+    <div class="final-confirmation-icon">✓</div>
+    <h2>Encuesta finalizada</h2>
+    <p>
+      Gracias por participar en la Encuesta de Consumo y Usos de Energía del sector comercial y de servicios.
+      La información registrada ha quedado guardada correctamente.
+    </p>
+    <div class="final-meta" id="fechaFinalizacionPublica"></div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px">
+      <button type="button" class="secondary" id="btnFinalPublicoVolverInicio">Volver al inicio</button>
+    </div>
+  </section>
+
 </div>
 
 
 
 <!-- =====================================================
-     SECCIÓN 6
+     ACCESO / PANEL ADMINISTRATIVO
 ====================================================== -->
-
-<div
-  id="view-revision"
-  class="survey-view hidden">
-
-  <h1 class="section-title">
-    6. Revisión de la información
-  </h1>
-
-  <div class="placeholder">
-    Aquí mostraremos un resumen de las respuestas antes de finalizar.
-  </div>
-
-</div>
-
-
 <!-- =====================================================
-     SECCIÓN 7
+     PANEL ADMINISTRATIVO - RESULTADOS PRELIMINARES
 ====================================================== -->
+<div id="view-finalizar" class="survey-view admin-only-view hidden">
 
-<div
-  id="view-finalizar"
-  class="survey-view hidden">
-
-  <h1 class="section-title">
-    7. Finalizar encuesta
-  </h1>
-
-  <div class="placeholder">
-    Aquí estará la confirmación final y la descarga o envío de la información.
+  <div class="admin-panel-head">
+    <div>
+      <h1 class="section-title" style="margin-bottom:6px">Panel de administración</h1>
+      <p style="color:#607080">Consulta de registros, revisión de consistencia, resultados preliminares y descarga de información para análisis.</p>
+    </div>
+    <div class="admin-panel-actions">
+      <button type="button" class="secondary" id="btnAdminDescargarExcel">Descargar Excel del registro</button>
+      <button type="button" class="secondary" id="btnAdminCerrarPanel">Cerrar panel</button>
+      <button type="button" class="action-btn delete" id="btnAdminCerrarSesion">Cerrar sesión</button>
+    </div>
   </div>
 
+  <div class="results-warning">
+    <strong>Análisis administrativo preliminar.</strong>
+    Este resumen se genera con la información declarada y sirve como apoyo para control de calidad.
+    No constituye todavía un balance energético conciliado ni una estimación representativa del subsector.
+  </div>
+
+  <section class="results-summary-card">
+    <h3>Resumen de la información registrada</h3>
+    <div class="results-kpis" id="resultadosKpis"></div>
+    <div class="results-context" id="resultadosContexto"></div>
+  </section>
+
+  <section class="results-main-section">
+    <div class="results-section-head">
+      <div>
+        <h3>Observaciones y áreas de oportunidad preliminares</h3>
+        <p>Se muestran únicamente observaciones preliminares derivadas de las respuestas proporcionadas.</p>
+      </div>
+    </div>
+    <div id="resultadosOportunidades" class="results-list"></div>
+  </section>
+
+  <section class="results-main-section">
+    <div class="results-section-head">
+      <div>
+        <h3>Prácticas de eficiencia identificadas</h3>
+        <p>Estas prácticas pueden contribuir a un mejor desempeño energético cuando se aplican adecuadamente.</p>
+      </div>
+    </div>
+    <div id="resultadosBuenasPracticas" class="results-list"></div>
+  </section>
+
+  <section class="results-barrier-card" id="resultadoBarreraCard">
+    <h3>Principal barrera reportada</h3>
+    <p id="resultadoBarreraTexto">No se reportó una barrera principal.</p>
+  </section>
+
+  <div class="results-method-note">
+    <strong>Alcance actual:</strong> las observaciones se generan mediante reglas simples de consistencia y
+    presencia/ausencia de prácticas. La segunda etapa podrá incorporar conciliación con facturación, balance por
+    uso final, validación estadística, SCIAN, estratos y factores de expansión.
+  </div>
 </div>
 </main>
 
@@ -4749,6 +4933,62 @@
     <p>
       No marque una medida sólo porque el equipo tenga esa capacidad. Indique únicamente controles,
       prácticas o acciones que realmente estén implementados en el establecimiento.
+    </p>
+  </div>
+</div>
+
+<!-- =========================================
+     AYUDA - PÁGINA 6
+========================================== -->
+<div id="ayudaPagina6" class="hidden">
+  <div class="right-card green">
+    <h3>💬 Su opinión es prioritaria</h3>
+    <p>
+      Esta es una encuesta piloto. La evaluación permite identificar preguntas confusas, tiempos de captura
+      y oportunidades para mejorar el instrumento antes de su aplicación definitiva.
+    </p>
+  </div>
+  <div class="right-card blue">
+    <h3>▣ ¿Qué se evalúa?</h3>
+    <ul>
+      <li>✓ Claridad de las preguntas</li>
+      <li>◷ Tiempo de respuesta</li>
+      <li>⚙️ Facilidad para registrar equipos</li>
+      <li>📊 Pertinencia de la información solicitada</li>
+    </ul>
+  </div>
+  <div class="right-card yellow">
+    <h3>☆ Importante</h3>
+    <p>
+      El formulario de evaluación es independiente de la encuesta energética y se abre en una pestaña nueva.
+    </p>
+  </div>
+</div>
+
+<!-- =========================================
+     AYUDA - PÁGINA 7
+========================================== -->
+<div id="ayudaPagina7" class="hidden">
+  <div class="right-card green">
+    <h3>💡 ¿Qué muestran estos resultados?</h3>
+    <p>
+      Un resumen orientativo de las prácticas registradas y de posibles áreas de oportunidad identificadas
+      mediante reglas simples.
+    </p>
+  </div>
+  <div class="right-card blue">
+    <h3>▣ Interpretación</h3>
+    <ul>
+      <li>📌 No representan un diagnóstico energético.</li>
+      <li>📌 No estiman ahorros económicos o energéticos.</li>
+      <li>📌 No sustituyen una revisión técnica en sitio.</li>
+    </ul>
+  </div>
+  <div class="right-card yellow">
+    <h3>☆ Etapa piloto</h3>
+    <p>
+      La conciliación entre facturación y consumos estimados por uso final se incorporará después de validar
+      la consistencia de la información recopilada.
     </p>
   </div>
 </div>
@@ -8933,6 +9173,42 @@
 </div>
 
 
+
+<!-- =====================================================
+     INICIO DE SESIÓN ADMINISTRADOR
+====================================================== -->
+<div id="modalAdminLogin" class="modal-backdrop hidden" aria-hidden="true">
+  <div class="modal" style="width:min(480px,96vw)">
+    <div class="modal-head">
+      <div>
+        <h3>Acceso de administrador</h3>
+        <p style="margin-top:6px;color:#607080;font-size:13px;line-height:1.45">
+          Este acceso es independiente del llenado público de la encuesta.
+        </p>
+      </div>
+      <button type="button" class="close" id="cerrarAdminLogin" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="field" style="margin-bottom:14px">
+      <label for="adminUsuario">Usuario administrador (correo)</label>
+      <input type="email" id="adminUsuario" autocomplete="username" placeholder="usuario@dominio">
+    </div>
+
+    <div class="field">
+      <label for="adminPassword">Contraseña</label>
+      <input type="password" id="adminPassword" autocomplete="current-password" placeholder="Contraseña">
+    </div>
+
+    <div id="adminLoginEstado" class="save-hint" style="min-height:18px;margin-top:12px"></div>
+
+    <div class="modal-actions">
+      <button type="button" class="secondary" id="cancelarAdminLogin">Cancelar</button>
+      <button type="button" class="primary" id="btnAdminIngresar">Ingresar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" onerror="console.warn('No se pudo cargar la librería XLSX.')"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2'"></script>
 <script>
   const STORAGE_KEY = "encuestaEnergiaComerciosServicios_v1";
@@ -9297,6 +9573,10 @@ function calcularEdad(){
   document.getElementById("anioConstruccion").addEventListener("change",calcularEdad);
 
   function mostrarVista(nombre){
+    const vistasPublicas = ["datos","energia","facturacion","usos","practicas"];
+    if(!vistasPublicas.includes(nombre)) nombre = "datos";
+    document.querySelector(".app-shell")?.classList.remove("admin-mode");
+    document.getElementById("view-finalizar")?.classList.add("hidden");
     state.vista = nombre;
 
     document.querySelectorAll(".survey-view").forEach(v=>v.classList.add("hidden"));
@@ -9307,11 +9587,11 @@ function calcularEdad(){
       item.classList.toggle("active",item.dataset.view===nombre);
     });
 
-    const orden = ["datos","energia","facturacion","usos","practicas","revision","finalizar"];
+    const orden = ["datos","energia","facturacion","usos","practicas"];
     const idx = Math.max(0,orden.indexOf(nombre));
-    const porcentaje = Math.round(((idx+1)/7)*100);
+    const porcentaje = Math.round(((idx+1)/5)*100);
 
-    document.getElementById("textoProgreso").textContent = `${idx+1} de 7 secciones`;
+    document.getElementById("textoProgreso").textContent = `${idx+1} de 5 secciones`;
     document.getElementById("porcentajeProgreso").textContent = `${porcentaje}%`;
     document.getElementById("barraProgreso").style.width = `${porcentaje}%`;
 
@@ -9372,6 +9652,7 @@ if(nombre === "practicas"){
     console.error("No se pudo preparar la sección de prácticas:", error);
   }
 }
+
     
     window.scrollTo({top:0,behavior:"smooth"});
   }
@@ -13877,7 +14158,7 @@ function actualizarSeccionFacturacionElectrica(){
 // ======================================================
 
 function mostrarAyudaPagina(numero){
-  const ayudas = [1,2,3,4,5].map(n => document.getElementById(`ayudaPagina${n}`));
+  const ayudas = [1,2,3,4,5,6,7].map(n => document.getElementById(`ayudaPagina${n}`));
   ayudas.forEach(el => el?.classList.add("hidden"));
   document.getElementById(`ayudaPagina${numero}`)?.classList.remove("hidden");
 }
@@ -22203,10 +22484,518 @@ document.getElementById("btnPracticasAnterior")?.addEventListener("click",()=>{
 });
 document.getElementById("btnPracticasContinuar")?.addEventListener("click",()=>{
   if(!validarPracticasAntesDeContinuar()) return;
-  guardarPracticasLocal();
-  alert("La información de prácticas de eficiencia energética se guardó correctamente.");
-  mostrarVista("revision");
+  finalizarEncuestaPublica();
 });
+
+
+
+
+
+// =====================================================
+// CIERRE PÚBLICO / EXCEL / ACCESO ADMINISTRATIVO
+// =====================================================
+const STORAGE_FINAL_PUBLICA = "encuesta_cys_final_publica_v1";
+
+function folioEncuestaActual(){
+  const id = localStorage.getItem("encuesta_id");
+  if(id) return String(id).replace(/[^a-zA-Z0-9_-]/g,"_");
+  const localId = localStorage.getItem("encuesta_cys_usuario_local");
+  if(localId) return String(localId).replace(/[^a-zA-Z0-9_-]/g,"_");
+  return "SIN_FOLIO";
+}
+
+function fechaArchivoAAAAMMDD(){
+  const d=new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function guardarTodoAntesDeFinalizar(){
+  try{guardarLocal(false);}catch(e){console.warn(e);}
+  try{guardarUsosCDLocal?.();}catch(e){console.warn(e);}
+  try{guardarUsosEFGLocal?.();}catch(e){console.warn(e);}
+  try{guardarUsosFinalesCanonico?.();}catch(e){console.warn(e);}
+  try{guardarPracticasLocal?.();}catch(e){console.warn(e);}
+}
+
+function finalizarEncuestaPublica(){
+  guardarTodoAntesDeFinalizar();
+  const fecha=new Date().toISOString();
+  localStorage.setItem(STORAGE_FINAL_PUBLICA,JSON.stringify({
+    finalizada:true,
+    fecha,
+    versionFormato:"CYS_V1"
+  }));
+  document.querySelector(".prac-actions")?.classList.add("hidden");
+  document.getElementById("confirmacionFinalPublica")?.classList.remove("hidden");
+  const meta=document.getElementById("fechaFinalizacionPublica");
+  if(meta) meta.textContent=`Fecha de finalización: ${new Date(fecha).toLocaleString("es-MX")}`;
+  window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+}
+
+function restaurarFinalizacionPublica(){
+  try{
+    const d=JSON.parse(localStorage.getItem(STORAGE_FINAL_PUBLICA)||"{}");
+    if(!d.finalizada) return;
+    document.querySelector(".prac-actions")?.classList.add("hidden");
+    document.getElementById("confirmacionFinalPublica")?.classList.remove("hidden");
+    const meta=document.getElementById("fechaFinalizacionPublica");
+    if(meta && d.fecha) meta.textContent=`Fecha de finalización: ${new Date(d.fecha).toLocaleString("es-MX")}`;
+  }catch(e){}
+}
+
+function aFilasObjeto(obj,prefijo=""){
+  const filas=[];
+  const recorrer=(valor,ruta)=>{
+    if(valor===null || valor===undefined){
+      filas.push({campo:ruta,valor:""});
+    }else if(Array.isArray(valor) || typeof valor==="object"){
+      if(Array.isArray(valor) && valor.length===0) filas.push({campo:ruta,valor:"[]"});
+      else if(!Array.isArray(valor) && Object.keys(valor).length===0) filas.push({campo:ruta,valor:"{}"});
+      else if(Array.isArray(valor)){
+        valor.forEach((v,i)=>recorrer(v,`${ruta}[${i}]`));
+      }else{
+        Object.entries(valor).forEach(([k,v])=>recorrer(v,ruta?`${ruta}.${k}`:k));
+      }
+    }else{
+      filas.push({campo:ruta,valor:String(valor)});
+    }
+  };
+  recorrer(obj,prefijo);
+  return filas;
+}
+
+function filasUsosFinalesExcel(){
+  const bloques=[
+    ["ILUMINACION", typeof gruposIluminacion!=="undefined"?gruposIluminacion:[]],
+    ["AIRE_ACONDICIONADO", typeof equiposAireAcondicionado!=="undefined"?equiposAireAcondicionado:[]],
+    ["VENTILACION", typeof equiposVentilacion!=="undefined"?equiposVentilacion:[]],
+    ["CALEFACCION", typeof equiposCalefaccion!=="undefined"?equiposCalefaccion:[]],
+    ["REFRIGERACION", typeof equiposRefrigeracion!=="undefined"?equiposRefrigeracion:[]],
+    ["OFICINA_ELECTRONICOS", typeof equiposOficina!=="undefined"?equiposOficina:[]],
+    ["ELECTROMECANICOS", typeof equiposElectromecanicos!=="undefined"?equiposElectromecanicos:[]],
+    ["SISTEMAS_TERMICOS", typeof sistemasTermicos!=="undefined"?sistemasTermicos:[]],
+    ["COCCION", typeof equiposCoccion!=="undefined"?equiposCoccion:[]],
+    ["ESPECIALIZADOS", typeof equiposEspecializados!=="undefined"?equiposEspecializados:[]]
+  ];
+  const filas=[];
+  bloques.forEach(([categoria,arr])=>{
+    (Array.isArray(arr)?arr:[]).forEach((item,i)=>{
+      filas.push({
+        categoria,
+        indice:i+1,
+        id:item?.id||"",
+        datos_json:JSON.stringify(item)
+      });
+    });
+  });
+  return filas;
+}
+
+function respaldoLocalStorageExcel(){
+  const filas=[];
+  for(let i=0;i<localStorage.length;i++){
+    const clave=localStorage.key(i);
+    if(!clave) continue;
+    if(clave.startsWith("encuesta") || clave==="encuesta_id"){
+      filas.push({clave,valor:localStorage.getItem(clave)||""});
+    }
+  }
+  return filas.sort((a,b)=>a.clave.localeCompare(b.clave));
+}
+
+function descargarEncuestaExcel(){
+  guardarTodoAntesDeFinalizar();
+
+  if(!window.XLSX){
+    alert("No fue posible cargar el generador de Excel. Verifique su conexión a internet e intente nuevamente.");
+    return;
+  }
+
+  const wb=XLSX.utils.book_new();
+  const control=[
+    {campo:"version_formato",valor:"CYS_V1"},
+    {campo:"estructura_datos",valor:"ENCUESTA_CYS_V1"},
+    {campo:"folio",valor:folioEncuestaActual()},
+    {campo:"fecha_exportacion",valor:new Date().toISOString()},
+    {campo:"estado",valor:"COMPLETA"},
+    {campo:"unidad_observacion",valor:"ESTABLECIMIENTO"},
+    {campo:"nota",valor:"Archivo de intercambio. Conservar para importación y análisis en versiones posteriores."}
+  ];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(control),"CONTROL");
+
+  let ident={};
+  try{ident=recolectarDatos?.()||{};}catch(e){}
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(aFilasObjeto(ident)),"IDENTIFICACION");
+
+  const areas=(typeof areasEstablecimiento!=="undefined" && Array.isArray(areasEstablecimiento))?areasEstablecimiento:[];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(areas.length?areas:[{sin_registros:true}]),"AREAS");
+
+  const eners=(typeof energeticosEstablecimiento!=="undefined" && Array.isArray(energeticosEstablecimiento))?energeticosEstablecimiento:[];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(eners.length?eners:[{sin_registros:true}]),"ENERGETICOS");
+
+  const facts=(typeof facturasEnergia!=="undefined" && Array.isArray(facturasEnergia))?facturasEnergia:[];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(facts.length?facts:[{sin_registros:true}]),"FACTURACION");
+
+  const usos=filasUsosFinalesExcel();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(usos.length?usos:[{sin_registros:true}]),"USOS_FINALES");
+
+  let pract={};
+  try{pract=obtenerDatosPracticas?.()||{};}catch(e){}
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(aFilasObjeto(pract)),"PRACTICAS");
+
+  const respaldo=respaldoLocalStorageExcel();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(respaldo.length?respaldo:[{sin_registros:true}]),"RESPALDO_JSON");
+
+  const nombre=`Encuesta_Energia_${folioEncuestaActual()}_${fechaArchivoAAAAMMDD()}.xlsx`;
+  XLSX.writeFile(wb,nombre,{compression:true});
+}
+
+// ----- Supabase: cliente independiente para administración -----
+const adminSupabaseClient =
+  (window.supabase && typeof window.supabase.createClient==="function")
+    ? window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY,
+        {
+          auth:{
+            storageKey:"encuesta_cys_admin_auth",
+            persistSession:false,
+            autoRefreshToken:false,
+            detectSessionInUrl:false
+          }
+        }
+      )
+    : null;
+
+let adminAutenticado=false;
+let vistaPublicaAntesAdmin="datos";
+
+function esUsuarioAdministrador(user){
+  const meta=user?.app_metadata||{};
+  return meta.role==="admin" || meta.is_admin===true || meta.admin===true;
+}
+
+function abrirLoginAdministrador(){
+  const modal=document.getElementById("modalAdminLogin");
+  document.getElementById("adminLoginEstado").textContent="";
+  document.getElementById("adminPassword").value="";
+  modal?.classList.remove("hidden");
+  modal?.setAttribute("aria-hidden","false");
+  setTimeout(()=>document.getElementById("adminUsuario")?.focus(),50);
+}
+
+function cerrarLoginAdministrador(){
+  const modal=document.getElementById("modalAdminLogin");
+  modal?.classList.add("hidden");
+  modal?.setAttribute("aria-hidden","true");
+}
+
+async function iniciarSesionAdministrador(){
+  const usuario=(document.getElementById("adminUsuario")?.value||"").trim();
+  const password=document.getElementById("adminPassword")?.value||"";
+  const estado=document.getElementById("adminLoginEstado");
+
+  if(!usuario || !password){
+    if(estado) estado.textContent="Capture usuario y contraseña.";
+    return;
+  }
+  if(!adminSupabaseClient){
+    if(estado) estado.textContent="No está disponible la conexión con el servicio de autenticación.";
+    return;
+  }
+
+  if(estado) estado.textContent="Validando acceso...";
+  const {data,error}=await adminSupabaseClient.auth.signInWithPassword({
+    email:usuario,
+    password
+  });
+
+  if(error || !data?.user){
+    if(estado) estado.textContent="Usuario o contraseña incorrectos.";
+    return;
+  }
+
+  if(!esUsuarioAdministrador(data.user)){
+    await adminSupabaseClient.auth.signOut();
+    if(estado) estado.textContent="La cuenta existe, pero no tiene permisos de administrador.";
+    return;
+  }
+
+  adminAutenticado=true;
+  cerrarLoginAdministrador();
+  abrirPanelAdministrador();
+}
+
+function abrirPanelAdministrador(){
+  if(!adminAutenticado){
+    abrirLoginAdministrador();
+    return;
+  }
+
+  vistaPublicaAntesAdmin=["datos","energia","facturacion","usos","practicas"].includes(state.vista)
+    ? state.vista
+    : "datos";
+
+  document.querySelectorAll(".survey-view").forEach(v=>v.classList.add("hidden"));
+  document.getElementById("view-finalizar")?.classList.remove("hidden");
+  document.querySelector(".app-shell")?.classList.add("admin-mode");
+  document.querySelectorAll(".menu-item").forEach(x=>x.classList.remove("active"));
+
+  try{renderizarResultadosPreliminares?.();}catch(e){console.error(e);}
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function cerrarPanelAdministrador(){
+  document.querySelector(".app-shell")?.classList.remove("admin-mode");
+  document.getElementById("view-finalizar")?.classList.add("hidden");
+  mostrarVista(vistaPublicaAntesAdmin||"datos");
+}
+
+async function cerrarSesionAdministrador(){
+  try{await adminSupabaseClient?.auth.signOut();}catch(e){}
+  adminAutenticado=false;
+  cerrarPanelAdministrador();
+}
+
+document.getElementById("btnAdminHeader")?.addEventListener("click",abrirLoginAdministrador);
+document.getElementById("cerrarAdminLogin")?.addEventListener("click",cerrarLoginAdministrador);
+document.getElementById("cancelarAdminLogin")?.addEventListener("click",cerrarLoginAdministrador);
+document.getElementById("btnAdminIngresar")?.addEventListener("click",iniciarSesionAdministrador);
+document.getElementById("adminPassword")?.addEventListener("keydown",e=>{
+  if(e.key==="Enter") iniciarSesionAdministrador();
+});
+document.getElementById("btnAdminDescargarExcel")?.addEventListener("click",descargarEncuestaExcel);
+document.getElementById("btnAdminCerrarPanel")?.addEventListener("click",cerrarPanelAdministrador);
+document.getElementById("btnAdminCerrarSesion")?.addEventListener("click",cerrarSesionAdministrador);
+document.getElementById("btnFinalPublicoVolverInicio")?.addEventListener("click",()=>{
+  document.getElementById("vistaEncuesta")?.classList.add("hidden");
+  document.getElementById("vistaInicio")?.classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+
+// =====================================================
+// SECCIONES 6 Y 7 - EVALUACIÓN PILOTO Y RESULTADOS
+// =====================================================
+const STORAGE_EVALUACION_PILOTO = "encuesta_cys_evaluacion_piloto_v1";
+const STORAGE_FINALIZACION = "encuesta_cys_finalizacion_v1";
+
+function claveStoragePiloto(base){
+  const encuestaId=localStorage.getItem("encuesta_id")||"local";
+  return `${base}_${encuestaId}`;
+}
+function estadoEvaluacionPiloto(){
+  try{return JSON.parse(localStorage.getItem(claveStoragePiloto(STORAGE_EVALUACION_PILOTO))||"{}");}
+  catch(e){return {};}
+}
+
+function guardarEstadoEvaluacionPiloto(cambios={}){
+  const actual=estadoEvaluacionPiloto();
+  const nuevo={...actual,...cambios,ultimaActualizacion:new Date().toISOString()};
+  localStorage.setItem(claveStoragePiloto(STORAGE_EVALUACION_PILOTO),JSON.stringify(nuevo));
+  actualizarUIEvaluacionPiloto();
+  return nuevo;
+}
+
+function evaluacionPilotoConfirmada(){
+  return estadoEvaluacionPiloto().respondida===true;
+}
+
+function actualizarUIEvaluacionPiloto(){
+  const st=estadoEvaluacionPiloto();
+  const box=document.getElementById("evalConfirmacionBox");
+  const chk=document.getElementById("chkEvaluacionRespondida");
+  const btn=document.getElementById("btnEvaluacionContinuar");
+  box?.classList.toggle("hidden",!st.abierta && !st.respondida);
+  if(chk) chk.checked=st.respondida===true;
+  if(btn) btn.disabled=st.respondida!==true;
+}
+
+function listaSegura(nombre){
+  const mapa={
+    gruposIluminacion: typeof gruposIluminacion!=="undefined" ? gruposIluminacion : [],
+    equiposAireAcondicionado: typeof equiposAireAcondicionado!=="undefined" ? equiposAireAcondicionado : [],
+    equiposVentilacion: typeof equiposVentilacion!=="undefined" ? equiposVentilacion : [],
+    equiposCalefaccion: typeof equiposCalefaccion!=="undefined" ? equiposCalefaccion : [],
+    equiposRefrigeracion: typeof equiposRefrigeracion!=="undefined" ? equiposRefrigeracion : [],
+    equiposOficina: typeof equiposOficina!=="undefined" ? equiposOficina : [],
+    equiposElectromecanicos: typeof equiposElectromecanicos!=="undefined" ? equiposElectromecanicos : [],
+    sistemasTermicos: typeof sistemasTermicos!=="undefined" ? sistemasTermicos : [],
+    equiposCoccion: typeof equiposCoccion!=="undefined" ? equiposCoccion : [],
+    equiposEspecializados: typeof equiposEspecializados!=="undefined" ? equiposEspecializados : []
+  };
+  return Array.isArray(mapa[nombre])?mapa[nombre]:[];
+}
+
+function conjuntoPracticasSeleccionadas(){
+  return new Set([...document.querySelectorAll('input[data-practica-id]:checked')].map(x=>x.dataset.practicaId));
+}
+function conjuntoGestionSeleccionada(){
+  return new Set([...document.querySelectorAll('input[data-gestion-id]:checked')].map(x=>x.dataset.gestionId));
+}
+function tieneAlguna(set,ids){return ids.some(id=>set.has(id));}
+
+function nombreBarreraPrincipalResultado(){
+  const id=document.getElementById("pracBarreraPrincipal")?.value||"";
+  if(!id) return "";
+  if(id==="BAR_OTRA") return (document.getElementById("pracOtraBarrera")?.value||"").trim()||"Otra barrera";
+  return etiquetasBarreras?.[id]||id;
+}
+
+function resumenUsosFinalesResultado(){
+  const usos=[];
+  if(listaSegura("gruposIluminacion").length) usos.push("Iluminación");
+  if(listaSegura("equiposAireAcondicionado").length||listaSegura("equiposVentilacion").length||listaSegura("equiposCalefaccion").length) usos.push("Climatización");
+  if(listaSegura("equiposRefrigeracion").length) usos.push("Refrigeración");
+  if(listaSegura("equiposOficina").length) usos.push("Equipos de oficina y electrónicos");
+  if(listaSegura("equiposElectromecanicos").length) usos.push("Motores y sistemas electromecánicos");
+  if(listaSegura("sistemasTermicos").length) usos.push("Sistemas térmicos");
+  if(listaSegura("equiposCoccion").length) usos.push("Cocción");
+  if(listaSegura("equiposEspecializados").length) usos.push("Equipos especializados");
+  return usos;
+}
+
+function numeroGruposEquiposResultado(){
+  return ["gruposIluminacion","equiposAireAcondicionado","equiposVentilacion","equiposCalefaccion","equiposRefrigeracion","equiposOficina","equiposElectromecanicos","sistemasTermicos","equiposCoccion","equiposEspecializados"]
+    .reduce((s,n)=>s+listaSegura(n).length,0);
+}
+
+function generarAnalisisPreliminar(){
+  try{prepararSeccionPracticas?.();}catch(e){}
+  const p=conjuntoPracticasSeleccionadas();
+  const g=conjuntoGestionSeleccionada();
+  const ctx=typeof contextoPracticas==="function"?contextoPracticas():{};
+  const oportunidades=[];
+  const buenas=[];
+
+  const agregarO=(nivel,titulo,texto)=>oportunidades.push({nivel,titulo,texto});
+  const agregarB=(titulo,texto)=>buenas.push({nivel:"good",titulo,texto});
+
+  if(listaSegura("gruposIluminacion").length){
+    const controles=["ILU_PRESENCIA","ILU_TEMPORIZADORES","ILU_FOTOCELDAS","ILU_ATENUACION","ILU_SECTORIZACION","ILU_BMS"];
+    if(!tieneAlguna(p,controles)){
+      agregarO("medium","Controles de iluminación","Se registraron sistemas de iluminación, pero no se reportaron controles automáticos o de sectorización. Puede evaluarse su aplicación en áreas con horarios definidos u ocupación variable.");
+    }else{
+      const parciales=controles.filter(id=>p.has(id) && alcancesPracticasCache?.[id]?.cobertura && !["100","no_sabe"].includes(alcancesPracticasCache[id].cobertura));
+      if(parciales.length) agregarO("medium","Cobertura de controles de iluminación","Existen controles de iluminación con cobertura parcial. Puede revisarse si es técnica y operativamente conveniente ampliar su aplicación a otras luminarias o áreas.");
+      else agregarB("Controles de iluminación","Se identificaron medidas de control o sectorización aplicadas a la iluminación del establecimiento.");
+    }
+    if(p.has("ILU_NATURAL")||p.has("ILU_MANTENIMIENTO")) agregarB("Operación de iluminación","Se reportaron prácticas de aprovechamiento de luz natural o mantenimiento de luminarias.");
+  }
+
+  if(ctx.tieneClimatizacion){
+    const ids=["CLI_TERMOSTATO","CLI_ZONAS","CLI_HORARIO","CLI_OCUPACION","CLI_TEMP_AUTO"];
+    if(!tieneAlguna(p,ids)) agregarO("medium","Control de climatización","Se registraron equipos de climatización sin controles avanzados reportados. Puede evaluarse programación horaria, termostatos o control por zonas según el tipo de instalación.");
+    else agregarB("Control de climatización","Se reportaron controles de temperatura, horario, ocupación o zonificación en sistemas de climatización.");
+    if(!p.has("CLI_MANT_PREV")&&!p.has("CLI_FILTROS")) agregarO("medium","Mantenimiento de climatización","No se identificaron prácticas de mantenimiento o limpieza de filtros/intercambiadores. Conviene revisar el programa de mantenimiento de estos sistemas.");
+  }
+
+  if(ctx.tieneElectromecanicos){
+    if(!tieneAlguna(p,["MOT_VFD","MOT_AUTO_ONOFF","MOT_VARIABLE","MOT_SECUENCIA","MOT_HORARIO"])){
+      agregarO("medium","Motores, bombas y compresores","Se registraron sistemas electromecánicos sin estrategias de control reportadas. En aplicaciones con carga variable puede evaluarse la pertinencia de control de velocidad, automatización o secuenciación.");
+    }else agregarB("Control de sistemas electromecánicos","Se identificaron medidas de control aplicadas a motores, bombas, compresores u otros sistemas electromecánicos.");
+  }
+
+  if(ctx.tieneRefrigeracion){
+    if(!tieneAlguna(p,["REF_TEMP_AUTO","REF_DESHIELO","REF_MONITOREO","REF_MANT","REF_SELLOS"])){
+      agregarO("medium","Refrigeración y conservación","No se reportaron controles o prácticas de mantenimiento relevantes en los equipos de refrigeración. Puede revisarse control de temperatura, sellos, deshielo y mantenimiento.");
+    }else agregarB("Refrigeración","Se reportaron controles o prácticas de operación/mantenimiento en equipos de refrigeración y conservación.");
+  }
+
+  if(ctx.tieneTermicos){
+    if(!tieneAlguna(p,["TER_AISL_TUB","TER_AISL_EQUIP","TER_RECUP_CALOR","TER_CONDENSADOS","TER_TEMP_AUTO","TER_MANT","TER_COMBUSTION"])){
+      agregarO("medium","Sistemas térmicos","Se registraron sistemas térmicos sin medidas de aislamiento, recuperación, control o mantenimiento reportadas. Puede evaluarse su pertinencia según el tipo de sistema.");
+    }else agregarB("Sistemas térmicos","Se identificaron medidas de aislamiento, control, recuperación o mantenimiento en sistemas térmicos.");
+  }
+
+  if(ctx.tieneCoccion){
+    if(!tieneAlguna(p,["COC_APAGADO","COC_DEMANDA","COC_MANT","COC_TEMP_AUTO","COC_BUENAS_PRACT"])){
+      agregarO("medium","Cocción y preparación de alimentos","No se reportaron prácticas específicas de control u operación eficiente en los equipos de cocción. Puede revisarse encendido conforme a demanda, apagado fuera de horario y mantenimiento.");
+    }else agregarB("Operación de equipos de cocción","Se reportaron prácticas de operación o control orientadas a reducir consumos innecesarios en cocción.");
+  }
+
+  if(ctx.tieneOficina){
+    if(!tieneAlguna(p,["OFI_AHORRO","OFI_SUSPENSION","OFI_APAGADO","OFI_TEMPORIZADORES","OFI_CENTRAL"])){
+      agregarO("medium","Equipos de oficina y electrónicos","Puede fortalecerse la configuración de ahorro, suspensión o apagado automático de equipos de oficina y electrónicos.");
+    }else agregarB("Equipos de oficina","Se identificaron modos de ahorro, suspensión, apagado o administración de equipos electrónicos.");
+  }
+
+  if(ctx.tieneElectricidad){
+    if(!p.has("ELEC_SUBMED")&&!g.has("GES_SUBMEDICION")) agregarO("medium","Medición y seguimiento eléctrico","No se reportó submedición por áreas o sistemas. Cuando sea viable, la medición desagregada puede ayudar a localizar consumos relevantes y verificar mejoras.");
+    if(p.has("ELEC_DEMANDA")||p.has("ELEC_SUBMED")||p.has("ELEC_PROGRAMACION")) agregarB("Gestión del sistema eléctrico","Se reportaron medidas de control de demanda, submedición o programación de cargas eléctricas.");
+  }
+
+  const gestionClaves=["GES_SEGUIMIENTO","GES_INDICADORES","GES_METAS","GES_RESPONSABLE","GES_DIAGNOSTICO","GES_AUDITORIA","GES_SGEN"];
+  if(!tieneAlguna(g,gestionClaves)){
+    agregarO("high","Gestión de la energía","No se reportaron acciones estructuradas de seguimiento, indicadores, metas, responsable o diagnóstico energético. Formalizar al menos alguna de estas acciones puede facilitar la identificación y seguimiento de oportunidades.");
+  }else{
+    if(g.has("GES_SEGUIMIENTO")||g.has("GES_INDICADORES")) agregarB("Seguimiento energético","Se realiza seguimiento del consumo o se utilizan indicadores de desempeño energético.");
+    if(g.has("GES_DIAGNOSTICO")||g.has("GES_AUDITORIA")) agregarB("Evaluación energética","El establecimiento reportó haber realizado un diagnóstico o auditoría energética.");
+    if(g.has("GES_SGEN")) agregarB("Gestión formal de la energía","Se reportó un sistema de gestión de la energía.");
+  }
+
+  if(!oportunidades.length) agregarO("medium","Revisión periódica","No se identificaron oportunidades evidentes mediante las reglas simples de esta encuesta. Se recomienda mantener el seguimiento de consumos y revisar periódicamente el desempeño de los principales usos finales.");
+  if(!buenas.length) buenas.push({nivel:"good",titulo:"Información disponible",texto:"La información registrada permitirá continuar afinando la identificación de buenas prácticas conforme avance la validación metodológica."});
+
+  return {oportunidades:oportunidades.slice(0,6),buenas:buenas.slice(0,5)};
+}
+
+function renderItemResultado(item,buena=false){
+  const nivel=buena?"good":item.nivel;
+  const etiqueta=nivel==="high"?"Prioridad alta":nivel==="good"?"Buena práctica":"Oportunidad";
+  return `<div class="result-item"><div class="result-badge ${nivel}">${etiqueta}</div><div><h4>${escaparHTMLCD(item.titulo)}</h4><p>${escaparHTMLCD(item.texto)}</p></div></div>`;
+}
+
+function renderizarResultadosPreliminares(){
+  try{capturarAlcancesDesdeDOM?.();}catch(e){}
+  const catalogo=typeof catalogoEnergeticosUsosFinales==="function"?catalogoEnergeticosUsosFinales():[];
+  const usos=resumenUsosFinalesResultado();
+  const practicas=[...document.querySelectorAll('input[data-practica-id]:checked')].filter(x=>!String(x.dataset.practicaId||"").includes("NINGUNA")).length;
+  const grupos=numeroGruposEquiposResultado();
+  const analisis=generarAnalisisPreliminar();
+
+  const kpis=document.getElementById("resultadosKpis");
+  if(kpis) kpis.innerHTML=[
+    [catalogo.length,"Energéticos registrados"],
+    [usos.length,"Usos finales identificados"],
+    [grupos,"Grupos de equipos/sistemas"],
+    [practicas,"Prácticas de eficiencia reportadas"]
+  ].map(([v,l])=>`<div class="results-kpi"><strong>${v}</strong><span>${l}</span></div>`).join("");
+
+  const contexto=document.getElementById("resultadosContexto");
+  if(contexto){
+    const ens=catalogo.map(e=>e.nombre||e.codigo).filter(Boolean).join(", ")||"No disponibles";
+    contexto.innerHTML=`<strong>Energéticos:</strong> ${escaparHTMLCD(ens)}<br><strong>Usos finales:</strong> ${escaparHTMLCD(usos.join(", ")||"No identificados")}`;
+  }
+
+  const op=document.getElementById("resultadosOportunidades");
+  if(op) op.innerHTML=analisis.oportunidades.length?analisis.oportunidades.map(x=>renderItemResultado(x,false)).join(""):'<div class="results-empty">No se identificaron áreas de oportunidad mediante las reglas preliminares.</div>';
+  const bp=document.getElementById("resultadosBuenasPracticas");
+  if(bp) bp.innerHTML=analisis.buenas.length?analisis.buenas.map(x=>renderItemResultado(x,true)).join(""):'<div class="results-empty">No se identificaron buenas prácticas específicas con la información disponible.</div>';
+
+  const barrera=nombreBarreraPrincipalResultado();
+  const bt=document.getElementById("resultadoBarreraTexto");
+  if(bt) bt.textContent=barrera?`La principal barrera reportada es: ${barrera}.`:"No se identificó una barrera principal o el establecimiento indicó que no reconoce barreras.";
+
+}
+
+function mostrarConfirmacionFinal(fechaISO){
+  document.getElementById("resultadosAcciones")?.classList.add("hidden");
+  document.getElementById("confirmacionFinalEncuesta")?.classList.remove("hidden");
+  const fecha=fechaISO?new Date(fechaISO):new Date();
+  const meta=document.getElementById("fechaFinalizacionEncuesta");
+  if(meta) meta.textContent=`Fecha de finalización: ${fecha.toLocaleString("es-MX")}`;
+}
+
+function finalizarEncuestaPiloto(){
+  try{guardarLocal(false);}catch(e){}
+  try{guardarUsosFinalesCanonico?.();}catch(e){}
+  try{guardarPracticasLocal?.();}catch(e){}
+  const fecha=new Date().toISOString();
+  localStorage.setItem(claveStoragePiloto(STORAGE_FINALIZACION),JSON.stringify({finalizada:true,fecha}));
+  mostrarConfirmacionFinal(fecha);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
 
 
   // ======================================================
@@ -22231,6 +23020,7 @@ document.getElementById("btnPracticasContinuar")?.addEventListener("click",()=>{
   renderizarTablaEspecializados();
   sincronizarEnergeticosUsosFinales().catch(console.warn);
   cargarPracticasLocal();
+  restaurarFinalizacionPublica();
 
   if(!supabaseClient){
     document.getElementById("avisoModoLocal")?.classList.remove("hidden");
