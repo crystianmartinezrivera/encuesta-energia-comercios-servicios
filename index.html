@@ -4649,7 +4649,7 @@
     <h2>Encuesta finalizada</h2>
     <p>
       Gracias por participar en la Encuesta de Consumo y Usos de Energía del sector comercial y de servicios.
-      La información registrada ha quedado guardada correctamente.
+      La información registrada ha quedado cerrada correctamente. Para capturar otro establecimiento, vuelva al inicio e inicie una nueva encuesta.
     </p>
     <div class="final-meta" id="fechaFinalizacionPublica"></div>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px">
@@ -9756,7 +9756,12 @@ function calcularEdad(){
 
   function mostrarVista(nombre){
     const vistasPublicas = ["datos","energia","facturacion","usos","practicas"];
-    if(!vistasPublicas.includes(nombre)) nombre = "datos";
+
+    if(encuestaEstaFinalizada()){
+      nombre = "practicas";
+    } else if(!vistasPublicas.includes(nombre)) {
+      nombre = "datos";
+    }
     document.querySelector(".app-shell")?.classList.remove("admin-mode");
     document.getElementById("view-finalizar")?.classList.add("hidden");
     state.vista = nombre;
@@ -9844,9 +9849,14 @@ if(nombre === "practicas"){
   });
 
   document.getElementById("btnIniciar").addEventListener("click",()=>{
+    if(encuestaEstaFinalizada()){
+      iniciarNuevaEncuesta();
+      return;
+    }
+
     document.getElementById("vistaInicio").classList.add("hidden");
     document.getElementById("vistaEncuesta").classList.remove("hidden");
-    mostrarVista("datos");
+    mostrarVista(state.vista || "datos");
   });
 
   document.getElementById("btnVolverInicio").addEventListener("click",()=>{
@@ -11862,7 +11872,7 @@ function limpiarFormularioAireAcondicionado() {
 // Primera vez: INSERT y guarda el ID.
 // Siguientes veces: UPDATE del mismo ID.
 
-async function guardarEncuestaSupabase(){
+async function guardarEncuestaSupabase(estatusEncuesta="en_progreso"){
 
   // 1. Obtiene o crea el usuario anónimo.
   const userId =
@@ -11882,7 +11892,7 @@ async function guardarEncuestaSupabase(){
   // 4. Prepara los datos.
   const datos = {
 
-    estatus: "en_progreso",
+    estatus: estatusEncuesta,
 
     ultima_actualizacion:
       new Date().toISOString(),
@@ -22496,6 +22506,88 @@ function guardarPracticasLocal(mostrarEstado=false){
   }catch(e){console.warn("No se pudo guardar la sección 5.",e);}
 }
 
+
+async function guardarPracticasSupabase(mostrarEstado=false){
+  guardarPracticasLocal(false);
+
+  if(!supabaseClient){
+    throw new Error("Supabase no está disponible.");
+  }
+
+  // Garantiza sesión anónima activa.
+  await obtenerUsuarioAnonimo();
+
+  let encuestaId=localStorage.getItem("encuesta_id");
+
+  // Por seguridad, si por alguna razón el registro principal aún no existe,
+  // lo creamos antes de guardar la sección 5.
+  if(!encuestaId){
+    encuestaId=await guardarEncuestaSupabase("en_progreso");
+  }
+
+  const datos=obtenerDatosPracticas();
+  const ahora=new Date().toISOString();
+
+  const fila={
+    encuesta_id:Number(encuestaId),
+    version:Number(datos.version||1),
+    practicas:Array.isArray(datos.practicas)?datos.practicas:[],
+    gestion:Array.isArray(datos.gestion)?datos.gestion:[],
+    barreras:Array.isArray(datos.barreras)?datos.barreras:[],
+    barrera_principal:datos.barreraPrincipal||null,
+    datos_json:datos,
+    updated_at:ahora
+  };
+
+  const {error}=await supabaseClient
+    .from("practicas_eficiencia")
+    .upsert(fila,{onConflict:"encuesta_id"});
+
+  if(error) throw error;
+
+  if(mostrarEstado){
+    const estado=document.getElementById("pracGuardadoEstado");
+    if(estado){
+      estado.textContent="Información guardada en la base de datos";
+      estado.classList.remove("hidden");
+      setTimeout(()=>{
+        estado.classList.add("hidden");
+        estado.textContent="Información guardada";
+      },2200);
+    }
+  }
+
+  return true;
+}
+
+async function cargarPracticasSupabase(){
+  if(!supabaseClient) return false;
+
+  const encuestaId=localStorage.getItem("encuesta_id");
+  if(!encuestaId) return false;
+
+  await obtenerUsuarioAnonimo();
+
+  const {data,error}=await supabaseClient
+    .from("practicas_eficiencia")
+    .select("datos_json,updated_at")
+    .eq("encuesta_id",Number(encuestaId))
+    .maybeSingle();
+
+  if(error) throw error;
+  if(!data?.datos_json) return false;
+
+  // Conserva una copia local para que la encuesta también pueda seguir
+  // funcionando si posteriormente se pierde la conexión.
+  localStorage.setItem(
+    STORAGE_PRACTICAS_V1,
+    JSON.stringify(data.datos_json)
+  );
+
+  aplicarDatosPracticas(data.datos_json);
+  return true;
+}
+
 function marcarPorData(selector,atributo,valores){
   const set=new Set(Array.isArray(valores)?valores:[]);
   document.querySelectorAll(selector).forEach(x=>x.checked=set.has(x.dataset[atributo]));
@@ -22511,46 +22603,80 @@ function restaurarParticipaciones(tipo,obj){
   actualizarTotalTermico(tipo);
 }
 
+function aplicarDatosPracticas(d){
+  prepararSeccionPracticas();
+  if(!d || typeof d!=="object") return false;
+
+  alcancesPracticasCache = (d.alcances && typeof d.alcances === "object")
+    ? d.alcances
+    : {};
+
+  ["agua","vapor"].forEach(tipo=>{
+    const usos=d?.termicos?.[tipo]?.usos||[];
+    const set=new Set(usos);
+    checkboxesTermicos(tipo).forEach(x=>x.checked=set.has(x.value));
+  });
+
+  if(document.getElementById("pracAguaOtro"))
+    document.getElementById("pracAguaOtro").value=d?.termicos?.agua?.otro||"";
+
+  if(document.getElementById("pracVaporOtro"))
+    document.getElementById("pracVaporOtro").value=d?.termicos?.vapor?.otro||"";
+
+  marcarPorData('input[data-practica-id]','practicaId',d.practicas);
+  marcarPorData('input[data-gestion-id]','gestionId',d.gestion);
+  marcarPorData('input[data-barrera-id]','barreraId',d.barreras);
+
+  const otros=d.otros||{};
+  const mapaOtros={
+    pracOtroIluminacion:"iluminacion",
+    pracOtroClimatizacion:"climatizacion",
+    pracOtroMotores:"motores",
+    pracOtroRefrigeracion:"refrigeracion",
+    pracOtroTermicos:"termicos",
+    pracOtroCoccion:"coccion",
+    pracOtroOficina:"oficina",
+    pracOtroElectrico:"electrico",
+    pracOtroGestion:"gestion"
+  };
+
+  Object.entries(mapaOtros).forEach(([id,k])=>{
+    const el=document.getElementById(id);
+    if(el) el.value=otros[k]||"";
+  });
+
+  if(document.getElementById("pracOtraBarrera"))
+    document.getElementById("pracOtraBarrera").value=d.barreraOtra||"";
+
+  if(document.getElementById("pracDiagnosticoAntiguedad"))
+    document.getElementById("pracDiagnosticoAntiguedad").value=d.diagnosticoAntiguedad||"";
+
+  actualizarOtrosPracticas();
+  actualizarDiagnosticoPracticas();
+  restaurarParticipaciones("agua",d?.termicos?.agua?.participacion||{});
+  restaurarParticipaciones("vapor",d?.termicos?.vapor?.participacion||{});
+  actualizarBarreraPrincipal();
+
+  if(document.getElementById("pracBarreraPrincipal"))
+    document.getElementById("pracBarreraPrincipal").value=d.barreraPrincipal||"";
+
+  renderizarAlcancesPracticas();
+  return true;
+}
+
 function cargarPracticasLocal(){
   try{
     const raw=localStorage.getItem(STORAGE_PRACTICAS_V1);
     prepararSeccionPracticas();
-    if(!raw) return;
+    if(!raw) return false;
+
     const d=JSON.parse(raw);
-    alcancesPracticasCache = (d && d.alcances && typeof d.alcances === "object") ? d.alcances : {};
+    return aplicarDatosPracticas(d);
 
-    ["agua","vapor"].forEach(tipo=>{
-      const usos=d?.termicos?.[tipo]?.usos||[];
-      const set=new Set(usos);
-      checkboxesTermicos(tipo).forEach(x=>x.checked=set.has(x.value));
-    });
-    if(document.getElementById("pracAguaOtro")) document.getElementById("pracAguaOtro").value=d?.termicos?.agua?.otro||"";
-    if(document.getElementById("pracVaporOtro")) document.getElementById("pracVaporOtro").value=d?.termicos?.vapor?.otro||"";
-
-    marcarPorData('input[data-practica-id]','practicaId',d.practicas);
-    marcarPorData('input[data-gestion-id]','gestionId',d.gestion);
-    marcarPorData('input[data-barrera-id]','barreraId',d.barreras);
-
-    const otros=d.otros||{};
-    const mapaOtros={
-      pracOtroIluminacion:"iluminacion", pracOtroClimatizacion:"climatizacion",
-      pracOtroMotores:"motores", pracOtroRefrigeracion:"refrigeracion",
-      pracOtroTermicos:"termicos", pracOtroCoccion:"coccion",
-      pracOtroOficina:"oficina", pracOtroElectrico:"electrico",
-      pracOtroGestion:"gestion"
-    };
-    Object.entries(mapaOtros).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.value=otros[k]||"";});
-    if(document.getElementById("pracOtraBarrera")) document.getElementById("pracOtraBarrera").value=d.barreraOtra||"";
-    if(document.getElementById("pracDiagnosticoAntiguedad")) document.getElementById("pracDiagnosticoAntiguedad").value=d.diagnosticoAntiguedad||"";
-
-    actualizarOtrosPracticas();
-    actualizarDiagnosticoPracticas();
-    restaurarParticipaciones("agua",d?.termicos?.agua?.participacion||{});
-    restaurarParticipaciones("vapor",d?.termicos?.vapor?.participacion||{});
-    actualizarBarreraPrincipal();
-    if(document.getElementById("pracBarreraPrincipal")) document.getElementById("pracBarreraPrincipal").value=d.barreraPrincipal||"";
-    renderizarAlcancesPracticas();
-  }catch(e){console.warn("No se pudo recuperar la sección 5.",e);}
+  }catch(e){
+    console.warn("No se pudo recuperar la sección 5.",e);
+    return false;
+  }
 }
 
 function validarPorcentajesTermicos(tipo,nombre){
@@ -22659,14 +22785,45 @@ document.querySelectorAll('#view-practicas input[type="text"], #view-practicas s
 document.getElementById("pracBarreraPrincipal")?.addEventListener("change",guardarPracticasLocal);
 document.getElementById("pracDiagnosticoAntiguedad")?.addEventListener("change",guardarPracticasLocal);
 
-document.getElementById("btnGuardarPracticas")?.addEventListener("click",()=>guardarPracticasLocal(true));
-document.getElementById("btnPracticasAnterior")?.addEventListener("click",()=>{
+document.getElementById("btnGuardarPracticas")?.addEventListener("click",async ()=>{
+  const btn=document.getElementById("btnGuardarPracticas");
+  if(btn){
+    btn.disabled=true;
+    btn.textContent="Guardando...";
+  }
+
+  try{
+    await guardarPracticasSupabase(true);
+  }catch(error){
+    console.error("No se pudo guardar la sección 5 en Supabase:",error);
+    guardarPracticasLocal(false);
+    alert(
+      "No fue posible guardar la sección 5 en la base de datos. " +
+      "El avance permanece guardado en este navegador."
+    );
+  }finally{
+    if(btn){
+      btn.disabled=false;
+      btn.textContent="Guardar avance";
+    }
+  }
+});
+document.getElementById("btnPracticasAnterior")?.addEventListener("click",async ()=>{
   guardarPracticasLocal();
+
+  if(supabaseClient && localStorage.getItem("encuesta_id")){
+    try{
+      await guardarPracticasSupabase(false);
+    }catch(error){
+      console.warn("La sección 5 quedó guardada localmente, pero no pudo sincronizarse al retroceder.",error);
+    }
+  }
+
   mostrarVista("usos");
 });
-document.getElementById("btnPracticasContinuar")?.addEventListener("click",()=>{
+document.getElementById("btnPracticasContinuar")?.addEventListener("click",async ()=>{
   if(!validarPracticasAntesDeContinuar()) return;
-  finalizarEncuestaPublica();
+  await finalizarEncuestaPublica();
 });
 
 
@@ -22677,6 +22834,106 @@ document.getElementById("btnPracticasContinuar")?.addEventListener("click",()=>{
 // CIERRE PÚBLICO / EXCEL / ACCESO ADMINISTRATIVO
 // =====================================================
 const STORAGE_FINAL_PUBLICA = "encuesta_cys_final_publica_v1";
+const SESSION_AUTOSTART_NUEVA = "encuesta_cys_autostart_nueva";
+
+function estadoFinalizacionPublica(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_FINAL_PUBLICA) || "{}");
+  }catch(e){
+    return {};
+  }
+}
+
+function encuestaEstaFinalizada(){
+  return estadoFinalizacionPublica().finalizada === true;
+}
+
+function actualizarBotonInicio(){
+  const btn = document.getElementById("btnIniciar");
+  if(!btn) return;
+
+  if(encuestaEstaFinalizada()){
+    btn.textContent = "INICIAR NUEVA ENCUESTA →";
+    return;
+  }
+
+  const tieneAvance =
+    !!localStorage.getItem("encuesta_id") ||
+    !!localStorage.getItem(STORAGE_KEY);
+
+  btn.textContent = tieneAvance
+    ? "CONTINUAR ENCUESTA →"
+    : "INICIAR ENCUESTA →";
+}
+
+function bloquearEncuestaFinalizada(){
+  const finalizada = encuestaEstaFinalizada();
+
+  document.querySelectorAll(".menu-item").forEach(btn=>{
+    btn.disabled = finalizada;
+    btn.style.opacity = finalizada ? ".55" : "";
+    btn.style.cursor = finalizada ? "not-allowed" : "";
+  });
+
+  const guardarHeader = document.getElementById("btnGuardarHeader");
+  if(guardarHeader){
+    guardarHeader.disabled = finalizada;
+    guardarHeader.style.opacity = finalizada ? ".55" : "";
+  }
+}
+
+function clavesLocalesDeEncuesta(){
+  const prefijos = [
+    "encuestaEnergiaComerciosServicios_v1",
+    "encuesta_cys_usos_cd_v1",
+    "encuesta_cys_usos_efg_v1",
+    "encuesta_cys_usos_finales_v2",
+    "encuesta_cys_practicas_eficiencia_v1",
+    "encuesta_cys_final_publica_v1",
+    "encuesta_cys_evaluacion_piloto_v1",
+    "encuesta_cys_finalizacion_v1"
+  ];
+
+  const claves = new Set(["encuesta_id"]);
+
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    if(!k) continue;
+
+    // No borrar la identidad anónima técnica del navegador
+    // ni una eventual sesión administrativa.
+    if(k === "encuesta_cys_usuario_local" || k === "encuesta_cys_admin_auth") continue;
+
+    if(prefijos.some(p => k === p || k.startsWith(p + "_"))){
+      claves.add(k);
+    }
+  }
+
+  return [...claves];
+}
+
+function limpiarDatosEncuestaActual(){
+  clavesLocalesDeEncuesta().forEach(k => localStorage.removeItem(k));
+}
+
+function iniciarNuevaEncuesta(){
+  if(!encuestaEstaFinalizada()){
+    const hayAvance = !!localStorage.getItem("encuesta_id") || !!localStorage.getItem(STORAGE_KEY);
+    if(hayAvance){
+      const confirmar = confirm(
+        "Hay una encuesta en progreso. ¿Desea descartarla e iniciar una nueva? Esta acción eliminará el avance guardado en este navegador."
+      );
+      if(!confirmar) return;
+    }
+  }
+
+  limpiarDatosEncuestaActual();
+
+  // Recargar es intencional: reinicia también todos los arreglos,
+  // tablas, radios, modales y caches JavaScript de las secciones 1–5.
+  sessionStorage.setItem(SESSION_AUTOSTART_NUEVA,"1");
+  window.location.reload();
+}
 
 function folioEncuestaActual(){
   const id = localStorage.getItem("encuesta_id");
@@ -22699,30 +22956,92 @@ function guardarTodoAntesDeFinalizar(){
   try{guardarPracticasLocal?.();}catch(e){console.warn(e);}
 }
 
-function finalizarEncuestaPublica(){
+async function finalizarEncuestaPublica(){
+  const btn = document.getElementById("btnPracticasContinuar");
+  if(btn){
+    btn.disabled = true;
+    btn.textContent = "Finalizando...";
+  }
+
   guardarTodoAntesDeFinalizar();
-  const fecha=new Date().toISOString();
-  localStorage.setItem(STORAGE_FINAL_PUBLICA,JSON.stringify({
-    finalizada:true,
-    fecha,
-    versionFormato:"CYS_V1"
-  }));
-  document.querySelector(".prac-actions")?.classList.add("hidden");
-  document.getElementById("confirmacionFinalPublica")?.classList.remove("hidden");
-  const meta=document.getElementById("fechaFinalizacionPublica");
-  if(meta) meta.textContent=`Fecha de finalización: ${new Date(fecha).toLocaleString("es-MX")}`;
-  window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+
+  try{
+    // La sección 5 debe existir en Supabase antes de cerrar la encuesta.
+    // Si esta sincronización falla, NO marcamos la encuesta como finalizada.
+    if(supabaseClient){
+      await guardarPracticasSupabase(false);
+      await guardarEncuestaSupabase("finalizada");
+    } else {
+      throw new Error("Supabase no está disponible para finalizar la encuesta.");
+    }
+
+    const fecha=new Date().toISOString();
+    const encuestaId=localStorage.getItem("encuesta_id") || null;
+
+    localStorage.setItem(STORAGE_FINAL_PUBLICA,JSON.stringify({
+      finalizada:true,
+      fecha,
+      encuestaId,
+      sincronizadaSupabase:!!supabaseClient,
+      versionFormato:"CYS_V1"
+    }));
+
+    document.querySelector(".prac-actions")?.classList.add("hidden");
+    document.getElementById("confirmacionFinalPublica")?.classList.remove("hidden");
+
+    const meta=document.getElementById("fechaFinalizacionPublica");
+    if(meta){
+      meta.textContent =
+        `Fecha de finalización: ${new Date(fecha).toLocaleString("es-MX")}` +
+        (encuestaId ? ` · Folio: ${encuestaId}` : "");
+    }
+
+    bloquearEncuestaFinalizada();
+    actualizarBotonInicio();
+
+    window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+  }catch(error){
+    console.error("No se pudo finalizar la encuesta:",error);
+    alert(
+      "No fue posible guardar completamente la encuesta en la base de datos, por lo que aún no se marcó como finalizada. " +
+      "El avance permanece guardado en este navegador y puede intentar nuevamente."
+    );
+
+    if(btn){
+      btn.disabled = false;
+      btn.textContent = "Finalizar encuesta";
+    }
+  }
 }
 
 function restaurarFinalizacionPublica(){
-  try{
-    const d=JSON.parse(localStorage.getItem(STORAGE_FINAL_PUBLICA)||"{}");
-    if(!d.finalizada) return;
-    document.querySelector(".prac-actions")?.classList.add("hidden");
-    document.getElementById("confirmacionFinalPublica")?.classList.remove("hidden");
-    const meta=document.getElementById("fechaFinalizacionPublica");
-    if(meta && d.fecha) meta.textContent=`Fecha de finalización: ${new Date(d.fecha).toLocaleString("es-MX")}`;
-  }catch(e){}
+  const d=estadoFinalizacionPublica();
+  if(!d.finalizada){
+    actualizarBotonInicio();
+    return;
+  }
+
+  document.querySelector(".prac-actions")?.classList.add("hidden");
+  document.getElementById("confirmacionFinalPublica")?.classList.remove("hidden");
+
+  const meta=document.getElementById("fechaFinalizacionPublica");
+  if(meta && d.fecha){
+    meta.textContent =
+      `Fecha de finalización: ${new Date(d.fecha).toLocaleString("es-MX")}` +
+      (d.encuestaId ? ` · Folio: ${d.encuestaId}` : "");
+  }
+
+  bloquearEncuestaFinalizada();
+  actualizarBotonInicio();
+}
+
+function procesarAutoinicioNuevaEncuesta(){
+  if(sessionStorage.getItem(SESSION_AUTOSTART_NUEVA) !== "1") return;
+  sessionStorage.removeItem(SESSION_AUTOSTART_NUEVA);
+
+  document.getElementById("vistaInicio")?.classList.add("hidden");
+  document.getElementById("vistaEncuesta")?.classList.remove("hidden");
+  mostrarVista("datos");
 }
 
 function aFilasObjeto(obj,prefijo=""){
@@ -22952,6 +23271,7 @@ document.getElementById("btnAdminCerrarSesion")?.addEventListener("click",cerrar
 document.getElementById("btnFinalPublicoVolverInicio")?.addEventListener("click",()=>{
   document.getElementById("vistaEncuesta")?.classList.add("hidden");
   document.getElementById("vistaInicio")?.classList.remove("hidden");
+  actualizarBotonInicio();
   window.scrollTo({top:0,behavior:"smooth"});
 });
 
@@ -23201,8 +23521,19 @@ function finalizarEncuestaPiloto(){
   renderizarTablaCalefaccion();
   renderizarTablaEspecializados();
   sincronizarEnergeticosUsosFinales().catch(console.warn);
-  cargarPracticasLocal();
+  const practicasCargadasLocalmente=cargarPracticasLocal();
+
+  // Si esta encuesta se abre en otro navegador/dispositivo y no existe
+  // respaldo local, recuperamos la sección 5 desde Supabase.
+  if(!practicasCargadasLocalmente && supabaseClient && localStorage.getItem("encuesta_id")){
+    cargarPracticasSupabase().catch(error=>{
+      console.warn("No fue posible recuperar la sección 5 desde Supabase.",error);
+    });
+  }
+
   restaurarFinalizacionPublica();
+  actualizarBotonInicio();
+  procesarAutoinicioNuevaEncuesta();
 
   if(!supabaseClient){
     document.getElementById("avisoModoLocal")?.classList.remove("hidden");
