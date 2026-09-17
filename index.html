@@ -21612,6 +21612,7 @@ function energeticoDisponible(codigo) {
 }
 
 function guardarUsosFinalesCanonico() {
+  asegurarIdsUsoFinal(gruposIluminacion, "ilu");
   asegurarIdsUsoFinal(equiposAireAcondicionado, "ac");
   asegurarIdsUsoFinal(equiposVentilacion, "vent");
   asegurarIdsUsoFinal(equiposRefrigeracion, "ref");
@@ -21625,6 +21626,7 @@ function guardarUsosFinalesCanonico() {
   const datos = {
     version: 2,
     respuestas: {
+      usaIluminacion: valorRadioCD("usaIluminacion"),
       acondAire: !!document.getElementById("acondAire")?.checked,
       acondVentilacion: !!document.getElementById("acondVentilacion")?.checked,
       acondCalefaccion: !!document.getElementById("acondCalefaccion")?.checked,
@@ -21653,6 +21655,7 @@ function guardarUsosFinalesCanonico() {
   };
 
   localStorage.setItem(STORAGE_USOS_FINALES_V2, JSON.stringify(datos));
+  return datos;
 }
 
 function cargarUsosFinalesCanonico() {
@@ -21671,6 +21674,90 @@ function cargarUsosFinalesCanonico() {
   } catch (error) {
     console.warn("No se pudo recuperar la capa canónica de usos finales.", error);
   }
+}
+
+// -----------------------------------------------------
+// Persistencia definitiva de la sección 4 en Supabase
+// -----------------------------------------------------
+async function guardarUsosFinalesSupabase(mostrarEstado=false) {
+  const datos = guardarUsosFinalesCanonico();
+  if (!supabaseClient) throw new Error("Supabase no está disponible.");
+
+  await obtenerUsuarioAnonimo();
+  let encuestaId = localStorage.getItem("encuesta_id");
+  if (!encuestaId) encuestaId = await guardarEncuestaSupabase("en_progreso");
+
+  const fila = {
+    encuesta_id: Number(encuestaId),
+    version: Number(datos?.version || 2),
+    datos_json: datos,
+    updated_at: new Date().toISOString()
+  };
+
+  const { error } = await supabaseClient
+    .from("usos_finales")
+    .upsert(fila, { onConflict: "encuesta_id" });
+  if (error) throw error;
+
+  if (mostrarEstado) console.log("Sección 4 sincronizada con Supabase.");
+  return true;
+}
+
+function aplicarDatosUsosFinales(datos) {
+  if (!datos || typeof datos !== "object") return false;
+  const usos = datos.usos || {};
+  const resp = datos.respuestas || {};
+
+  gruposIluminacion = asegurarIdsUsoFinal(usos.iluminacion || [], "ilu");
+  equiposAireAcondicionado = asegurarIdsUsoFinal(usos.aireAcondicionado || [], "ac");
+  equiposVentilacion = asegurarIdsUsoFinal(usos.ventilacion || [], "vent");
+  equiposCalefaccion = asegurarIdsUsoFinal(usos.calefaccion || [], "cal");
+  equiposRefrigeracion = asegurarIdsUsoFinal(usos.refrigeracion || [], "ref");
+  equiposOficina = asegurarIdsUsoFinal(usos.oficina || [], "ofi");
+  equiposElectromecanicos = asegurarIdsUsoFinal(usos.electromecanicos || [], "em");
+  sistemasTermicos = asegurarIdsUsoFinal(usos.sistemasTermicos || [], "term");
+  equiposCoccion = asegurarIdsUsoFinal(usos.coccion || [], "coc");
+  equiposEspecializados = asegurarIdsUsoFinal(usos.especializados || [], "esp");
+
+  ponerRadioCD("usaIluminacion", resp.usaIluminacion || (gruposIluminacion.length ? "si" : ""));
+  ["acondAire","acondVentilacion","acondCalefaccion","acondNinguno"].forEach(id => {
+    const el=document.getElementById(id); if(el && Object.prototype.hasOwnProperty.call(resp,id)) el.checked=!!resp[id];
+  });
+  ["usaRefrigeracion","usaEquiposOficina","usaElectromecanicos","usaSistemasTermicos","usaCoccion","usaEspecializados"].forEach(nombre => {
+    ponerRadioCD(nombre, resp[nombre] || "");
+  });
+
+  try { renderTablaIluminacion(); } catch(e) { console.warn(e); }
+  try { renderizarTablaAireAcondicionado(); } catch(e) { console.warn(e); }
+  try { renderizarTablaVentilacion(); } catch(e) { console.warn(e); }
+  try { renderizarTablaCalefaccion(); } catch(e) { console.warn(e); }
+  try { renderizarTablaRefrigeracion(); } catch(e) { console.warn(e); }
+  try { renderizarTablaEquiposOficina(); } catch(e) { console.warn(e); }
+  try { renderizarTablaElectromecanicos(); } catch(e) { console.warn(e); }
+  try { renderizarTablaSistemasTermicos(); } catch(e) { console.warn(e); }
+  try { renderizarTablaCoccion(); } catch(e) { console.warn(e); }
+  try { renderizarTablaEspecializados(); } catch(e) { console.warn(e); }
+  try { actualizarAcondicionamiento(); } catch(e) { console.warn(e); }
+  try { actualizarVisibilidadEspecializados(); } catch(e) { console.warn(e); }
+
+  localStorage.setItem(STORAGE_USOS_FINALES_V2, JSON.stringify(datos));
+  return true;
+}
+
+async function cargarUsosFinalesSupabase() {
+  if (!supabaseClient) return false;
+  const encuestaId = localStorage.getItem("encuesta_id");
+  if (!encuestaId) return false;
+  await obtenerUsuarioAnonimo();
+
+  const { data, error } = await supabaseClient
+    .from("usos_finales")
+    .select("datos_json,updated_at")
+    .eq("encuesta_id", Number(encuestaId))
+    .maybeSingle();
+  if (error) throw error;
+  if (!data?.datos_json) return false;
+  return aplicarDatosUsosFinales(data.datos_json);
 }
 
 function cargarAreasSelect(selectId) {
@@ -21958,6 +22045,13 @@ document.getElementById("btnUsosContinuar")?.addEventListener("click", async () 
   guardarUsosCDLocal();
   guardarUsosEFGLocal();
   guardarUsosFinalesCanonico();
+  try {
+    await guardarUsosFinalesSupabase(true);
+  } catch (error) {
+    console.error("No se pudo sincronizar la sección 4:", error);
+    alert("La sección 4 quedó guardada en este navegador, pero no pudo sincronizarse con la base de datos. Revise la conexión e intente nuevamente antes de continuar.");
+    return;
+  }
   alert("La información de usos finales de energía se guardó correctamente.");
   mostrarVista("practicas");
 });
@@ -22969,6 +23063,8 @@ async function finalizarEncuestaPublica(){
     // La sección 5 debe existir en Supabase antes de cerrar la encuesta.
     // Si esta sincronización falla, NO marcamos la encuesta como finalizada.
     if(supabaseClient){
+      // Las secciones 4 y 5 deben existir en Supabase antes de cerrar.
+      await guardarUsosFinalesSupabase(false);
       await guardarPracticasSupabase(false);
       await guardarEncuestaSupabase("finalizada");
     } else {
@@ -23516,7 +23612,13 @@ function finalizarEncuestaPiloto(){
   cargarUsosEFGLocal();
 
   // Recupera la capa canónica de usos finales (incluye calefacción y H).
+  const usosFinalesCargadosLocalmente = !!localStorage.getItem(STORAGE_USOS_FINALES_V2);
   cargarUsosFinalesCanonico();
+  if(!usosFinalesCargadosLocalmente && supabaseClient && localStorage.getItem("encuesta_id")){
+    cargarUsosFinalesSupabase().catch(error=>{
+      console.warn("No fue posible recuperar la sección 4 desde Supabase.", error);
+    });
+  }
   actualizarVisibilidadEspecializados();
   renderizarTablaCalefaccion();
   renderizarTablaEspecializados();
