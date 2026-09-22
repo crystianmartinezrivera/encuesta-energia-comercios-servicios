@@ -2543,6 +2543,53 @@
   min-height:42px;
 }
 
+
+/* =====================================================
+   DESTINO DE ENERGÉTICOS - SECCIÓN 4
+===================================================== */
+.destino-energetico-card{
+  margin:14px 0;
+  padding:16px;
+  border:1px solid #dce7ef;
+  border-radius:10px;
+  background:#f8fbfd;
+}
+.destino-energetico-card h4{
+  margin:0 0 10px;
+  color:#0b3770;
+  font-size:15px;
+}
+.destino-usos-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px 18px;
+}
+.destino-usos-grid label{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  font-weight:400;
+  line-height:1.35;
+}
+.destino-usos-grid input[type="checkbox"]{
+  width:auto;
+  margin-top:2px;
+}
+.destino-principal{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:minmax(220px,1fr) minmax(220px,1fr);
+  gap:14px;
+}
+.destino-auto{
+  color:#0b6c43;
+  font-size:11px;
+  font-weight:700;
+}
+@media(max-width:800px){
+  .destino-usos-grid,.destino-principal{grid-template-columns:1fr}
+}
+
 </style>
 <!-- =====================================================
    Fin de CSS
@@ -2694,6 +2741,15 @@
               <div class="field hidden" id="campoOtroGiro">
                 <label>Si selecciona “Otro”, especifique la actividad <span class="req">*</span></label>
                 <input id="otroGiro" type="text" placeholder="Especifique la actividad principal">
+              </div>
+
+              <div class="field hidden" id="campoComensalesMes">
+                <label>Comensales promedio atendidos al mes</label>
+                <input id="comensalesPromedioMes" type="number" min="0" step="1"
+                       placeholder="Si dispone de esta información">
+                <small class="field-help">
+                  Capture el promedio de un mes típico. Si no dispone del dato, puede dejarlo en blanco.
+                </small>
               </div>
 
               <div class="field">
@@ -4181,9 +4237,17 @@
     <div class="efg-service-box">
       <h4>Actividad de preparación de alimentos</h4>
       <div class="cd-form-grid">
-        <div class="cd-form-group">
+        <div class="cd-form-group" id="cocComensalesBox">
           <label for="cocComensales">Comensales o clientes promedio atendidos al día</label>
           <input id="cocComensales" type="number" min="0" step="1" placeholder="Ej. 120">
+          <small class="cd-help">Este dato se solicita aquí sólo cuando no fue capturado como indicador de actividad del subsector.</small>
+        </div>
+
+        <div class="cd-form-group hidden" id="cocComensalesNotaRestaurante">
+          <label>Comensales</label>
+          <div class="cd-info-note" style="margin:0">
+            El promedio mensual ya fue solicitado en Información general y operación; no es necesario capturarlo nuevamente.
+          </div>
         </div>
 
         <div class="cd-form-group">
@@ -4281,6 +4345,34 @@
         </thead>
         <tbody id="tablaEspecializadosBody"></tbody>
       </table>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- =====================================================
+     I. DESTINO DE COMBUSTIBLES Y OTROS ENERGÉTICOS
+====================================================== -->
+<section class="uso-card" id="moduloDestinoEnergeticos">
+  <div class="uso-card-head">
+    <div style="width:100%">
+      <h3>I. Destino de combustibles y otros energéticos</h3>
+      <div class="question-block" style="margin-top:14px">
+        <div class="question-title">
+          Indique los principales usos finales de cada combustible u otro energético reportado en Facturación.
+        </div>
+        <small class="cd-help" style="margin-top:8px">
+          Sólo se muestran los energéticos declarados previamente. Algunos usos pueden identificarse automáticamente a partir de los equipos ya registrados; agregue los que no hayan quedado representados.
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <div id="destinosEnergeticosContenido" class="cd-module-body">
+    <div id="destinosEnergeticosLista"></div>
+    <div id="sinDestinosEnergeticos" class="cd-empty">
+      Primero registre los energéticos en la sección 3. Facturación y consumo de energía.
     </div>
   </div>
 </section>
@@ -8862,6 +8954,40 @@
         </div>
       </div>
 
+      <div id="termEficienciaBox" class="cd-form-grid" style="margin-top:16px">
+        <div class="cd-form-group">
+          <label for="termConoceEficiencia">¿Conoce la eficiencia térmica del equipo?</label>
+          <select id="termConoceEficiencia">
+            <option value="">Seleccione...</option>
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+          </select>
+          <small class="cd-help">Si no dispone del dato, no lo estime. Podrá asignarse posteriormente una eficiencia de referencia durante el análisis.</small>
+        </div>
+
+        <div class="cd-form-group hidden" id="termEficienciaValorBox">
+          <label for="termEficiencia">Eficiencia térmica (%) <span class="req">*</span></label>
+          <input id="termEficiencia" type="number" min="1" max="100" step="0.1" placeholder="Ej. 82">
+        </div>
+
+        <div class="cd-form-group hidden" id="termEficienciaFuenteBox">
+          <label for="termEficienciaFuente">Fuente del dato de eficiencia</label>
+          <select id="termEficienciaFuente">
+            <option value="">Seleccione...</option>
+            <option value="placa">Placa del equipo</option>
+            <option value="ficha">Ficha técnica / manual</option>
+            <option value="fabricante">Información del fabricante</option>
+            <option value="medicion">Medición o prueba de eficiencia</option>
+            <option value="otro">Otra fuente</option>
+          </select>
+        </div>
+
+        <div class="cd-form-group hidden" id="termEficienciaFuenteOtroBox">
+          <label for="termEficienciaFuenteOtro">Especifique la fuente</label>
+          <input id="termEficienciaFuenteOtro" type="text" maxlength="120" placeholder="Especifique">
+        </div>
+      </div>
+
       <div id="termUsosVaporBox" class="hidden">
         <h3 class="cd-subtitle">Uso del vapor</h3>
         <div class="efg-check-grid">
@@ -9495,10 +9621,24 @@ async function obtenerUsuarioAnonimo(){
     }
   }
 
+  function actualizarCampoComensales(){
+    const codigo = String(document.getElementById("giro")?.value || "");
+    const grupo = document.getElementById("giroGrupo")?.value || "";
+    const mostrar = grupo === "restaurantes" && ["301","302","303","304"].includes(codigo);
+    document.getElementById("campoComensalesMes")?.classList.toggle("hidden", !mostrar);
+
+    // Evita repetir la misma variable en la sección de cocción.
+    const cocBox = document.getElementById("cocComensalesBox");
+    if(cocBox) cocBox.classList.toggle("hidden", mostrar);
+    const nota = document.getElementById("cocComensalesNotaRestaurante");
+    if(nota) nota.classList.toggle("hidden", !mostrar);
+  }
+
   function actualizarGiroGrupo(){
     const grupo = document.getElementById("giroGrupo")?.value || "";
     cargarOpcionesGiroDetalle(grupo);
     actualizarOtroGiro();
+    actualizarCampoComensales();
   }
 
   function establecerGiroDesdeCodigo(codigoOriginal){
@@ -9511,6 +9651,7 @@ async function obtenerUsuarioAnonimo(){
     if(grupoSelect) grupoSelect.value = grupo;
     cargarOpcionesGiroDetalle(grupo,codigo);
     actualizarOtroGiro();
+    actualizarCampoComensales();
   }
 
   function recolectarDatos(){
@@ -9521,6 +9662,7 @@ async function obtenerUsuarioAnonimo(){
       giro: document.getElementById("giro").value,
       giroNombre: nombreGiroCodigo(document.getElementById("giro").value),
       otroGiro: document.getElementById("otroGiro").value,
+      comensalesPromedioMes: document.getElementById("comensalesPromedioMes")?.value || "",
       anioInicio: document.getElementById("anioInicio").value,
       anioConstruccion: document.getElementById("anioConstruccion").value,
       estado: document.getElementById("estado").value,
@@ -9560,7 +9702,7 @@ async function obtenerUsuarioAnonimo(){
       const d = JSON.parse(raw);
 
       const ids = [
-        "nombreEstablecimiento","otroGiro","anioInicio","anioConstruccion",
+        "nombreEstablecimiento","otroGiro","comensalesPromedioMes","anioInicio","anioConstruccion",
         "estado","municipio","cp","horasOperacion","empleadosTotal",
         "empleadosMin","empleadosMax","empleadosCompleto","empleadosParcial"
       ];
@@ -9750,7 +9892,10 @@ function calcularEdad(){
   });
 
   document.getElementById("giroGrupo")?.addEventListener("change",actualizarGiroGrupo);
-  document.getElementById("giro")?.addEventListener("change",actualizarOtroGiro);
+  document.getElementById("giro")?.addEventListener("change",()=>{
+    actualizarOtroGiro();
+    actualizarCampoComensales();
+  });
   document.getElementById("anioInicio").addEventListener("change", calcularEdad);
   document.getElementById("anioConstruccion").addEventListener("change",calcularEdad);
 
@@ -11908,6 +12053,11 @@ async function guardarEncuestaSupabase(estatusEncuesta="en_progreso"){
     giro_otro:
       document.getElementById("giro").value === "999"
         ? document.getElementById("otroGiro").value.trim()
+        : null,
+
+    comensales_promedio_mes:
+      document.getElementById("comensalesPromedioMes")?.value
+        ? parseInt(document.getElementById("comensalesPromedioMes").value)
         : null,
 
     anio_inicio:
@@ -14386,9 +14536,11 @@ async function guardarCaracteristicasEnergia(){
     localStorage.getItem("encuesta_id");
 
   if(!encuestaId){
-    throw new Error(
-      "No se encontró el identificador de la encuesta."
-    );
+    // En una encuesta nueva todavía puede no existir ID hasta guardar la sección 1.
+    // Se conserva el catálogo local y no se trata como error.
+    return (typeof energeticosEstablecimiento !== "undefined" && Array.isArray(energeticosEstablecimiento))
+      ? energeticosEstablecimiento.map(e => ({codigo:e.codigo, nombre:e.nombre}))
+      : [];
   }
 
 
@@ -20692,12 +20844,30 @@ function actualizarOtroUsoVapor() {
   }
 }
 
+function actualizarEficienciaSistemaTermico() {
+  const conoce = document.getElementById("termConoceEficiencia")?.value || "";
+  const fuente = document.getElementById("termEficienciaFuente")?.value || "";
+
+  document.getElementById("termEficienciaValorBox")?.classList.toggle("hidden", conoce !== "si");
+  document.getElementById("termEficienciaFuenteBox")?.classList.toggle("hidden", conoce !== "si");
+  document.getElementById("termEficienciaFuenteOtroBox")?.classList.toggle("hidden", conoce !== "si" || fuente !== "otro");
+
+  if (conoce !== "si") {
+    if (document.getElementById("termEficiencia")) document.getElementById("termEficiencia").value = "";
+    if (document.getElementById("termEficienciaFuente")) document.getElementById("termEficienciaFuente").value = "";
+    if (document.getElementById("termEficienciaFuenteOtro")) document.getElementById("termEficienciaFuenteOtro").value = "";
+  } else if (fuente !== "otro" && document.getElementById("termEficienciaFuenteOtro")) {
+    document.getElementById("termEficienciaFuenteOtro").value = "";
+  }
+}
+
 function limpiarFormularioSistemaTermico() {
   ["termTipo","termTipoOtro","termCantidad","termEnergetico","termEnergeticoOtro",
    "termPotencia","termUnidadPotencia","termCapacidadAgua","termUnidadAgua",
    "termCapacidadVapor","termUnidadVapor","termTemperatura","termUsoVaporOtro",
    "termPresion","termUnidadPresion","termEconomizador","termPrecalentador",
-   "termCondensados","termAislamiento","termMantenimiento"].forEach(id => {
+   "termCondensados","termAislamiento","termMantenimiento",
+   "termConoceEficiencia","termEficiencia","termEficienciaFuente","termEficienciaFuenteOtro"].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       el.disabled = false;
@@ -20713,6 +20883,7 @@ function limpiarFormularioSistemaTermico() {
   actualizarEnergeticoTermico();
   actualizarMetodoCapacidadTermica();
   actualizarOtroUsoVapor();
+  actualizarEficienciaSistemaTermico();
 }
 
 function abrirModalSistemaTermico(index = null, duplicar = false) {
@@ -20760,6 +20931,11 @@ function abrirModalSistemaTermico(index = null, duplicar = false) {
     document.getElementById("termCapacidadVapor").value = item.capacidadVapor ?? "";
     document.getElementById("termUnidadVapor").value = item.unidadVapor || "";
     document.getElementById("termTemperatura").value = item.temperatura ?? "";
+    document.getElementById("termConoceEficiencia").value = item.conoceEficiencia || "";
+    document.getElementById("termEficiencia").value = item.eficiencia ?? "";
+    document.getElementById("termEficienciaFuente").value = item.eficienciaFuente || "";
+    document.getElementById("termEficienciaFuenteOtro").value = item.eficienciaFuenteOtro || "";
+    actualizarEficienciaSistemaTermico();
 
     const usos = Array.isArray(item.usosVapor) ? item.usosVapor : [];
     document.querySelectorAll(".termUsoVapor").forEach(ch => {
@@ -20830,6 +21006,10 @@ function capacidadSistemaTermicoTexto(item) {
 function infoAdicionalSistemaTermico(item) {
   const partes = [];
 
+  if (item.conoceEficiencia === "si" && Number.isFinite(Number(item.eficiencia))) {
+    partes.push(`Eficiencia térmica: ${Number(item.eficiencia).toLocaleString("es-MX", {maximumFractionDigits:1})}%`);
+  }
+
   if (Array.isArray(item.usosVapor) && item.usosVapor.length) {
     const mapa = {
       calentar_agua: "Calentar agua",
@@ -20899,6 +21079,19 @@ function guardarSistemaTermicoFn() {
     if (!unidadVapor) return alert("Seleccione la unidad de producción de vapor.");
   }
 
+  const conoceEficiencia = document.getElementById("termConoceEficiencia")?.value || "";
+  const eficienciaRaw = document.getElementById("termEficiencia")?.value ?? "";
+  const eficiencia = eficienciaRaw === "" ? null : Number(eficienciaRaw);
+  const eficienciaFuente = document.getElementById("termEficienciaFuente")?.value || "";
+  const eficienciaFuenteOtro = (document.getElementById("termEficienciaFuenteOtro")?.value || "").trim();
+
+  if (conoceEficiencia === "si" && (!Number.isFinite(eficiencia) || eficiencia <= 0 || eficiencia > 100)) {
+    return alert("Ingrese una eficiencia térmica válida entre 1 y 100%.");
+  }
+  if (conoceEficiencia === "si" && eficienciaFuente === "otro" && !eficienciaFuenteOtro) {
+    return alert("Especifique la fuente del dato de eficiencia.");
+  }
+
   const usosVapor = Array.from(document.querySelectorAll(".termUsoVapor:checked")).map(ch => ch.value);
   const usoVaporOtro = (document.getElementById("termUsoVaporOtro")?.value || "").trim();
 
@@ -20933,6 +21126,10 @@ function guardarSistemaTermicoFn() {
     capacidadVapor,
     unidadVapor,
     temperatura,
+    conoceEficiencia,
+    eficiencia: conoceEficiencia === "si" ? eficiencia : null,
+    eficienciaFuente: conoceEficiencia === "si" ? eficienciaFuente : "",
+    eficienciaFuenteOtro: (conoceEficiencia === "si" && eficienciaFuente === "otro") ? eficienciaFuenteOtro : "",
     usosVapor: tipo === "vapor" ? usosVapor : [],
     usoVaporOtro: tipo === "vapor" ? usoVaporOtro : "",
     presion: (tipo === "caldera" || tipo === "vapor") ? presion : null,
@@ -21436,6 +21633,8 @@ document.getElementById("emSubtipo")?.addEventListener("change", actualizarSubti
 document.getElementById("btnAgregarSistemaTermico")?.addEventListener("click", () => abrirModalSistemaTermico(null, false));
 document.getElementById("cerrarModalSistemaTermico")?.addEventListener("click", cerrarModalSistemaTermicoFn);
 document.getElementById("cancelarSistemaTermico")?.addEventListener("click", cerrarModalSistemaTermicoFn);
+document.getElementById("termConoceEficiencia")?.addEventListener("change", actualizarEficienciaSistemaTermico);
+document.getElementById("termEficienciaFuente")?.addEventListener("change", actualizarEficienciaSistemaTermico);
 document.getElementById("guardarSistemaTermico")?.addEventListener("click", guardarSistemaTermicoFn);
 document.getElementById("termTipo")?.addEventListener("change", actualizarTipoSistemaTermico);
 document.getElementById("termEnergetico")?.addEventListener("change", actualizarEnergeticoTermico);
@@ -21599,6 +21798,7 @@ async function sincronizarEnergeticosUsosFinales() {
     if (catalogo.some(e => e.codigo === valorActual)) select.value = valorActual;
   });
 
+  try { renderizarDestinosEnergeticos(); } catch(e) { console.warn(e); }
   return catalogo;
 }
 
@@ -21609,6 +21809,167 @@ function nombreEnergeticoCatalogo(codigo) {
 
 function energeticoDisponible(codigo) {
   return !!codigo && catalogoEnergeticosUsosFinales().some(e => e.codigo === codigo);
+}
+
+
+// -----------------------------------------------------
+// I. DESTINO DE COMBUSTIBLES Y OTROS ENERGÉTICOS
+// -----------------------------------------------------
+let destinosEnergeticos = {};
+
+const USOS_DESTINO_ENERGETICOS = [
+  ["coccion","Cocción y preparación de alimentos"],
+  ["agua_caliente","Agua caliente sanitaria"],
+  ["lavanderia","Lavandería / secado / planchado"],
+  ["vapor","Generación de vapor"],
+  ["calefaccion","Calefacción de espacios"],
+  ["proceso","Calor o proceso térmico"],
+  ["planta_emergencia","Planta de emergencia"],
+  ["jardineria","Maquinaria o equipo de jardinería"],
+  ["vehiculos","Vehículos o equipo móvil"],
+  ["mantenimiento","Mantenimiento / taller"],
+  ["otro","Otro uso"]
+];
+
+function energeticoRequiereDestino(codigo){
+  return !!codigo && codigo !== "electricidad";
+}
+
+function usosInferidosPorEquipos(codigo){
+  const usos = new Set();
+
+  (typeof plantasEmergencia !== "undefined" && Array.isArray(plantasEmergencia) ? plantasEmergencia : [])
+    .forEach(x => {
+      const e = String(x.energetico || x.combustible || "");
+      if(e === codigo || (codigo.startsWith("glp_") && e === "glp")) usos.add("planta_emergencia");
+    });
+
+  (Array.isArray(equiposCoccion) ? equiposCoccion : [])
+    .forEach(x => { if(String(x.energetico || "") === codigo) usos.add("coccion"); });
+
+  (Array.isArray(equiposCalefaccion) ? equiposCalefaccion : [])
+    .forEach(x => { if(String(x.energetico || "") === codigo) usos.add("calefaccion"); });
+
+  (Array.isArray(sistemasTermicos) ? sistemasTermicos : [])
+    .forEach(x => {
+      if(String(x.energetico || "") !== codigo) return;
+      const tipo = String(x.tipo || "");
+      if(tipo === "calentador" || tipo === "solar" || tipo === "bomba_calor") usos.add("agua_caliente");
+      else if(tipo === "vapor") usos.add("vapor");
+      else usos.add("proceso");
+    });
+
+  (Array.isArray(equiposEspecializados) ? equiposEspecializados : [])
+    .forEach(x => {
+      if(String(x.energetico || "") !== codigo) return;
+      const tipo = String(x.tipo || x.aplicacion || "");
+      if(tipo === "lavanderia") usos.add("lavanderia");
+      if(tipo === "taller") usos.add("mantenimiento");
+      if(tipo === "proceso") usos.add("proceso");
+    });
+
+  return [...usos];
+}
+
+function normalizarDestinoEnergetico(codigo){
+  if(!destinosEnergeticos[codigo]){
+    destinosEnergeticos[codigo] = { usos:[], principal:"", otro:"" };
+  }
+  const d = destinosEnergeticos[codigo];
+  if(!Array.isArray(d.usos)) d.usos = [];
+  const inferidos = usosInferidosPorEquipos(codigo);
+  d.usos = [...new Set([...d.usos, ...inferidos])];
+  if(d.principal && !d.usos.includes(d.principal)) d.principal = "";
+  return d;
+}
+
+function renderizarDestinosEnergeticos(){
+  const cont = document.getElementById("destinosEnergeticosLista");
+  const vacio = document.getElementById("sinDestinosEnergeticos");
+  if(!cont || !vacio) return;
+
+  const catalogo = catalogoEnergeticosUsosFinales().filter(e => energeticoRequiereDestino(e.codigo));
+  cont.innerHTML = "";
+  vacio.style.display = catalogo.length ? "none" : "block";
+
+  catalogo.forEach(e => {
+    const d = normalizarDestinoEnergetico(e.codigo);
+    const inferidos = new Set(usosInferidosPorEquipos(e.codigo));
+    const card = document.createElement("div");
+    card.className = "destino-energetico-card";
+
+    const checks = USOS_DESTINO_ENERGETICOS.map(([valor,texto]) => {
+      const marcado = d.usos.includes(valor) ? "checked" : "";
+      const auto = inferidos.has(valor) ? '<span class="destino-auto">Identificado por equipos registrados</span>' : "";
+      return `<label>
+        <input type="checkbox" data-destino-energetico="${escaparHTMLCD(e.codigo)}" value="${valor}" ${marcado}>
+        <span>${texto}${auto ? "<br>"+auto : ""}</span>
+      </label>`;
+    }).join("");
+
+    const seleccionados = USOS_DESTINO_ENERGETICOS.filter(([v]) => d.usos.includes(v));
+    const opcionesPrincipal = '<option value="">Seleccione...</option>' +
+      seleccionados.map(([v,t]) => `<option value="${v}" ${d.principal===v?"selected":""}>${t}</option>`).join("");
+
+    card.innerHTML = `
+      <h4>${escaparHTMLCD(e.nombre)}</h4>
+      <div class="destino-usos-grid">${checks}</div>
+      <div class="destino-principal">
+        <div class="cd-form-group">
+          <label>Uso principal del energético</label>
+          <select data-destino-principal="${escaparHTMLCD(e.codigo)}">${opcionesPrincipal}</select>
+        </div>
+        <div class="cd-form-group ${d.usos.includes("otro") ? "" : "hidden"}" data-destino-otro-box="${escaparHTMLCD(e.codigo)}">
+          <label>Especifique otro uso</label>
+          <input type="text" data-destino-otro="${escaparHTMLCD(e.codigo)}" value="${escaparHTMLCD(d.otro || "")}" placeholder="Describa el uso">
+        </div>
+      </div>`;
+    cont.appendChild(card);
+  });
+
+  cont.querySelectorAll('input[data-destino-energetico]').forEach(chk => {
+    chk.addEventListener("change", () => actualizarDestinoEnergetico(chk.dataset.destinoEnergetico));
+  });
+  cont.querySelectorAll('select[data-destino-principal]').forEach(sel => {
+    sel.addEventListener("change", () => {
+      const codigo = sel.dataset.destinoPrincipal;
+      normalizarDestinoEnergetico(codigo).principal = sel.value;
+      guardarUsosFinalesCanonico();
+    });
+  });
+  cont.querySelectorAll('input[data-destino-otro]').forEach(inp => {
+    inp.addEventListener("input", () => {
+      const codigo = inp.dataset.destinoOtro;
+      normalizarDestinoEnergetico(codigo).otro = inp.value.trim();
+      guardarUsosFinalesCanonico();
+    });
+  });
+}
+
+function actualizarDestinoEnergetico(codigo){
+  const d = normalizarDestinoEnergetico(codigo);
+  const checks = [...document.querySelectorAll(`input[data-destino-energetico="${CSS.escape(codigo)}"]`)];
+  d.usos = checks.filter(x => x.checked).map(x => x.value);
+  if(d.principal && !d.usos.includes(d.principal)) d.principal = "";
+  if(!d.usos.includes("otro")) d.otro = "";
+  renderizarDestinosEnergeticos();
+  guardarUsosFinalesCanonico();
+}
+
+function obtenerDestinosEnergeticos(){
+  const salida = {};
+  catalogoEnergeticosUsosFinales()
+    .filter(e => energeticoRequiereDestino(e.codigo))
+    .forEach(e => {
+      const d = normalizarDestinoEnergetico(e.codigo);
+      salida[e.codigo] = {
+        nombre: e.nombre,
+        usos: [...d.usos],
+        principal: d.principal || "",
+        otro: d.usos.includes("otro") ? (d.otro || "") : ""
+      };
+    });
+  return salida;
 }
 
 function guardarUsosFinalesCanonico() {
@@ -21624,7 +21985,7 @@ function guardarUsosFinalesCanonico() {
   asegurarIdsUsoFinal(equiposEspecializados, "esp");
 
   const datos = {
-    version: 2,
+    version: 4,
     respuestas: {
       usaIluminacion: valorRadioCD("usaIluminacion"),
       acondAire: !!document.getElementById("acondAire")?.checked,
@@ -21651,6 +22012,7 @@ function guardarUsosFinalesCanonico() {
       especializados: equiposEspecializados
     },
     energeticos: catalogoEnergeticosUsosFinales(),
+    destinosEnergeticos: obtenerDestinosEnergeticos(),
     fechaGuardado: new Date().toISOString()
   };
 
@@ -21663,6 +22025,8 @@ function cargarUsosFinalesCanonico() {
     const raw = localStorage.getItem(STORAGE_USOS_FINALES_V2);
     if (!raw) return;
     const datos = JSON.parse(raw);
+    destinosEnergeticos = datos?.destinosEnergeticos && typeof datos.destinosEnergeticos === "object"
+      ? datos.destinosEnergeticos : {};
     equiposCalefaccion = asegurarIdsUsoFinal(datos?.usos?.calefaccion || [], "cal");
     equiposEspecializados = asegurarIdsUsoFinal(datos?.usos?.especializados || [], "esp");
     ["acondAire","acondVentilacion","acondCalefaccion","acondNinguno"].forEach(id => {
@@ -21707,6 +22071,8 @@ function aplicarDatosUsosFinales(datos) {
   if (!datos || typeof datos !== "object") return false;
   const usos = datos.usos || {};
   const resp = datos.respuestas || {};
+  destinosEnergeticos = datos.destinosEnergeticos && typeof datos.destinosEnergeticos === "object"
+    ? datos.destinosEnergeticos : {};
 
   gruposIluminacion = asegurarIdsUsoFinal(usos.iluminacion || [], "ilu");
   equiposAireAcondicionado = asegurarIdsUsoFinal(usos.aireAcondicionado || [], "ac");
@@ -21739,6 +22105,7 @@ function aplicarDatosUsosFinales(datos) {
   try { renderizarTablaEspecializados(); } catch(e) { console.warn(e); }
   try { actualizarAcondicionamiento(); } catch(e) { console.warn(e); }
   try { actualizarVisibilidadEspecializados(); } catch(e) { console.warn(e); }
+  try { renderizarDestinosEnergeticos(); } catch(e) { console.warn(e); }
 
   localStorage.setItem(STORAGE_USOS_FINALES_V2, JSON.stringify(datos));
   return true;
@@ -23185,6 +23552,16 @@ function filasUsosFinalesExcel(){
       });
     });
   });
+  Object.entries(destinosEnergeticos || {}).forEach(([codigo,d])=>{
+    filas.push({
+      grupo:"Destino de energético",
+      tipo:d.nombre || nombreEnergeticoCatalogo(codigo),
+      energetico:codigo,
+      uso_principal:d.principal || "",
+      usos_reportados:Array.isArray(d.usos) ? d.usos.join(" | ") : "",
+      otro_uso:d.otro || ""
+    });
+  });
   return filas;
 }
 
@@ -23620,8 +23997,10 @@ function finalizarEncuestaPiloto(){
     });
   }
   actualizarVisibilidadEspecializados();
+  actualizarCampoComensales();
   renderizarTablaCalefaccion();
   renderizarTablaEspecializados();
+  renderizarDestinosEnergeticos();
   sincronizarEnergeticosUsosFinales().catch(console.warn);
   const practicasCargadasLocalmente=cargarPracticasLocal();
 
