@@ -2752,6 +2752,64 @@
                 </small>
               </div>
 
+              <!-- Indicadores físicos de actividad: se muestran sólo cuando aplican al subgiro -->
+              <div class="field hidden" id="campoHabitacionesDisponibles">
+                <label>Habitaciones disponibles</label>
+                <input id="habitacionesDisponibles" type="number" min="0" step="1"
+                       placeholder="Número de habitaciones">
+                <small class="field-help">
+                  Considere las habitaciones disponibles para alojamiento. Si no dispone del dato, puede dejarlo en blanco.
+                </small>
+              </div>
+
+              <div class="field hidden" id="campoNochesHabitacionMes">
+                <label>Noches-habitación ocupadas en un mes típico</label>
+                <input id="nochesHabitacionMes" type="number" min="0" step="1"
+                       placeholder="Si dispone de esta información">
+                <small class="field-help">
+                  Sume las habitaciones efectivamente ocupadas durante un mes típico. No es necesario estimar el dato si no se conoce.
+                </small>
+              </div>
+
+              <div class="field hidden" id="campoCamasDisponibles">
+                <label>Camas disponibles</label>
+                <input id="camasDisponibles" type="number" min="0" step="1"
+                       placeholder="Número de camas">
+                <small class="field-help">
+                  Registre la capacidad instalada de camas del establecimiento.
+                </small>
+              </div>
+
+              <div class="field hidden" id="campoOcupacionCamas">
+                <label>Ocupación promedio de camas</label>
+                <div class="input-unit">
+                  <input id="ocupacionCamasPct" type="number" min="0" max="100" step="0.1"
+                         placeholder="Si se conoce">
+                  <span class="unit">%</span>
+                </div>
+                <small class="field-help">
+                  Capture el porcentaje promedio de ocupación. Si no dispone del dato, puede dejarlo en blanco.
+                </small>
+              </div>
+
+              <div class="field hidden" id="campoPacientesMes">
+                <label>Pacientes o servicios atendidos promedio al mes</label>
+                <input id="pacientesMes" type="number" min="0" step="1"
+                       placeholder="Si dispone de esta información">
+                <small class="field-help">
+                  Para clínica, consultorio o laboratorio, capture un mes típico.
+                </small>
+              </div>
+
+              <div class="field hidden" id="campoAlumnos">
+                <label>Alumnos o matrícula atendida</label>
+                <input id="alumnosMatricula" type="number" min="0" step="1"
+                       placeholder="Número de alumnos">
+                <small class="field-help">
+                  Registre la matrícula o número habitual de alumnos atendidos.
+                </small>
+              </div>
+
               <div class="field">
                 <label>Año de inicio de actividades <span class="req">*</span></label>
                 <select id="anioInicio" required></select>
@@ -2971,6 +3029,25 @@
           </span>
         </div>
 
+      </div>
+
+      <div class="field">
+        <label>
+          Superficie climatizada del establecimiento
+        </label>
+        <div class="input-unit">
+          <input
+            id="superficieClimatizada"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Si se conoce"
+          >
+          <span class="unit" style="font-size:13px;">m²</span>
+        </div>
+        <small class="field-help">
+          Superficie atendida por aire acondicionado y/o calefacción. Si no dispone del dato, puede dejarlo en blanco.
+        </small>
       </div>
 
 
@@ -9624,14 +9701,26 @@ async function obtenerUsuarioAnonimo(){
   function actualizarCampoComensales(){
     const codigo = String(document.getElementById("giro")?.value || "");
     const grupo = document.getElementById("giroGrupo")?.value || "";
-    const mostrar = grupo === "restaurantes" && ["301","302","303","304"].includes(codigo);
-    document.getElementById("campoComensalesMes")?.classList.toggle("hidden", !mostrar);
 
-    // Evita repetir la misma variable en la sección de cocción.
+    const esRestaurante = grupo === "restaurantes" && ["301","302","303","304"].includes(codigo);
+    const esAlojamiento = grupo === "alojamiento" && ["601","602","603"].includes(codigo);
+    const esHospital = codigo === "401";
+    const esSaludAmbulatoria = ["402","403","404"].includes(codigo);
+    const esEducacion = grupo === "educacion" && ["501","502","503"].includes(codigo);
+
+    document.getElementById("campoComensalesMes")?.classList.toggle("hidden", !esRestaurante);
+    document.getElementById("campoHabitacionesDisponibles")?.classList.toggle("hidden", !esAlojamiento);
+    document.getElementById("campoNochesHabitacionMes")?.classList.toggle("hidden", !esAlojamiento);
+    document.getElementById("campoCamasDisponibles")?.classList.toggle("hidden", !esHospital);
+    document.getElementById("campoOcupacionCamas")?.classList.toggle("hidden", !esHospital);
+    document.getElementById("campoPacientesMes")?.classList.toggle("hidden", !esSaludAmbulatoria);
+    document.getElementById("campoAlumnos")?.classList.toggle("hidden", !esEducacion);
+
+    // Evita repetir comensales en la sección de cocción.
     const cocBox = document.getElementById("cocComensalesBox");
-    if(cocBox) cocBox.classList.toggle("hidden", mostrar);
+    if(cocBox) cocBox.classList.toggle("hidden", esRestaurante);
     const nota = document.getElementById("cocComensalesNotaRestaurante");
-    if(nota) nota.classList.toggle("hidden", !mostrar);
+    if(nota) nota.classList.toggle("hidden", !esRestaurante);
   }
 
   function actualizarGiroGrupo(){
@@ -9663,6 +9752,12 @@ async function obtenerUsuarioAnonimo(){
       giroNombre: nombreGiroCodigo(document.getElementById("giro").value),
       otroGiro: document.getElementById("otroGiro").value,
       comensalesPromedioMes: document.getElementById("comensalesPromedioMes")?.value || "",
+      habitacionesDisponibles: document.getElementById("habitacionesDisponibles")?.value || "",
+      nochesHabitacionMes: document.getElementById("nochesHabitacionMes")?.value || "",
+      camasDisponibles: document.getElementById("camasDisponibles")?.value || "",
+      ocupacionCamasPct: document.getElementById("ocupacionCamasPct")?.value || "",
+      pacientesMes: document.getElementById("pacientesMes")?.value || "",
+      alumnosMatricula: document.getElementById("alumnosMatricula")?.value || "",
       anioInicio: document.getElementById("anioInicio").value,
       anioConstruccion: document.getElementById("anioConstruccion").value,
       estado: document.getElementById("estado").value,
@@ -9678,6 +9773,7 @@ async function obtenerUsuarioAnonimo(){
       empleadosCompleto: document.getElementById("empleadosCompleto").value,
       empleadosParcial: document.getElementById("empleadosParcial").value,
       turnos: state.turnos,
+      superficieClimatizada: document.getElementById("superficieClimatizada")?.value || "",
       vista: state.vista,
       fechaGuardado: new Date().toISOString()
     };
@@ -9702,7 +9798,9 @@ async function obtenerUsuarioAnonimo(){
       const d = JSON.parse(raw);
 
       const ids = [
-        "nombreEstablecimiento","otroGiro","comensalesPromedioMes","anioInicio","anioConstruccion",
+        "nombreEstablecimiento","otroGiro","comensalesPromedioMes",
+        "habitacionesDisponibles","nochesHabitacionMes","camasDisponibles","ocupacionCamasPct",
+        "pacientesMes","alumnosMatricula","superficieClimatizada","anioInicio","anioConstruccion",
         "estado","municipio","cp","horasOperacion","empleadosTotal",
         "empleadosMin","empleadosMax","empleadosCompleto","empleadosParcial"
       ];
@@ -12058,6 +12156,36 @@ async function guardarEncuestaSupabase(estatusEncuesta="en_progreso"){
     comensales_promedio_mes:
       document.getElementById("comensalesPromedioMes")?.value
         ? parseInt(document.getElementById("comensalesPromedioMes").value)
+        : null,
+
+    habitaciones_disponibles:
+      document.getElementById("habitacionesDisponibles")?.value
+        ? parseInt(document.getElementById("habitacionesDisponibles").value)
+        : null,
+
+    noches_habitacion_mes:
+      document.getElementById("nochesHabitacionMes")?.value
+        ? parseInt(document.getElementById("nochesHabitacionMes").value)
+        : null,
+
+    camas_disponibles:
+      document.getElementById("camasDisponibles")?.value
+        ? parseInt(document.getElementById("camasDisponibles").value)
+        : null,
+
+    ocupacion_camas_pct:
+      document.getElementById("ocupacionCamasPct")?.value
+        ? parseFloat(document.getElementById("ocupacionCamasPct").value)
+        : null,
+
+    pacientes_promedio_mes:
+      document.getElementById("pacientesMes")?.value
+        ? parseInt(document.getElementById("pacientesMes").value)
+        : null,
+
+    alumnos_matricula:
+      document.getElementById("alumnosMatricula")?.value
+        ? parseInt(document.getElementById("alumnosMatricula").value)
         : null,
 
     anio_inicio:
