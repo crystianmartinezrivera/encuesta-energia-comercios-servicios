@@ -2590,6 +2590,76 @@
   .destino-usos-grid,.destino-principal{grid-template-columns:1fr}
 }
 
+
+/* ==========================================================
+   AJUSTE FINAL 2.A - CARACTERÍSTICAS FÍSICAS
+   Distribución equilibrada: 2 columnas x 2 filas
+   ========================================================== */
+.fisicas-layout{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:22px 28px !important;
+  align-items:start !important;
+}
+.fisicas-derecha{
+  display:contents !important;
+}
+.fisicas-layout > .field,
+.fisicas-derecha > .field{
+  min-width:0 !important;
+}
+.fisicas-layout > .field:first-child{
+  grid-column:1;
+  grid-row:1;
+}
+.fisicas-derecha > .field:nth-child(1){
+  grid-column:2;
+  grid-row:1;
+}
+.fisicas-derecha > .field:nth-child(2){
+  grid-column:1;
+  grid-row:2;
+}
+.fisicas-derecha > .field:nth-child(3){
+  grid-column:2;
+  grid-row:2;
+}
+.fisicas-layout .field > label{
+  white-space:normal !important;
+  min-height:32px !important;
+  line-height:1.25 !important;
+}
+#tipoEdificacion,
+#tipoEdificacionOtro{
+  width:100% !important;
+  max-width:none !important;
+}
+#superficieTotal,
+#superficieClimatizada,
+#numeroNiveles{
+  width:100% !important;
+}
+.fisicas-layout .input-unit{
+  width:100% !important;
+  max-width:100% !important;
+}
+.fisicas-layout .input-unit input{
+  min-width:0 !important;
+  flex:1 1 auto !important;
+}
+@media (max-width:760px){
+  .fisicas-layout{
+    grid-template-columns:1fr !important;
+  }
+  .fisicas-layout > .field:first-child,
+  .fisicas-derecha > .field:nth-child(1),
+  .fisicas-derecha > .field:nth-child(2),
+  .fisicas-derecha > .field:nth-child(3){
+    grid-column:1 !important;
+    grid-row:auto !important;
+  }
+}
+
 </style>
 <!-- =====================================================
    Fin de CSS
@@ -2762,12 +2832,12 @@
                 </small>
               </div>
 
-              <div class="field hidden" id="campoNochesHabitacionMes">
-                <label>Noches-habitación ocupadas en un mes típico</label>
-                <input id="nochesHabitacionMes" type="number" min="0" step="1"
+              <div class="field hidden" id="campoHuespedesMes">
+                <label>Número de huéspedes atendidos en un mes típico</label>
+                <input id="huespedesMes" type="number" min="0" step="1"
                        placeholder="Si dispone de esta información">
                 <small class="field-help">
-                  Sume las habitaciones efectivamente ocupadas durante un mes típico. No es necesario estimar el dato si no se conoce.
+                  Capture el número aproximado de huéspedes atendidos durante un mes típico. Si no dispone del dato, puede dejarlo en blanco.
                 </small>
               </div>
 
@@ -3759,15 +3829,41 @@
     y evitar preguntas innecesarias.
   </div>
 
+<!-- =====================================================
+     A. DESTINO DE COMBUSTIBLES Y OTROS ENERGÉTICOS
+====================================================== -->
+<section class="uso-card" id="moduloDestinoEnergeticos">
+  <div class="uso-card-head">
+    <div style="width:100%">
+      <h3>A. Destino de combustibles y otros energéticos</h3>
+      <div class="question-block" style="margin-top:14px">
+        <div class="question-title">
+          Indique los principales usos finales de cada combustible u otro energético reportado en Facturación.
+        </div>
+        <small class="cd-help" style="margin-top:8px">
+          Sólo se muestran los energéticos declarados previamente en Facturación. Seleccione el destino o uso final de cada uno; posteriormente registre los equipos correspondientes.
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <div id="destinosEnergeticosContenido" class="cd-module-body">
+    <div id="destinosEnergeticosLista"></div>
+    <div id="sinDestinosEnergeticos" class="cd-empty">
+      Primero registre los energéticos en la sección 3. Facturación y consumo de energía.
+    </div>
+  </div>
+</section>
+
   <!-- =====================================================
-       A. ILUMINACIÓN
+       B. ILUMINACIÓN
   ====================================================== -->
   <section class="uso-card" id="moduloIluminacion">
 
  <div class="uso-card-head">
 
   <div style="width:100%">
-    <h3>A. Iluminación</h3>
+    <h3>B. Iluminación</h3>
 
     <div class="question-block" style="margin-top:14px">
 
@@ -4083,12 +4179,12 @@
 
 
 <!-- =====================================================
-     C. REFRIGERACIÓN Y CONSERVACIÓN
+     D. REFRIGERACIÓN Y CONSERVACIÓN
 ====================================================== -->
 <section class="uso-card" id="moduloRefrigeracion">
   <div class="uso-card-head">
     <div style="width:100%">
-      <h3>C. Refrigeración y conservación</h3>
+      <h3>D. Refrigeración y conservación</h3>
 
       <div class="question-block" style="margin-top:14px">
         <div class="question-title">
@@ -4134,12 +4230,12 @@
 </section>
 
 <!-- =====================================================
-     D. EQUIPOS DE OFICINA, COMUNICACIÓN Y ELECTRÓNICOS
+     E. EQUIPOS DE OFICINA, COMUNICACIÓN Y ELECTRÓNICOS
 ====================================================== -->
 <section class="uso-card" id="moduloEquiposOficina">
   <div class="uso-card-head">
     <div style="width:100%">
-      <h3>D. Equipos de oficina, comunicación y electrónicos</h3>
+      <h3>E. Equipos de oficina, comunicación y electrónicos</h3>
 
       <div class="question-block" style="margin-top:14px">
         <div class="question-title">
@@ -4186,16 +4282,16 @@
 
 
 <!-- =====================================================
-     E. MOTORES Y SISTEMAS ELECTROMECÁNICOS
+     F. MOTORES, SISTEMAS ELECTROMECÁNICOS Y MAQUINARIA MOTORIZADA
 ====================================================== -->
 <section class="uso-card" id="moduloElectromecanicos">
   <div class="uso-card-head">
     <div style="width:100%">
-      <h3>E. Motores y sistemas electromecánicos</h3>
+      <h3>F. Motores, sistemas electromecánicos y maquinaria motorizada</h3>
 
       <div class="question-block" style="margin-top:14px">
         <div class="question-title">
-          ¿El establecimiento cuenta con motores, bombas, compresores, elevadores o escaleras eléctricas?
+          ¿El establecimiento cuenta con motores, bombas, compresores, elevadores, escaleras eléctricas o maquinaria motorizada?
         </div>
 
         <div class="radio-group" style="min-height:auto; margin-top:10px">
@@ -4224,6 +4320,7 @@
           <tr>
             <th>Equipo</th>
             <th>Tipo / aplicación</th>
+            <th>Energético</th>
             <th class="num">Cantidad</th>
             <th class="num">Potencia</th>
             <th>Patrón de uso</th>
@@ -4238,12 +4335,12 @@
 </section>
 
 <!-- =====================================================
-     F. SISTEMAS TÉRMICOS Y GENERACIÓN DE CALOR
+     G. SISTEMAS TÉRMICOS Y GENERACIÓN DE CALOR
 ====================================================== -->
 <section class="uso-card" id="moduloSistemasTermicos">
   <div class="uso-card-head">
     <div style="width:100%">
-      <h3>F. Sistemas térmicos y generación de calor para agua y procesos</h3>
+      <h3>G. Sistemas térmicos y generación de calor para agua y procesos</h3>
 
       <div class="question-block" style="margin-top:14px">
         <div class="question-title">
@@ -4290,12 +4387,12 @@
 </section>
 
 <!-- =====================================================
-     G. COCCIÓN Y PREPARACIÓN DE ALIMENTOS
+     H. COCCIÓN Y PREPARACIÓN DE ALIMENTOS
 ====================================================== -->
 <section class="uso-card" id="moduloCoccion">
   <div class="uso-card-head">
     <div style="width:100%">
-      <h3>G. Cocción y preparación de alimentos</h3>
+      <h3>H. Cocción y preparación de alimentos</h3>
 
       <div class="question-block" style="margin-top:14px">
         <div class="question-title">
@@ -4374,12 +4471,12 @@
 </section>
 
 <!-- =====================================================
-     H. EQUIPOS ESPECIALIZADOS Y OTROS USOS FINALES
+     I. EQUIPOS ESPECIALIZADOS Y OTROS USOS FINALES
 ====================================================== -->
 <section class="uso-card" id="moduloEquiposEspecializados">
   <div class="uso-card-head">
     <div style="width:100%">
-      <h3>H. Equipos especializados y otros usos finales</h3>
+      <h3>I. Equipos especializados y otros usos finales</h3>
 
       <div class="question-block" style="margin-top:14px">
         <div class="question-title">
@@ -4428,31 +4525,7 @@
 
 
 
-<!-- =====================================================
-     I. DESTINO DE COMBUSTIBLES Y OTROS ENERGÉTICOS
-====================================================== -->
-<section class="uso-card" id="moduloDestinoEnergeticos">
-  <div class="uso-card-head">
-    <div style="width:100%">
-      <h3>I. Destino de combustibles y otros energéticos</h3>
-      <div class="question-block" style="margin-top:14px">
-        <div class="question-title">
-          Indique los principales usos finales de cada combustible u otro energético reportado en Facturación.
-        </div>
-        <small class="cd-help" style="margin-top:8px">
-          Sólo se muestran los energéticos declarados previamente. Algunos usos pueden identificarse automáticamente a partir de los equipos ya registrados; agregue los que no hayan quedado representados.
-        </small>
-      </div>
-    </div>
-  </div>
 
-  <div id="destinosEnergeticosContenido" class="cd-module-body">
-    <div id="destinosEnergeticosLista"></div>
-    <div id="sinDestinosEnergeticos" class="cd-empty">
-      Primero registre los energéticos en la sección 3. Facturación y consumo de energía.
-    </div>
-  </div>
-</section>
 
 
 <!-- =====================================================
@@ -8475,7 +8548,7 @@
 
 
 <!-- =====================================================
-     MODAL C. REFRIGERACIÓN Y CONSERVACIÓN
+     MODAL D. REFRIGERACIÓN Y CONSERVACIÓN
 ====================================================== -->
 <div id="modalRefrigeracion" class="cd-modal hidden" aria-hidden="true">
   <div class="cd-modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloModalRefrigeracion">
@@ -8620,7 +8693,7 @@
 </div>
 
 <!-- =====================================================
-     MODAL D. EQUIPOS DE OFICINA, COMUNICACIÓN Y ELECTRÓNICOS
+     MODAL E. EQUIPOS DE OFICINA, COMUNICACIÓN Y ELECTRÓNICOS
 ====================================================== -->
 <div id="modalEquipoOficina" class="cd-modal hidden" aria-hidden="true">
   <div class="cd-modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloModalEquipoOficina">
@@ -8717,7 +8790,7 @@
 
 
 <!-- =====================================================
-     MODAL E. MOTORES Y SISTEMAS ELECTROMECÁNICOS
+     MODAL F. MOTORES, SISTEMAS ELECTROMECÁNICOS Y MAQUINARIA MOTORIZADA
 ====================================================== -->
 <div id="modalElectromecanico" class="cd-modal hidden" aria-hidden="true">
   <div class="cd-modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloModalElectromecanico">
@@ -8741,6 +8814,8 @@
             <option value="compresor">Compresor de aire</option>
             <option value="elevador">Elevador</option>
             <option value="escalera">Escalera eléctrica</option>
+            <option value="jardineria">Maquinaria o herramienta motorizada de jardinería</option>
+            <option value="otro_motorizado">Otro equipo motorizado</option>
           </select>
         </div>
 
@@ -8752,6 +8827,14 @@
         <div class="cd-form-group hidden" id="emSubtipoOtroBox">
           <label for="emSubtipoOtro">Especifique el tipo o aplicación <span class="req">*</span></label>
           <input id="emSubtipoOtro" type="text" maxlength="120" placeholder="Especifique">
+        </div>
+
+        <div class="cd-form-group">
+          <label for="emEnergetico">Energético <span class="req">*</span></label>
+          <select id="emEnergetico">
+            <option value="">Seleccione...</option>
+          </select>
+          <small class="cd-help">La lista se limita a los energéticos declarados previamente en Facturación.</small>
         </div>
 
         <div class="cd-form-group">
@@ -9167,7 +9250,7 @@
 </div>
 
 <!-- =====================================================
-     MODAL G. COCCIÓN Y PREPARACIÓN DE ALIMENTOS
+     MODAL H. COCCIÓN Y PREPARACIÓN DE ALIMENTOS
 ====================================================== -->
 <div id="modalCoccion" class="cd-modal hidden" aria-hidden="true">
   <div class="cd-modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloModalCoccion">
@@ -9308,7 +9391,7 @@
 
 
 <!-- =====================================================
-     MODAL H. EQUIPOS ESPECIALIZADOS Y OTROS USOS FINALES
+     MODAL I. EQUIPOS ESPECIALIZADOS Y OTROS USOS FINALES
 ====================================================== -->
 <div id="modalEspecializado" class="cd-modal hidden" aria-hidden="true">
   <div class="cd-modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloModalEspecializado">
@@ -9710,7 +9793,7 @@ async function obtenerUsuarioAnonimo(){
 
     document.getElementById("campoComensalesMes")?.classList.toggle("hidden", !esRestaurante);
     document.getElementById("campoHabitacionesDisponibles")?.classList.toggle("hidden", !esAlojamiento);
-    document.getElementById("campoNochesHabitacionMes")?.classList.toggle("hidden", !esAlojamiento);
+    document.getElementById("campoHuespedesMes")?.classList.toggle("hidden", !esAlojamiento);
     document.getElementById("campoCamasDisponibles")?.classList.toggle("hidden", !esHospital);
     document.getElementById("campoOcupacionCamas")?.classList.toggle("hidden", !esHospital);
     document.getElementById("campoPacientesMes")?.classList.toggle("hidden", !esSaludAmbulatoria);
@@ -9753,7 +9836,7 @@ async function obtenerUsuarioAnonimo(){
       otroGiro: document.getElementById("otroGiro").value,
       comensalesPromedioMes: document.getElementById("comensalesPromedioMes")?.value || "",
       habitacionesDisponibles: document.getElementById("habitacionesDisponibles")?.value || "",
-      nochesHabitacionMes: document.getElementById("nochesHabitacionMes")?.value || "",
+      huespedesMes: document.getElementById("huespedesMes")?.value || "",
       camasDisponibles: document.getElementById("camasDisponibles")?.value || "",
       ocupacionCamasPct: document.getElementById("ocupacionCamasPct")?.value || "",
       pacientesMes: document.getElementById("pacientesMes")?.value || "",
@@ -9799,7 +9882,7 @@ async function obtenerUsuarioAnonimo(){
 
       const ids = [
         "nombreEstablecimiento","otroGiro","comensalesPromedioMes",
-        "habitacionesDisponibles","nochesHabitacionMes","camasDisponibles","ocupacionCamasPct",
+        "habitacionesDisponibles","huespedesMes","camasDisponibles","ocupacionCamasPct",
         "pacientesMes","alumnosMatricula","superficieClimatizada","anioInicio","anioConstruccion",
         "estado","municipio","cp","horasOperacion","empleadosTotal",
         "empleadosMin","empleadosMax","empleadosCompleto","empleadosParcial"
@@ -12163,9 +12246,9 @@ async function guardarEncuestaSupabase(estatusEncuesta="en_progreso"){
         ? parseInt(document.getElementById("habitacionesDisponibles").value)
         : null,
 
-    noches_habitacion_mes:
-      document.getElementById("nochesHabitacionMes")?.value
-        ? parseInt(document.getElementById("nochesHabitacionMes").value)
+    huespedes_promedio_mes:
+      document.getElementById("huespedesMes")?.value
+        ? parseInt(document.getElementById("huespedesMes").value)
         : null,
 
     camas_disponibles:
@@ -14689,9 +14772,12 @@ async function guardarCaracteristicasEnergia(){
 
     superficie_total_m2:
       document.getElementById("superficieTotal").value
-        ? Number(
-            document.getElementById("superficieTotal").value
-          )
+        ? Number(document.getElementById("superficieTotal").value)
+        : null,
+
+    superficie_climatizada_m2:
+      document.getElementById("superficieClimatizada")?.value
+        ? Number(document.getElementById("superficieClimatizada").value)
         : null,
 
     numero_niveles:
@@ -15463,6 +15549,12 @@ if(caracteristicas){
   if(superficieTotal){
     superficieTotal.value =
       caracteristicas.superficie_total_m2 ?? "";
+  }
+
+  const superficieClimatizada = document.getElementById("superficieClimatizada");
+  if(superficieClimatizada){
+    superficieClimatizada.value =
+      caracteristicas.superficie_climatizada_m2 ?? "";
   }
 
   if(numeroNiveles){
@@ -17015,7 +17107,7 @@ if(btnFacturacionContinuar){
 
 // =====================================================
 // SECCIÓN 4 - USOS FINALES DE ENERGÍA
-// MÓDULO A. ILUMINACIÓN
+// MÓDULO B. ILUMINACIÓN
 // =====================================================
 
 // Arreglo principal de registros de iluminación
@@ -19908,7 +20000,7 @@ function cargarUsosCDLocal() {
 }
 
 // -----------------------------------------------------
-// C. REFRIGERACIÓN Y CONSERVACIÓN
+// D. REFRIGERACIÓN Y CONSERVACIÓN
 // -----------------------------------------------------
 
 const nombresTipoRefrigeracion = {
@@ -20256,7 +20348,7 @@ window.eliminarRefrigeracion = function(index) {
 };
 
 // -----------------------------------------------------
-// D. EQUIPOS DE OFICINA, COMUNICACIÓN Y ELECTRÓNICOS
+// E. EQUIPOS DE OFICINA, COMUNICACIÓN Y ELECTRÓNICOS
 // -----------------------------------------------------
 
 const nombresTipoOficina = {
@@ -20451,7 +20543,7 @@ function renderizarTablaEquiposOficina() {
       <td class="num">${Number(item.cantidad).toLocaleString("es-MX")}</td>
       <td class="num">${Number(item.potenciaW).toLocaleString("es-MX", {maximumFractionDigits:2})} W</td>
       <td>${Number(item.horasDia).toLocaleString("es-MX", {maximumFractionDigits:2})} h/día · ${item.diasSemana} días/sem · ${item.semanasAnio} sem/año</td>
-      <td class="num">${consumo} kWh/año</td>
+      <td class="num">${escaparHTMLCD(consumo)}</td>
       <td class="acciones">
         <button type="button" class="cd-action-btn" onclick="editarEquipoOficina(${index})">Editar</button>
         <button type="button" class="cd-action-btn" onclick="duplicarEquipoOficina(${index})">Duplicar</button>
@@ -20574,7 +20666,7 @@ function cargarUsosEFGLocal() {
 }
 
 // -----------------------------------------------------
-// E. MOTORES Y SISTEMAS ELECTROMECÁNICOS
+// F. MOTORES, SISTEMAS ELECTROMECÁNICOS Y MAQUINARIA MOTORIZADA
 // -----------------------------------------------------
 
 const nombresElectromecanicos = {
@@ -20582,7 +20674,9 @@ const nombresElectromecanicos = {
   bomba: "Bomba",
   compresor: "Compresor de aire",
   elevador: "Elevador",
-  escalera: "Escalera eléctrica"
+  escalera: "Escalera eléctrica",
+  jardineria: "Maquinaria o herramienta motorizada de jardinería",
+  otro_motorizado: "Otro equipo motorizado"
 };
 
 const subtiposElectromecanicos = {
@@ -20600,6 +20694,17 @@ const subtiposElectromecanicos = {
     ["pasajeros", "Pasajeros"],
     ["carga", "Carga"],
     ["mixto", "Mixto"],
+    ["otro", "Otro"]
+  ],
+  jardineria: [
+    ["podadora", "Podadora"],
+    ["desbrozadora", "Desbrozadora"],
+    ["sopladora", "Sopladora"],
+    ["motosierra", "Motosierra"],
+    ["tractor_jardin", "Tractor / equipo de jardinería"],
+    ["otro", "Otro"]
+  ],
+  otro_motorizado: [
     ["otro", "Otro"]
   ]
 };
@@ -20669,6 +20774,12 @@ function actualizarSubtipoElectromecanico() {
 }
 
 function actualizarPreviewElectromecanico() {
+  const energetico = document.getElementById("emEnergetico")?.value || "";
+  const preview = document.getElementById("emConsumoPreview");
+  if (energetico && energetico !== "electricidad") {
+    if (preview) preview.textContent = "Para este energético se conserva potencia y patrón de operación; el consumo se conciliará posteriormente con la información de facturación.";
+    return;
+  }
   const consumo = calcularConsumoElectromecanico(
     document.getElementById("emCantidad")?.value,
     document.getElementById("emPotencia")?.value,
@@ -20678,7 +20789,6 @@ function actualizarPreviewElectromecanico() {
     document.getElementById("emSemanasAnio")?.value
   );
 
-  const preview = document.getElementById("emConsumoPreview");
   if (!preview) return;
 
   if (consumo === null) {
@@ -20690,7 +20800,7 @@ function actualizarPreviewElectromecanico() {
 }
 
 function limpiarFormularioElectromecanico() {
-  ["emTipo","emSubtipo","emSubtipoOtro","emCantidad","emPotencia","emUnidadPotencia",
+  ["emTipo","emSubtipo","emSubtipoOtro","emEnergetico","emCantidad","emPotencia","emUnidadPotencia",
    "emHorasDia","emDiasSemana"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = "";
@@ -20704,7 +20814,8 @@ function limpiarFormularioElectromecanico() {
   actualizarPreviewElectromecanico();
 }
 
-function abrirModalElectromecanico(index = null, duplicar = false) {
+async function abrirModalElectromecanico(index = null, duplicar = false) {
+  await sincronizarEnergeticosUsosFinales();
   limpiarFormularioElectromecanico();
 
   indiceElectromecanicoEdicion = duplicar ? null : index;
@@ -20732,6 +20843,7 @@ function abrirModalElectromecanico(index = null, duplicar = false) {
       document.getElementById("emSubtipoOtro").value = item.subtipoOtro || "";
     }
 
+    document.getElementById("emEnergetico").value = item.energetico || "electricidad";
     document.getElementById("emCantidad").value = item.cantidad ?? "";
     document.getElementById("emPotencia").value = item.potencia ?? "";
     document.getElementById("emUnidadPotencia").value = item.unidadPotencia || "";
@@ -20758,6 +20870,7 @@ function guardarElectromecanicoFn() {
   const tipo = document.getElementById("emTipo")?.value || "";
   const subtipo = document.getElementById("emSubtipo")?.value || "";
   const subtipoOtro = (document.getElementById("emSubtipoOtro")?.value || "").trim();
+  const energetico = document.getElementById("emEnergetico")?.value || "";
   const cantidad = Number(document.getElementById("emCantidad")?.value);
   const potencia = Number(document.getElementById("emPotencia")?.value);
   const unidadPotencia = document.getElementById("emUnidadPotencia")?.value || "";
@@ -20770,6 +20883,7 @@ function guardarElectromecanicoFn() {
   const necesitaSubtipo = (subtiposElectromecanicos[tipo] || []).length > 0;
   if (necesitaSubtipo && !subtipo) return alert("Seleccione el tipo o aplicación del equipo.");
   if (subtipo === "otro" && !subtipoOtro) return alert("Especifique el tipo o aplicación.");
+  if (!energeticoDisponible(energetico)) return alert("Seleccione un energético previamente declarado en Facturación.");
 
   if (!Number.isInteger(cantidad) || cantidad < 1) return alert("Ingrese una cantidad válida de equipos.");
   if (!Number.isFinite(potencia) || potencia <= 0) return alert("Ingrese una potencia nominal válida.");
@@ -20778,14 +20892,17 @@ function guardarElectromecanicoFn() {
   if (!Number.isInteger(diasSemana) || diasSemana < 0 || diasSemana > 7) return alert("Los días por semana deben estar entre 0 y 7.");
   if (!Number.isInteger(semanasAnio) || semanasAnio < 0 || semanasAnio > 52) return alert("Las semanas por año deben estar entre 0 y 52.");
 
-  const consumoKWh = calcularConsumoElectromecanico(
-    cantidad, potencia, unidadPotencia, horasDia, diasSemana, semanasAnio
-  );
+  const consumoKWh = energetico === "electricidad"
+    ? calcularConsumoElectromecanico(
+        cantidad, potencia, unidadPotencia, horasDia, diasSemana, semanasAnio
+      )
+    : null;
 
   const item = {
     tipo,
     subtipo: necesitaSubtipo ? subtipo : "",
     subtipoOtro: subtipo === "otro" ? subtipoOtro : "",
+    energetico,
     cantidad,
     potencia,
     unidadPotencia,
@@ -20826,11 +20943,14 @@ function renderizarTablaElectromecanicos() {
     const tr = document.createElement("tr");
     const subtipo = nombreSubtipoElectromecanico(item) || "—";
     const potencia = `${Number(item.potencia).toLocaleString("es-MX", {maximumFractionDigits:2})} ${String(item.unidadPotencia || "").toUpperCase()}`;
-    const consumo = Number(item.consumoKWh || 0).toLocaleString("es-MX", {maximumFractionDigits:1});
+    const consumo = item.consumoKWh === null || item.consumoKWh === undefined
+      ? "Se concilia con facturación"
+      : `${Number(item.consumoKWh).toLocaleString("es-MX", {maximumFractionDigits:1})} kWh/año`;
 
     tr.innerHTML = `
       <td>${escaparHTMLCD(nombreElectromecanico(item))}</td>
       <td>${escaparHTMLCD(subtipo)}</td>
+      <td>${escaparHTMLCD(nombreEnergeticoCatalogo(item.energetico || "electricidad"))}</td>
       <td class="num">${Number(item.cantidad).toLocaleString("es-MX")}</td>
       <td class="num">${escaparHTMLCD(potencia)}</td>
       <td>${Number(item.horasDia).toLocaleString("es-MX", {maximumFractionDigits:2})} h/día · ${item.diasSemana} días/sem · ${item.semanasAnio} sem/año</td>
@@ -20846,11 +20966,12 @@ function renderizarTablaElectromecanicos() {
 
   if (resumen) {
     const cantidadTotal = equiposElectromecanicos.reduce((s, x) => s + Number(x.cantidad || 0), 0);
-    const consumoTotal = equiposElectromecanicos.reduce((s, x) => s + Number(x.consumoKWh || 0), 0);
+    const consumoTotal = equiposElectromecanicos.reduce((s, x) => s + (x.consumoKWh == null ? 0 : Number(x.consumoKWh || 0)), 0);
+    const hayElectricos = equiposElectromecanicos.some(x => (x.energetico || "electricidad") === "electricidad");
 
     resumen.textContent =
-      `${cantidadTotal} equipo${cantidadTotal === 1 ? "" : "s"} registrado${cantidadTotal === 1 ? "" : "s"} · ` +
-      `Consumo estimado: ${consumoTotal.toLocaleString("es-MX", {maximumFractionDigits:1})} kWh/año`;
+      `${cantidadTotal} equipo${cantidadTotal === 1 ? "" : "s"} registrado${cantidadTotal === 1 ? "" : "s"}` +
+      (hayElectricos ? ` · Consumo eléctrico estimado: ${consumoTotal.toLocaleString("es-MX", {maximumFractionDigits:1})} kWh/año` : "");
   }
 }
 
@@ -20866,7 +20987,7 @@ window.eliminarElectromecanico = function(index) {
 };
 
 // -----------------------------------------------------
-// F. SISTEMAS TÉRMICOS Y GENERACIÓN DE CALOR
+// G. SISTEMAS TÉRMICOS Y GENERACIÓN DE CALOR
 // -----------------------------------------------------
 
 const nombresSistemasTermicos = {
@@ -21337,7 +21458,7 @@ window.eliminarSistemaTermico = function(index) {
 };
 
 // -----------------------------------------------------
-// G. COCCIÓN Y PREPARACIÓN DE ALIMENTOS
+// H. COCCIÓN Y PREPARACIÓN DE ALIMENTOS
 // -----------------------------------------------------
 
 const nombresCoccion = {
@@ -21752,6 +21873,7 @@ document.getElementById("cerrarModalElectromecanico")?.addEventListener("click",
 document.getElementById("cancelarElectromecanico")?.addEventListener("click", cerrarModalElectromecanicoFn);
 document.getElementById("guardarElectromecanico")?.addEventListener("click", guardarElectromecanicoFn);
 document.getElementById("emTipo")?.addEventListener("change", actualizarTipoElectromecanico);
+document.getElementById("emEnergetico")?.addEventListener("change", actualizarPreviewElectromecanico);
 document.getElementById("emSubtipo")?.addEventListener("change", actualizarSubtipoElectromecanico);
 ["emCantidad","emPotencia","emUnidadPotencia","emHorasDia","emDiasSemana","emSemanasAnio"].forEach(id => {
   document.getElementById(id)?.addEventListener("input", actualizarPreviewElectromecanico);
@@ -21915,7 +22037,7 @@ async function sincronizarEnergeticosUsosFinales() {
     }
   }
 
-  const ids = ["termEnergetico", "cocEnergetico", "calEnergetico", "espEnergetico"];
+  const ids = ["termEnergetico", "cocEnergetico", "calEnergetico", "espEnergetico", "emEnergetico"];
   ids.forEach(id => {
     const select = document.getElementById(id);
     if (!select) return;
@@ -22459,7 +22581,7 @@ window.editarCalefaccion=index=>abrirModalCalefaccion(index);
 window.eliminarCalefaccion=function(index){if(!equiposCalefaccion[index])return;if(!confirm("¿Desea eliminar este equipo de calefacción?"))return;equiposCalefaccion.splice(index,1);renderizarTablaCalefaccion();guardarUsosFinalesCanonico();};
 
 // -----------------------------------------------------
-// H. EQUIPOS ESPECIALIZADOS Y OTROS USOS FINALES
+// I. EQUIPOS ESPECIALIZADOS Y OTROS USOS FINALES
 // -----------------------------------------------------
 const nombresEspecializados={lavanderia:"Lavandería / secado / planchado",medico:"Equipo médico / diagnóstico",esterilizacion:"Esterilización especializada",piscina_spa:"Piscina / spa / hidromasaje",audiovisual:"Equipo audiovisual / recreativo",taller:"Equipo de taller / mantenimiento",proceso:"Equipo de proceso especializado",otro:"Otro equipo especializado"};
 function actualizarVisibilidadEspecializados(){document.getElementById("especializadosContenido")?.classList.toggle("hidden",valorRadioCD("usaEspecializados")!=="si");}
