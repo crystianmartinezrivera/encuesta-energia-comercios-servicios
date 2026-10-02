@@ -3948,7 +3948,7 @@
 
     <div style="width:100%">
 
-      <h3>B. Acondicionamiento de espacios</h3>
+      <h3>C. Acondicionamiento de espacios</h3>
 
       <div class="question-block" style="margin-top:14px">
 
@@ -3963,7 +3963,7 @@
               type="checkbox"
               id="acondAire"
               value="aire">
-            Equipos de aire acondicionado o enfriamiento
+            Equipos de aire acondicionado 
           </label>
 
           <label>
@@ -10194,7 +10194,7 @@ if(nombre === "practicas"){
 
 // =====================================================
 // SECCIÓN 4 - USOS FINALES DE ENERGÍA
-// B. ACONDICIONAMIENTO DE ESPACIOS
+// C. ACONDICIONAMIENTO DE ESPACIOS
 // =====================================================
 
 const acondAire =
@@ -22273,20 +22273,15 @@ function guardarUsosFinalesCanonico() {
 function cargarUsosFinalesCanonico() {
   try {
     const raw = localStorage.getItem(STORAGE_USOS_FINALES_V2);
-    if (!raw) return;
+    if (!raw) return false;
     const datos = JSON.parse(raw);
-    destinosEnergeticos = datos?.destinosEnergeticos && typeof datos.destinosEnergeticos === "object"
-      ? datos.destinosEnergeticos : {};
-    equiposCalefaccion = asegurarIdsUsoFinal(datos?.usos?.calefaccion || [], "cal");
-    equiposEspecializados = asegurarIdsUsoFinal(datos?.usos?.especializados || [], "esp");
-    ["acondAire","acondVentilacion","acondCalefaccion","acondNinguno"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el && Object.prototype.hasOwnProperty.call(datos?.respuestas || {}, id)) el.checked = !!datos.respuestas[id];
-    });
-    ponerRadioCD("usaEspecializados", datos?.respuestas?.usaEspecializados || "");
-    if (typeof actualizarAcondicionamiento === "function") actualizarAcondicionamiento();
+
+    // IMPORTANTE: la capa canónica restaura TODA la sección 4 (A-I),
+    // no únicamente calefacción y equipos especializados.
+    return aplicarDatosUsosFinales(datos);
   } catch (error) {
     console.warn("No se pudo recuperar la capa canónica de usos finales.", error);
+    return false;
   }
 }
 
@@ -22593,6 +22588,132 @@ function guardarEspecializadoFn(){const tipo=document.getElementById("espTipo")?
 function renderizarTablaEspecializados(){const tbody=document.getElementById("tablaEspecializadosBody"),cont=document.getElementById("tablaEspecializadosContenedor"),vacio=document.getElementById("sinEspecializados"),res=document.getElementById("resumenEspecializados");if(!tbody||!cont||!vacio)return;tbody.innerHTML="";if(!equiposEspecializados.length){cont.style.display="none";vacio.style.display="block";if(res)res.textContent="";return;}cont.style.display="block";vacio.style.display="none";equiposEspecializados.forEach((i,index)=>{const tr=document.createElement("tr");const cap=i.potencia?`${Number(i.potencia).toLocaleString("es-MX",{maximumFractionDigits:2})} ${i.unidadPotencia||""}`:"—";const cons=i.consumoKWh!==null?`${Number(i.consumoKWh).toLocaleString("es-MX",{maximumFractionDigits:1})} kWh/año`:"—";tr.innerHTML=`<td>${escaparHTMLCD(i.tipo==="otro"?(i.tipoOtro||"Otro"):(nombresEspecializados[i.tipo]||i.tipo))}</td><td>${escaparHTMLCD(i.aplicacion)}</td><td>${escaparHTMLCD(nombreEnergeticoCatalogo(i.energetico))}</td><td class="num">${i.cantidad}</td><td>${escaparHTMLCD(cap)}</td><td>${i.horasDia} h/día · ${i.diasSemana} días/sem · ${i.semanasAnio} sem/año</td><td class="num">${escaparHTMLCD(cons)}</td><td class="acciones"><button type="button" class="action-btn edit" onclick="editarEspecializado(${index})">Editar</button><button type="button" class="action-btn delete" onclick="eliminarEspecializado(${index})">Eliminar</button></td>`;tbody.appendChild(tr);});if(res){const t=equiposEspecializados.reduce((s,x)=>s+Number(x.cantidad||0),0);res.textContent=`${t} equipo${t===1?"":"s"} registrado${t===1?"":"s"}`;}}
 window.editarEspecializado=index=>abrirModalEspecializado(index);
 window.eliminarEspecializado=function(index){if(!equiposEspecializados[index])return;if(!confirm("¿Desea eliminar este equipo especializado?"))return;equiposEspecializados.splice(index,1);renderizarTablaEspecializados();guardarUsosFinalesCanonico();};
+
+// -----------------------------------------------------
+// AUTOGUARDADO Y RECONCILIACIÓN - SECCIÓN 4 COMPLETA
+// -----------------------------------------------------
+let temporizadorAutoguardadoUsosFinales = null;
+let sincronizacionUsosFinalesEnCurso = false;
+let sincronizacionUsosFinalesPendiente = false;
+
+function fechaMsUsosFinales(valor){
+  const ms = Date.parse(valor || "");
+  return Number.isFinite(ms) ? ms : 0;
+}
+
+function programarAutoguardadoUsosFinales(retardo = 900){
+  // Siempre deja primero una copia local inmediata. Así un refresh no pierde
+  // los cambios aunque la red falle o Supabase tarde en responder.
+  try { guardarUsosCDLocal(); } catch(e) { console.warn(e); }
+  try { guardarUsosEFGLocal(); } catch(e) { console.warn(e); }
+  try { guardarUsosFinalesCanonico(); } catch(e) { console.warn(e); }
+
+  clearTimeout(temporizadorAutoguardadoUsosFinales);
+  temporizadorAutoguardadoUsosFinales = setTimeout(() => {
+    sincronizarUsosFinalesAutomaticamente();
+  }, retardo);
+}
+
+async function sincronizarUsosFinalesAutomaticamente(){
+  if (!supabaseClient) return false;
+  if (sincronizacionUsosFinalesEnCurso) {
+    sincronizacionUsosFinalesPendiente = true;
+    return false;
+  }
+
+  sincronizacionUsosFinalesEnCurso = true;
+  try {
+    await guardarUsosFinalesSupabase(false);
+    return true;
+  } catch (error) {
+    // La copia local ya quedó hecha. No interrumpimos la captura por una falla de red.
+    console.warn("Autoguardado de la sección 4 pendiente de sincronizar con Supabase.", error);
+    return false;
+  } finally {
+    sincronizacionUsosFinalesEnCurso = false;
+    if (sincronizacionUsosFinalesPendiente) {
+      sincronizacionUsosFinalesPendiente = false;
+      programarAutoguardadoUsosFinales(500);
+    }
+  }
+}
+
+async function reconciliarUsosFinalesAlIniciar(){
+  const encuestaId = localStorage.getItem("encuesta_id");
+  let local = null;
+
+  try {
+    const raw = localStorage.getItem(STORAGE_USOS_FINALES_V2);
+    if (raw) local = JSON.parse(raw);
+  } catch(e) {
+    console.warn("La copia local de la sección 4 no pudo leerse.", e);
+  }
+
+  // La copia local se aplica primero para que la interfaz aparezca inmediatamente.
+  if (local) aplicarDatosUsosFinales(local);
+
+  if (!supabaseClient || !encuestaId) return !!local;
+
+  try {
+    await obtenerUsuarioAnonimo();
+    const { data, error } = await supabaseClient
+      .from("usos_finales")
+      .select("datos_json,updated_at")
+      .eq("encuesta_id", Number(encuestaId))
+      .maybeSingle();
+    if (error) throw error;
+
+    const remoto = data?.datos_json || null;
+    if (!remoto) {
+      if (local) await guardarUsosFinalesSupabase(false);
+      return !!local;
+    }
+
+    const fechaLocal = fechaMsUsosFinales(local?.fechaGuardado);
+    const fechaRemota = Math.max(
+      fechaMsUsosFinales(remoto?.fechaGuardado),
+      fechaMsUsosFinales(data?.updated_at)
+    );
+
+    if (!local || fechaRemota > fechaLocal) {
+      aplicarDatosUsosFinales(remoto);
+    } else if (fechaLocal > fechaRemota) {
+      // Si el navegador tiene una captura más reciente, la sube en vez de perderla.
+      await guardarUsosFinalesSupabase(false);
+    }
+    return true;
+  } catch(error) {
+    console.warn("No fue posible reconciliar la sección 4 con Supabase; se conserva la copia local.", error);
+    return !!local;
+  }
+}
+
+function activarAutoguardadoSeccion4(){
+  const vista = document.getElementById("view-usos");
+  if (!vista || vista.dataset.autoguardadoActivo === "1") return;
+  vista.dataset.autoguardadoActivo = "1";
+
+  // Radios, checks y selects se guardan al cambiar. Los inputs de texto/número
+  // usan debounce para no escribir en Supabase en cada pulsación.
+  vista.addEventListener("change", () => programarAutoguardadoUsosFinales(450));
+  vista.addEventListener("input", () => programarAutoguardadoUsosFinales(1200));
+
+  // Los botones de los modales modifican arreglos JS; esperamos al final del
+  // evento para capturar el arreglo ya actualizado.
+  vista.addEventListener("click", (event) => {
+    const boton = event.target.closest("button");
+    if (!boton) return;
+    const texto = (boton.textContent || "").trim().toLowerCase();
+    const accionPersistente = /guardar|eliminar|duplicar|agregar/.test(texto);
+    if (accionPersistente) setTimeout(() => programarAutoguardadoUsosFinales(350), 0);
+  });
+
+  window.addEventListener("beforeunload", () => {
+    try { guardarUsosCDLocal(); } catch(e) {}
+    try { guardarUsosEFGLocal(); } catch(e) {}
+    try { guardarUsosFinalesCanonico(); } catch(e) {}
+  });
+}
 
 function validarUsosFinalesAntesDeContinuar(){
   const errores=[];
@@ -24238,14 +24359,13 @@ function finalizarEncuestaPiloto(){
   // Recupera los módulos E, F y G guardados localmente.
   cargarUsosEFGLocal();
 
-  // Recupera la capa canónica de usos finales (incluye calefacción y H).
-  const usosFinalesCargadosLocalmente = !!localStorage.getItem(STORAGE_USOS_FINALES_V2);
+  // Recupera y reconcilia TODA la sección 4. La copia más reciente entre
+  // navegador y Supabase prevalece; después queda activo el autoguardado.
   cargarUsosFinalesCanonico();
-  if(!usosFinalesCargadosLocalmente && supabaseClient && localStorage.getItem("encuesta_id")){
-    cargarUsosFinalesSupabase().catch(error=>{
-      console.warn("No fue posible recuperar la sección 4 desde Supabase.", error);
-    });
-  }
+  reconciliarUsosFinalesAlIniciar().catch(error=>{
+    console.warn("No fue posible reconciliar la sección 4 al iniciar.", error);
+  });
+  activarAutoguardadoSeccion4();
   actualizarVisibilidadEspecializados();
   actualizarCampoComensales();
   renderizarTablaCalefaccion();
