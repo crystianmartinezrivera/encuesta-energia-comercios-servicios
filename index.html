@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Encuesta de Consumo y Usos de Energía</title>
+<!-- Ajuste 2026-10-05: semanas efectivas de operación en acondicionamiento de espacios -->
 
 <!-- =====================================================
    inicio de CSS
@@ -7655,6 +7656,29 @@
       </div>
 
 
+      <!-- SEMANAS EFECTIVAS DE OPERACIÓN -->
+      <div class="form-group" style="margin-top:16px">
+        <label for="acSemanasAnio">
+          Semanas efectivas de operación por año
+        </label>
+        <div class="input-unit">
+          <input
+            type="number"
+            id="acSemanasAnio"
+            min="0"
+            max="52"
+            step="1"
+            value="52"
+            placeholder="Ej. 12">
+          <span class="unit">sem/año</span>
+        </div>
+        <small class="field-help">
+          Capture 52 si el equipo puede operar durante todo el año. Si sólo se utiliza por temporada,
+          eventos o periodos específicos, indique el número aproximado de semanas efectivas de uso.
+        </small>
+      </div>
+
+
       <!-- =================================================
            HORARIO ESPECÍFICO
            APARECE SI NO COINCIDE
@@ -8508,6 +8532,27 @@
 
         </div>
 
+          <div class="form-group">
+            <label for="ventSemanasAnio">
+              Semanas efectivas de operación por año
+            </label>
+            <div class="input-unit">
+              <input
+                type="number"
+                id="ventSemanasAnio"
+                min="0"
+                max="52"
+                step="1"
+                value="52"
+                placeholder="Ej. 12">
+              <span class="unit">sem/año</span>
+            </div>
+            <small class="field-help">
+              Capture 52 si opera todo el año; para equipos usados sólo por eventos o periodos específicos,
+              indique las semanas efectivas de uso.
+            </small>
+          </div>
+
       </div>
 
     </div>
@@ -8967,7 +9012,7 @@
         </div>
         <div class="cd-form-group">
           <label for="calSemanasAnio">Semanas por año <span class="req">*</span></label>
-          <input id="calSemanasAnio" type="number" min="0" max="52" step="1" value="20">
+          <input id="calSemanasAnio" type="number" min="0" max="52" step="1" value="52">
         </div>
         <div class="cd-form-group">
           <label for="calTemperatura">Temperatura de consigna</label>
@@ -10629,7 +10674,13 @@ function calcularHorasAnualesAC() {
       (5 días laborales + sábado + domingo)
     */
 
-    return 52 * (
+    const semanasAnio = Number(valorCampoAC("acSemanasAnio"));
+
+    if (!Number.isFinite(semanasAnio) || semanasAnio < 0 || semanasAnio > 52) {
+      return null;
+    }
+
+    return semanasAnio * (
       (lv * 5) +
       sab +
       dom
@@ -10737,7 +10788,13 @@ function calcularHorasAnualesAC() {
       friaDom;
 
 
-    return (
+    const semanasAnio = Number(valorCampoAC("acSemanasAnio"));
+
+    if (!Number.isFinite(semanasAnio) || semanasAnio < 0 || semanasAnio > 52) {
+      return null;
+    }
+
+    const horasAnualesCalendario = (
       mesesCalidos *
       semanasPorMes *
       horasSemanaCalida
@@ -10747,6 +10804,9 @@ function calcularHorasAnualesAC() {
       semanasPorMes *
       horasSemanaFria
     );
+
+    // Ajuste por semanas efectivas de operación.
+    return horasAnualesCalendario * (semanasAnio / 52);
 
   }
 
@@ -11097,6 +11157,9 @@ if (guardarAireAcondicionado) {
             'input[name="acHorarioEstacional"]:checked'
           )?.value || "",
 
+
+        semanasAnio:
+          numeroCampoAC("acSemanasAnio"),
 
         horasAnuales:
           resultadoHorario.horas,
@@ -12044,6 +12107,9 @@ function limpiarHorarioEspecificoAireAcondicionado() {
 
   });
 
+
+  const acSemanasAnio = document.getElementById("acSemanasAnio");
+  if (acSemanasAnio) acSemanasAnio.value = 52;
 
   if (acHorarioNormal) {
     acHorarioNormal.classList.add("hidden");
@@ -18965,7 +19031,8 @@ function limpiarHorarioVentilacion() {
   const campos = [
     "ventHorasLV",
     "ventHorasSab",
-    "ventHorasDom"
+    "ventHorasDom",
+    "ventSemanasAnio"
   ];
 
   campos.forEach(id => {
@@ -19182,8 +19249,22 @@ function obtenerHorasAnualesVentilacion() {
     }
 
 
+    const semanasAnio =
+      Number(valorCampoVent("ventSemanasAnio"));
+
+    if (
+      !Number.isFinite(semanasAnio) ||
+      semanasAnio < 0 ||
+      semanasAnio > 52
+    ) {
+      return {
+        horas: null,
+        origen: "Horario específico"
+      };
+    }
+
     const horasAnuales =
-      52 * (
+      semanasAnio * (
         (lv * 5) +
         sab +
         dom
@@ -19408,6 +19489,11 @@ if (guardarVentilacion) {
         horasDom:
           valorCampoVent(
             "ventHorasDom"
+          ),
+
+        semanasAnio:
+          numeroCampoVent(
+            "ventSemanasAnio"
           ),
 
 
@@ -22409,6 +22495,7 @@ window.editarAireAcondicionado = function(index) {
     acVoltaje:item.voltaje, acCorriente:item.corriente, acDatosPlaca:item.datosPlaca,
     acProporcionArea:item.proporcionArea, acTemperaturaConsigna:item.temperaturaConsigna,
     acHorasLV:item.horasLV, acHorasSab:item.horasSab, acHorasDom:item.horasDom,
+    acSemanasAnio:item.semanasAnio ?? 52,
     acCalidaInicio:item.calidaInicio, acCalidaFin:item.calidaFin,
     acCalidaLV:item.calidaLV, acCalidaSab:item.calidaSab, acCalidaDom:item.calidaDom,
     acFriaLV:item.friaLV, acFriaSab:item.friaSab, acFriaDom:item.friaDom
@@ -22425,11 +22512,13 @@ window.editarAireAcondicionado = function(index) {
 function limpiarFormularioVentilacion() {
   ["ventArea","ventTipo","ventTipoOtro","ventCantidad","ventAnioAdquisicion","ventAntiguedad",
    "ventPotencia","ventUnidadPotencia","ventMarca","ventModelo","ventCaudal","ventUnidadCaudal",
-   "ventVelocidades","ventHorasLV","ventHorasSab","ventHorasDom"].forEach(id => {
+   "ventVelocidades","ventHorasLV","ventHorasSab","ventHorasDom","ventSemanasAnio"].forEach(id => {
     const el=document.getElementById(id); if(el) el.value="";
   });
   if (typeof ventPotenciaDesconocida !== "undefined" && ventPotenciaDesconocida) ventPotenciaDesconocida.checked=false;
   ponerRadioCD("ventHorarioCoincide", "");
+  const ventSemanasAnio = document.getElementById("ventSemanasAnio");
+  if (ventSemanasAnio) ventSemanasAnio.value = 52;
   if (typeof limpiarDatosTecnicosVentilacion === "function") limpiarDatosTecnicosVentilacion();
   if (typeof limpiarHorarioVentilacion === "function") limpiarHorarioVentilacion();
   document.getElementById("ventTipoOtroBox")?.classList.add("hidden");
@@ -22453,7 +22542,8 @@ window.editarVentilacion = function(index) {
     ventUnidadPotencia:item.unidadPotencia, ventMarca:item.marca,
     ventModelo:item.modelo, ventCaudal:item.caudal, ventUnidadCaudal:item.unidadCaudal,
     ventVelocidades:item.velocidades, ventHorasLV:item.horasLV,
-    ventHorasSab:item.horasSab, ventHorasDom:item.horasDom
+    ventHorasSab:item.horasSab, ventHorasDom:item.horasDom,
+    ventSemanasAnio:item.semanasAnio ?? 52
   };
   Object.entries(valores).forEach(([id,valor]) => { const el=document.getElementById(id); if(el) el.value=valor ?? ""; });
   if (typeof ventPotenciaDesconocida !== "undefined" && ventPotenciaDesconocida) ventPotenciaDesconocida.checked = !!item.potenciaDesconocida;
@@ -22517,7 +22607,7 @@ async function abrirModalCalefaccion(index = null) {
   ["calArea","calTipo","calTipoOtro","calEnergetico","calCantidad","calPotencia","calUnidadPotencia","calHorasDia","calDiasSemana","calTemperatura"].forEach(id => {
     const el=document.getElementById(id); if(el) el.value="";
   });
-  if (document.getElementById("calSemanasAnio")) document.getElementById("calSemanasAnio").value = 20;
+  if (document.getElementById("calSemanasAnio")) document.getElementById("calSemanasAnio").value = 52;
   const titulo=document.getElementById("tituloModalCalefaccion");
   if(titulo) titulo.textContent=index===null?"Agregar equipo de calefacción":"Editar equipo de calefacción";
   if(index!==null){
