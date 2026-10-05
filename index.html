@@ -1508,7 +1508,7 @@
 
 
 /* =====================================================
-   AIRE ACONDICIONADO - DATOS TÉCNICOS
+   EQUIPO DE AIRE ACONDICIONADO - DATOS TÉCNICOS
 ===================================================== */
 
 #acDatosTecnicosBox {
@@ -3116,7 +3116,7 @@
           <span class="unit" style="font-size:13px;">m²</span>
         </div>
         <small class="field-help">
-          Superficie atendida por aire acondicionado y/o calefacción. Si no dispone del dato, puede dejarlo en blanco.
+          Superficie atendida por equipo de aire acondicionado y/o calefacción. Si no dispone del dato, puede dejarlo en blanco.
         </small>
       </div>
 
@@ -7028,7 +7028,7 @@
             </option>
 
             <option value="portatil">
-              Aire acondicionado portátil
+              Equipo de aire acondicionado portátil
             </option>
 
             <option value="dividido_central">
@@ -23142,7 +23142,7 @@ function opcionesAlcancePractica(fuente){
         cantidad:Math.max(1,Number(x.cantidad||1))
       }));
     };
-    agregar(equiposAireAcondicionado,"ac",x=>`Aire acondicionado · ${x.area||x.tipo||"equipo"}`);
+    agregar(equiposAireAcondicionado,"ac",x=>`Equipo de aire acondicionado · ${x.area||x.tipo||"equipo"}`);
     agregar(equiposVentilacion,"vent",x=>`Ventilación / extracción · ${x.area||x.tipo||"equipo"}`);
     agregar(equiposCalefaccion,"cal",x=>`Calefacción · ${x.area||x.tipo||"equipo"}`);
     return out;
