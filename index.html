@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Encuesta de Consumo y Usos de Energía</title>
-<!-- Ajuste 2026-10-05: semanas efectivas de operación en acondicionamiento de espacios -->
+<!-- Ajuste 2026-10-06: refrigeración NOM-015/NOM-022, equipos especiales y datos de placa; conserva ajuste de semanas -->
 
 <!-- =====================================================
    inicio de CSS
@@ -8604,7 +8604,7 @@
 
     <div class="cd-modal-body">
       <div class="cd-info-note">
-        Registre conjuntamente únicamente los equipos que sean del mismo tipo y tengan características similares de antigüedad y tamaño. Si son diferentes, agréguelos como otro grupo.
+        Registre conjuntamente únicamente equipos del mismo tipo y con características similares. La aplicación clasifica internamente el equipo; el encuestador no necesita identificar la NOM aplicable.
       </div>
 
       <div class="cd-form-grid">
@@ -8612,24 +8612,46 @@
           <label for="refTipo">Tipo de equipo <span class="req">*</span></label>
           <select id="refTipo">
             <option value="">Seleccione...</option>
-            <option value="refrigerador">Refrigerador</option>
-            <option value="refrigerador_exhibidor">Refrigerador exhibidor / vitrina refrigerada</option>
-            <option value="enfriador_bebidas">Enfriador de bebidas</option>
-            <option value="servibar">Servibar / minibar</option>
-            <option value="congelador_horizontal">Congelador horizontal</option>
-            <option value="congelador_vertical">Congelador vertical</option>
-            <option value="congelador_exhibidor">Congelador exhibidor</option>
-            <option value="enfriador_agua">Enfriador de agua</option>
-            <option value="maquina_hielo">Máquina / fábrica de hielo</option>
-            <option value="cuarto_frio">Cámara o cuarto frío de conservación</option>
-            <option value="cuarto_congelacion">Cámara o cuarto de congelación</option>
-            <option value="otro">Otro</option>
+            <optgroup label="Equipos domésticos">
+              <option value="refrigerador_domestico">Refrigerador doméstico</option>
+              <option value="refrigerador_congelador_domestico">Refrigerador-congelador doméstico</option>
+              <option value="congelador_domestico_vertical">Congelador doméstico vertical</option>
+              <option value="congelador_domestico_horizontal">Congelador doméstico horizontal</option>
+              <option value="servibar">Servibar / minibar</option>
+            </optgroup>
+            <optgroup label="Refrigeración comercial autocontenida">
+              <option value="enfriador_comercial_vertical">Enfriador comercial vertical</option>
+              <option value="enfriador_comercial_horizontal">Enfriador comercial horizontal</option>
+              <option value="congelador_comercial_vertical">Congelador comercial vertical</option>
+              <option value="congelador_comercial_horizontal">Congelador comercial horizontal</option>
+              <option value="vitrina_refrigerada_cerrada">Vitrina refrigerada cerrada</option>
+              <option value="conservador_bolsas_hielo">Conservador de bolsas con hielo</option>
+            </optgroup>
+            <optgroup label="Equipos especiales / otros">
+              <option value="exhibidor_refrigerado_abierto">Exhibidor refrigerado abierto</option>
+              <option value="enfriador_bebidas_despachador">Enfriador de bebidas con despachador</option>
+              <option value="enfriador_agua">Enfriador de agua</option>
+              <option value="mesa_refrigerada">Mesa refrigerada / mesa de preparación</option>
+              <option value="maquina_hielo">Máquina / fábrica de hielo</option>
+              <option value="cuarto_frio">Cámara o cuarto frío de conservación</option>
+              <option value="cuarto_congelacion">Cámara o cuarto de congelación</option>
+              <option value="otro">Otro</option>
+            </optgroup>
+            <optgroup label="Registros anteriores (clasificar al editar)">
+              <option value="refrigerador">Refrigerador (registro anterior)</option>
+              <option value="refrigerador_exhibidor">Refrigerador exhibidor / vitrina (registro anterior)</option>
+              <option value="enfriador_bebidas">Enfriador de bebidas (registro anterior)</option>
+              <option value="congelador_horizontal">Congelador horizontal (registro anterior)</option>
+              <option value="congelador_vertical">Congelador vertical (registro anterior)</option>
+              <option value="congelador_exhibidor">Congelador exhibidor (registro anterior)</option>
+            </optgroup>
           </select>
+          <small class="cd-help">Seleccione por las características físicas del equipo, no por el giro del establecimiento.</small>
         </div>
 
         <div class="cd-form-group hidden" id="refTipoOtroBox">
           <label for="refTipoOtro">Especifique el tipo de equipo <span class="req">*</span></label>
-          <input id="refTipoOtro" type="text" maxlength="100" placeholder="Ej. mesa refrigerada">
+          <input id="refTipoOtro" type="text" maxlength="100" placeholder="Ej. equipo de conservación especial">
           <small class="cd-help">Se pueden registrar hasta 5 tipos personalizados distintos.</small>
         </div>
 
@@ -8647,16 +8669,59 @@
         </div>
       </div>
 
-      <h3 class="cd-subtitle">Tamaño del equipo</h3>
+      <div id="refClasificacionAyuda" class="cd-calc-box hidden" style="margin-top:14px"></div>
 
-      <div class="cd-form-group full">
+      <div id="refCaracteristicasNormativas" class="hidden">
+        <h3 class="cd-subtitle">Características del equipo</h3>
+        <div class="cd-form-grid">
+          <div class="cd-form-group hidden" id="refDeshieloBox">
+            <label for="refDeshielo">Sistema de deshielo</label>
+            <select id="refDeshielo">
+              <option value="">No identificado / no disponible</option>
+              <option value="manual">Manual</option>
+              <option value="automatico">Automático</option>
+              <option value="semiautomatico">Semiautomático / parcial</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="cd-form-group hidden" id="refPuertaBox">
+            <label for="refPuerta">Tipo de puerta</label>
+            <select id="refPuerta">
+              <option value="">No se puede identificar</option>
+              <option value="solida">Sólida</option>
+              <option value="cristal">Cristal</option>
+            </select>
+          </div>
+          <div class="cd-form-group hidden" id="refSistemaEnfriamientoBox">
+            <label for="refSistemaEnfriamiento">Sistema de enfriamiento</label>
+            <select id="refSistemaEnfriamiento">
+              <option value="">No se puede identificar</option>
+              <option value="circulacion_forzada">Circulación forzada</option>
+              <option value="placa_fria">Placa fría</option>
+              <option value="otro">Otro / diferente</option>
+            </select>
+          </div>
+          <div class="cd-form-group hidden" id="refNivelTemperaturaBox">
+            <label for="refNivelTemperatura">Nivel de temperatura</label>
+            <select id="refNivelTemperatura">
+              <option value="">No se puede identificar</option>
+              <option value="media">Media temperatura</option>
+              <option value="baja">Baja temperatura</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="cd-subtitle">Capacidad o tamaño del equipo</h3>
+
+      <div class="cd-form-group full" id="refMetodoTamanoBox">
         <label>¿Cómo desea reportar el tamaño del equipo? <span class="req">*</span></label>
         <div class="cd-method-cards">
           <label class="cd-method-card">
             <input type="radio" name="refMetodoTamano" value="volumen">
             <span>Conozco su capacidad o volumen</span>
           </label>
-          <label class="cd-method-card">
+          <label class="cd-method-card" id="refMetodoDimensionesCard">
             <input type="radio" name="refMetodoTamano" value="dimensiones">
             <span>Deseo reportarlo mediante sus dimensiones</span>
           </label>
@@ -8666,17 +8731,12 @@
       <div id="refVolumenBox" class="hidden" style="margin-top:16px">
         <div class="cd-form-grid">
           <div class="cd-form-group">
-            <label for="refVolumen">Tamaño o volumen por equipo <span class="req">*</span></label>
-            <input id="refVolumen" type="number" min="0.001" step="0.001" placeholder="Ej. 72">
+            <label for="refVolumen" id="refVolumenLabel">Capacidad o volumen por equipo <span class="req">*</span></label>
+            <input id="refVolumen" type="number" min="0.001" step="0.001" placeholder="Ej. 420">
           </div>
           <div class="cd-form-group">
             <label for="refUnidadVolumen">Unidad <span class="req">*</span></label>
-            <select id="refUnidadVolumen">
-              <option value="">Seleccione...</option>
-              <option value="ft3">pies³</option>
-              <option value="m3">m³</option>
-              <option value="litros">litros</option>
-            </select>
+            <select id="refUnidadVolumen"></select>
           </div>
         </div>
         <div id="refVolumenEquivalencia" class="cd-calc-box hidden"></div>
@@ -8708,26 +8768,74 @@
         <div id="refDimensionesResultado" class="cd-calc-box hidden"></div>
       </div>
 
-      <h3 class="cd-subtitle">Información de consumo en etiqueta o placa</h3>
+      <h3 class="cd-subtitle">Información de placa o etiqueta energética</h3>
+      <div class="cd-info-note">
+        Capture únicamente la información disponible en la placa o etiqueta. No es necesario completar todos los campos.
+      </div>
 
-      <div class="cd-form-group full">
-        <label>¿El equipo indica un consumo de energía en su etiqueta o placa? <span class="req">*</span></label>
+      <div class="cd-form-grid">
+        <div class="cd-form-group">
+          <label for="refPotencia">Potencia nominal</label>
+          <input id="refPotencia" type="number" min="0" step="0.001" placeholder="Ej. 720">
+        </div>
+        <div class="cd-form-group">
+          <label for="refUnidadPotencia">Unidad de potencia</label>
+          <select id="refUnidadPotencia">
+            <option value="">No indicada</option>
+            <option value="W">W</option>
+            <option value="kW">kW</option>
+            <option value="HP">HP</option>
+          </select>
+        </div>
+        <div class="cd-form-group">
+          <label for="refVoltaje">Voltaje</label>
+          <div class="input-unit"><input id="refVoltaje" type="number" min="0" step="0.1" placeholder="Ej. 115"><span class="unit">V</span></div>
+        </div>
+        <div class="cd-form-group">
+          <label for="refCorriente">Corriente nominal</label>
+          <div class="input-unit"><input id="refCorriente" type="number" min="0" step="0.01" placeholder="Ej. 6.4"><span class="unit">A</span></div>
+        </div>
+        <div class="cd-form-group">
+          <label for="refConsumoDeclarado">Consumo energético declarado</label>
+          <input id="refConsumoDeclarado" type="number" min="0" step="0.0001" placeholder="Capture si aparece en la etiqueta">
+        </div>
+        <div class="cd-form-group">
+          <label for="refUnidadConsumo">Unidad del consumo declarado</label>
+          <select id="refUnidadConsumo">
+            <option value="">No indicada</option>
+            <option value="kWh_anio">kWh/año</option>
+            <option value="kWh_24h">kWh/24 h</option>
+            <option value="Wh_L_24h">Wh/L en 24 h</option>
+            <option value="kWh_L_24h">kWh/L en 24 h</option>
+          </select>
+        </div>
+        <div class="cd-form-group">
+          <label for="refRefrigerante">Refrigerante</label>
+          <select id="refRefrigerante">
+            <option value="">No identificado / no disponible</option>
+            <option value="R-134a">R-134a</option>
+            <option value="R-404A">R-404A</option>
+            <option value="R-290">R-290</option>
+            <option value="R-600a">R-600a</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="cd-form-group hidden" id="refRefrigeranteOtroBox">
+          <label for="refRefrigeranteOtro">Especifique el refrigerante</label>
+          <input id="refRefrigeranteOtro" type="text" maxlength="30" placeholder="Ej. R-448A">
+        </div>
+      </div>
+
+      <div class="cd-form-group full" style="margin-top:14px">
+        <label>¿Se pudo verificar la placa o etiqueta del equipo?</label>
         <div class="cd-radio-options">
           <label><input type="radio" name="refEtiquetaConsumo" value="si"> Sí</label>
-          <label><input type="radio" name="refEtiquetaConsumo" value="no"> No</label>
+          <label><input type="radio" name="refEtiquetaConsumo" value="no"> No tiene / no indica consumo</label>
           <label><input type="radio" name="refEtiquetaConsumo" value="no_verificar"> No se pudo verificar</label>
         </div>
       </div>
 
-      <div id="refConsumoEtiquetaBox" class="cd-form-grid hidden" style="margin-top:16px">
-        <div class="cd-form-group">
-          <label for="refConsumoEtiqueta">Consumo anual indicado por equipo <span class="req">*</span></label>
-          <div class="input-unit">
-            <input id="refConsumoEtiqueta" type="number" min="0.001" step="0.01" placeholder="Ej. 420">
-            <span class="unit">kWh/año</span>
-          </div>
-        </div>
-      </div>
+      <div id="refConsumoEtiquetaBox" class="hidden"></div>
     </div>
 
     <div class="cd-modal-footer">
@@ -20090,24 +20198,64 @@ function cargarUsosCDLocal() {
 // -----------------------------------------------------
 
 const nombresTipoRefrigeracion = {
-  refrigerador: "Refrigerador",
-  refrigerador_exhibidor: "Refrigerador exhibidor / vitrina refrigerada",
-  enfriador_bebidas: "Enfriador de bebidas",
+  refrigerador_domestico: "Refrigerador doméstico",
+  refrigerador_congelador_domestico: "Refrigerador-congelador doméstico",
+  congelador_domestico_vertical: "Congelador doméstico vertical",
+  congelador_domestico_horizontal: "Congelador doméstico horizontal",
   servibar: "Servibar / minibar",
-  congelador_horizontal: "Congelador horizontal",
-  congelador_vertical: "Congelador vertical",
-  congelador_exhibidor: "Congelador exhibidor",
+  enfriador_comercial_vertical: "Enfriador comercial vertical",
+  enfriador_comercial_horizontal: "Enfriador comercial horizontal",
+  congelador_comercial_vertical: "Congelador comercial vertical",
+  congelador_comercial_horizontal: "Congelador comercial horizontal",
+  vitrina_refrigerada_cerrada: "Vitrina refrigerada cerrada",
+  conservador_bolsas_hielo: "Conservador de bolsas con hielo",
+  exhibidor_refrigerado_abierto: "Exhibidor refrigerado abierto",
+  enfriador_bebidas_despachador: "Enfriador de bebidas con despachador",
   enfriador_agua: "Enfriador de agua",
+  mesa_refrigerada: "Mesa refrigerada / mesa de preparación",
   maquina_hielo: "Máquina / fábrica de hielo",
   cuarto_frio: "Cámara o cuarto frío de conservación",
   cuarto_congelacion: "Cámara o cuarto de congelación",
+  refrigerador: "Refrigerador (registro anterior)",
+  refrigerador_exhibidor: "Refrigerador exhibidor / vitrina (registro anterior)",
+  enfriador_bebidas: "Enfriador de bebidas (registro anterior)",
+  congelador_horizontal: "Congelador horizontal (registro anterior)",
+  congelador_vertical: "Congelador vertical (registro anterior)",
+  congelador_exhibidor: "Congelador exhibidor (registro anterior)",
   otro: "Otro"
 };
+
+const tiposRefNOM015 = new Set([
+  "refrigerador_domestico","refrigerador_congelador_domestico",
+  "congelador_domestico_vertical","congelador_domestico_horizontal"
+]);
+const tiposRefNOM022 = new Set([
+  "enfriador_comercial_vertical","enfriador_comercial_horizontal",
+  "congelador_comercial_vertical","congelador_comercial_horizontal",
+  "vitrina_refrigerada_cerrada","conservador_bolsas_hielo"
+]);
+const tiposRefEspeciales = new Set([
+  "exhibidor_refrigerado_abierto","enfriador_bebidas_despachador","enfriador_agua",
+  "mesa_refrigerada","maquina_hielo","cuarto_frio","cuarto_congelacion"
+]);
+const tiposRefLegacy = new Set([
+  "refrigerador","refrigerador_exhibidor","enfriador_bebidas",
+  "congelador_horizontal","congelador_vertical","congelador_exhibidor"
+]);
 
 function nombreRefrigeracion(item) {
   return item.tipo === "otro"
     ? (item.tipoOtro || "Otro")
     : (nombresTipoRefrigeracion[item.tipo] || item.tipo || "—");
+}
+
+function clasificacionTecnicaRefrigeracion(tipo) {
+  if (tiposRefNOM015.has(tipo)) return {familia:"domestico", referencia:"NOM-015", aplica:"evaluar"};
+  if (tiposRefNOM022.has(tipo)) return {familia:"comercial_autocontenido", referencia:"NOM-022", aplica:"evaluar"};
+  if (tipo === "servibar") return {familia:"domestico_compacto", referencia:"NOM-015", aplica:"evaluar_caracteristicas"};
+  if (tiposRefEspeciales.has(tipo)) return {familia:"especial", referencia:"metodologia_especifica", aplica:"no"};
+  if (tiposRefLegacy.has(tipo)) return {familia:"registro_anterior", referencia:"por_clasificar", aplica:"indeterminado"};
+  return {familia:"otro", referencia:"por_determinar", aplica:"indeterminado"};
 }
 
 function convertirVolumenALitros(valor, unidad) {
@@ -20120,317 +20268,323 @@ function convertirVolumenALitros(valor, unidad) {
 }
 
 function volumenDimensionesLitros(largo, ancho, alto, unidad) {
-  const l = Number(largo);
-  const a = Number(ancho);
-  const h = Number(alto);
-  if (![l, a, h].every(v => Number.isFinite(v) && v > 0)) return null;
-  if (unidad === "cm") return (l * a * h) / 1000;
-  if (unidad === "m") return l * a * h * 1000;
+  const l = Number(largo), a = Number(ancho), h = Number(alto);
+  if (![l,a,h].every(v => Number.isFinite(v) && v > 0)) return null;
+  if (unidad === "cm") return (l*a*h)/1000;
+  if (unidad === "m") return l*a*h*1000;
   return null;
 }
 
 function formatearLitros(litros) {
   if (!Number.isFinite(litros)) return "";
-  return litros.toLocaleString("es-MX", { maximumFractionDigits: 1 });
+  return litros.toLocaleString("es-MX",{maximumFractionDigits:1});
 }
 
 function actualizarVisibilidadRefrigeracion() {
-  const contenido = document.getElementById("refrigeracionContenido");
-  if (!contenido) return;
-  contenido.classList.toggle("hidden", valorRadioCD("usaRefrigeracion") !== "si");
+  const contenido=document.getElementById("refrigeracionContenido");
+  if(contenido) contenido.classList.toggle("hidden",valorRadioCD("usaRefrigeracion")!=="si");
+}
+
+function opcionesCapacidadRefrigeracion(tipo) {
+  if (tipo === "maquina_hielo") return [["kg_dia","kg/día"],["lb_dia","lb/día"]];
+  if (tipo === "cuarto_frio" || tipo === "cuarto_congelacion") return [["m3","m³"],["ft3","pies³"]];
+  return [["litros","litros"],["ft3","pies³"],["m3","m³"]];
 }
 
 function actualizarTipoOtroRefrigeracion() {
-  const tipo = document.getElementById("refTipo")?.value || "";
-  document.getElementById("refTipoOtroBox")?.classList.toggle("hidden", tipo !== "otro");
-  if (tipo !== "otro") {
-    const campo = document.getElementById("refTipoOtro");
-    if (campo) campo.value = "";
+  const tipo=document.getElementById("refTipo")?.value||"";
+  document.getElementById("refTipoOtroBox")?.classList.toggle("hidden",tipo!=="otro");
+  if(tipo!=="otro"){const c=document.getElementById("refTipoOtro");if(c)c.value="";}
+
+  const cfg=clasificacionTecnicaRefrigeracion(tipo);
+  const ayuda=document.getElementById("refClasificacionAyuda");
+  if(ayuda){
+    let msg="";
+    if(tiposRefNOM015.has(tipo)) msg="Clasificación interna: equipo doméstico. La aplicabilidad y referencia NOM-015 se evaluarán con las características capturadas.";
+    else if(tiposRefNOM022.has(tipo)) msg="Clasificación interna: refrigeración comercial autocontenida. La aplicabilidad y referencia NOM-022 se evaluarán con las características capturadas.";
+    else if(tipo==="servibar") msg="El servibar/minibar se conservará como equipo compacto y su referencia se evaluará según sus características.";
+    else if(tiposRefEspeciales.has(tipo)) msg="Equipo especial: se conservará para una metodología de estimación específica; no se forzará su clasificación como NOM-015 o NOM-022.";
+    else if(tiposRefLegacy.has(tipo)) msg="Registro de la versión anterior. Se conserva sin pérdida de información; conviene reclasificarlo al editar.";
+    ayuda.textContent=msg; ayuda.classList.toggle("hidden",!msg);
   }
+
+  const mostrarDeshielo=tiposRefNOM015.has(tipo)||tipo==="servibar";
+  const mostrarPuerta=["enfriador_comercial_vertical","congelador_comercial_vertical","congelador_comercial_horizontal"].includes(tipo);
+  const mostrarSistema=["enfriador_comercial_vertical","enfriador_comercial_horizontal","congelador_comercial_vertical"].includes(tipo);
+  const mostrarTemp=tipo==="vitrina_refrigerada_cerrada";
+  document.getElementById("refDeshieloBox")?.classList.toggle("hidden",!mostrarDeshielo);
+  document.getElementById("refPuertaBox")?.classList.toggle("hidden",!mostrarPuerta);
+  document.getElementById("refSistemaEnfriamientoBox")?.classList.toggle("hidden",!mostrarSistema);
+  document.getElementById("refNivelTemperaturaBox")?.classList.toggle("hidden",!mostrarTemp);
+  document.getElementById("refCaracteristicasNormativas")?.classList.toggle("hidden",!(mostrarDeshielo||mostrarPuerta||mostrarSistema||mostrarTemp));
+
+  const unidad=document.getElementById("refUnidadVolumen");
+  const anterior=unidad?.value||"";
+  if(unidad){
+    unidad.innerHTML='<option value="">Seleccione...</option>'+opcionesCapacidadRefrigeracion(tipo).map(([v,t])=>`<option value="${v}">${t}</option>`).join("");
+    if([...unidad.options].some(o=>o.value===anterior)) unidad.value=anterior;
+  }
+  const esProduccion=tipo==="maquina_hielo";
+  const lab=document.getElementById("refVolumenLabel");
+  if(lab) lab.innerHTML=(esProduccion?"Capacidad de producción por equipo":"Capacidad o volumen por equipo")+' <span class="req">*</span>';
+  document.getElementById("refMetodoDimensionesCard")?.classList.toggle("hidden",esProduccion);
+  if(esProduccion && valorRadioCD("refMetodoTamano")==="dimensiones") ponerRadioCD("refMetodoTamano","volumen");
+  actualizarMetodoTamanoRefrigeracion();
 }
 
 function actualizarMetodoTamanoRefrigeracion() {
-  const metodo = valorRadioCD("refMetodoTamano");
-  document.getElementById("refVolumenBox")?.classList.toggle("hidden", metodo !== "volumen");
-  document.getElementById("refDimensionesBox")?.classList.toggle("hidden", metodo !== "dimensiones");
+  const metodo=valorRadioCD("refMetodoTamano");
+  const tipo=document.getElementById("refTipo")?.value||"";
+  document.getElementById("refVolumenBox")?.classList.toggle("hidden",metodo!=="volumen");
+  document.getElementById("refDimensionesBox")?.classList.toggle("hidden",metodo!=="dimensiones"||tipo==="maquina_hielo");
   actualizarCalculosTamanoRefrigeracion();
 }
 
 function actualizarEtiquetaRefrigeracion() {
-  const valor = valorRadioCD("refEtiquetaConsumo");
-  document.getElementById("refConsumoEtiquetaBox")?.classList.toggle("hidden", valor !== "si");
-  if (valor !== "si") {
-    const campo = document.getElementById("refConsumoEtiqueta");
-    if (campo) campo.value = "";
-  }
+  // Se conserva el nombre del radio por compatibilidad con registros previos.
+}
+
+function actualizarRefrigeranteOtro() {
+  const otro=document.getElementById("refRefrigerante")?.value==="otro";
+  document.getElementById("refRefrigeranteOtroBox")?.classList.toggle("hidden",!otro);
+  if(!otro){const c=document.getElementById("refRefrigeranteOtro");if(c)c.value="";}
 }
 
 function actualizarCalculosTamanoRefrigeracion() {
-  const metodo = valorRadioCD("refMetodoTamano");
-  const eq = document.getElementById("refVolumenEquivalencia");
-  const dim = document.getElementById("refDimensionesResultado");
+  const metodo=valorRadioCD("refMetodoTamano");
+  const tipo=document.getElementById("refTipo")?.value||"";
+  const eq=document.getElementById("refVolumenEquivalencia");
+  const dim=document.getElementById("refDimensionesResultado");
+  if(eq)eq.classList.add("hidden"); if(dim)dim.classList.add("hidden");
 
-  if (eq) eq.classList.add("hidden");
-  if (dim) dim.classList.add("hidden");
-
-  if (metodo === "volumen") {
-    const volumen = document.getElementById("refVolumen")?.value;
-    const unidad = document.getElementById("refUnidadVolumen")?.value;
-    const litros = convertirVolumenALitros(volumen, unidad);
-    if (eq && litros !== null) {
-      eq.textContent = `Equivalencia aproximada: ${formatearLitros(litros)} litros por equipo.`;
-      eq.classList.remove("hidden");
+  if(metodo==="volumen"){
+    const v=Number(document.getElementById("refVolumen")?.value);
+    const u=document.getElementById("refUnidadVolumen")?.value||"";
+    if(eq && Number.isFinite(v) && v>0){
+      if(u==="kg_dia"||u==="lb_dia"){
+        eq.textContent=`Capacidad de producción declarada: ${v.toLocaleString("es-MX",{maximumFractionDigits:2})} ${u==="kg_dia"?"kg/día":"lb/día"}.`;
+        eq.classList.remove("hidden");
+      }else{
+        const litros=convertirVolumenALitros(v,u);
+        if(litros!==null){eq.textContent=`Equivalencia aproximada: ${formatearLitros(litros)} litros por equipo.`;eq.classList.remove("hidden");}
+      }
     }
   }
-
-  if (metodo === "dimensiones") {
-    const largo = document.getElementById("refLargo")?.value;
-    const ancho = document.getElementById("refAncho")?.value;
-    const alto = document.getElementById("refAlto")?.value;
-    const unidad = document.getElementById("refUnidadDimensiones")?.value;
-    const litros = volumenDimensionesLitros(largo, ancho, alto, unidad);
-    if (dim && litros !== null) {
-      const m3 = litros / 1000;
-      dim.textContent = `Volumen aproximado calculado: ${formatearLitros(litros)} L (${m3.toLocaleString("es-MX", {maximumFractionDigits:3})} m³) por equipo.`;
-      dim.classList.remove("hidden");
-    }
+  if(metodo==="dimensiones" && tipo!=="maquina_hielo"){
+    const litros=volumenDimensionesLitros(
+      document.getElementById("refLargo")?.value,
+      document.getElementById("refAncho")?.value,
+      document.getElementById("refAlto")?.value,
+      document.getElementById("refUnidadDimensiones")?.value
+    );
+    if(dim&&litros!==null){dim.textContent=`Volumen aproximado calculado: ${formatearLitros(litros)} L (${(litros/1000).toLocaleString("es-MX",{maximumFractionDigits:3})} m³) por equipo.`;dim.classList.remove("hidden");}
   }
 }
 
 function limpiarFormularioRefrigeracion() {
-  ["refTipo", "refTipoOtro", "refCantidad", "refAntiguedad", "refVolumen",
-   "refUnidadVolumen", "refLargo", "refAncho", "refAlto", "refUnidadDimensiones",
-   "refConsumoEtiqueta"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-  ponerRadioCD("refMetodoTamano", "");
-  ponerRadioCD("refEtiquetaConsumo", "");
+  ["refTipo","refTipoOtro","refCantidad","refAntiguedad","refVolumen","refLargo","refAncho","refAlto",
+   "refUnidadDimensiones","refDeshielo","refPuerta","refSistemaEnfriamiento","refNivelTemperatura",
+   "refPotencia","refUnidadPotencia","refVoltaje","refCorriente","refConsumoDeclarado","refUnidadConsumo",
+   "refRefrigerante","refRefrigeranteOtro"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  ponerRadioCD("refMetodoTamano","");
+  ponerRadioCD("refEtiquetaConsumo","");
   actualizarTipoOtroRefrigeracion();
-  actualizarMetodoTamanoRefrigeracion();
-  actualizarEtiquetaRefrigeracion();
+  actualizarRefrigeranteOtro();
 }
 
-function abrirModalRefrigeracion(index = null) {
-  indiceRefrigeracionEdicion = index;
+function abrirModalRefrigeracion(index=null) {
+  indiceRefrigeracionEdicion=index;
   limpiarFormularioRefrigeracion();
+  const titulo=document.getElementById("tituloModalRefrigeracion");
+  if(titulo)titulo.textContent=index===null?"Agregar equipo de refrigeración":"Editar equipo de refrigeración";
 
-  const titulo = document.getElementById("tituloModalRefrigeracion");
-  if (titulo) titulo.textContent = index === null
-    ? "Agregar equipo de refrigeración"
-    : "Editar equipo de refrigeración";
-
-  if (index !== null) {
-    const item = equiposRefrigeracion[index];
-    if (!item) return;
-
-    document.getElementById("refTipo").value = item.tipo || "";
+  if(index!==null){
+    const item=equiposRefrigeracion[index]; if(!item)return;
+    const vals={
+      refTipo:item.tipo,refTipoOtro:item.tipoOtro,refCantidad:item.cantidad,refAntiguedad:item.antiguedad,
+      refLargo:item.largo,refAncho:item.ancho,refAlto:item.alto,refUnidadDimensiones:item.unidadDimensiones,
+      refDeshielo:item.deshielo,refPuerta:item.tipoPuerta,refSistemaEnfriamiento:item.sistemaEnfriamiento,
+      refNivelTemperatura:item.nivelTemperatura,refPotencia:item.potenciaNominal,refUnidadPotencia:item.unidadPotencia,
+      refVoltaje:item.voltaje,refCorriente:item.corrienteNominal,
+      refConsumoDeclarado:item.consumoDeclarado ?? item.consumoEtiqueta,
+      refUnidadConsumo:item.unidadConsumo || (item.consumoEtiqueta!=null?"kWh_anio":""),
+      refRefrigerante:item.refrigerante,refRefrigeranteOtro:item.refrigeranteOtro
+    };
+    Object.entries(vals).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v??"";});
     actualizarTipoOtroRefrigeracion();
-    document.getElementById("refTipoOtro").value = item.tipoOtro || "";
-    document.getElementById("refCantidad").value = item.cantidad ?? "";
-    document.getElementById("refAntiguedad").value = item.antiguedad ?? "";
-    ponerRadioCD("refMetodoTamano", item.metodoTamano || "");
+    ponerRadioCD("refMetodoTamano",item.metodoTamano||"");
     actualizarMetodoTamanoRefrigeracion();
-
-    if (item.metodoTamano === "volumen") {
-      document.getElementById("refVolumen").value = item.volumenIngresado ?? "";
-      document.getElementById("refUnidadVolumen").value = item.unidadVolumen || "";
-    } else if (item.metodoTamano === "dimensiones") {
-      document.getElementById("refLargo").value = item.largo ?? "";
-      document.getElementById("refAncho").value = item.ancho ?? "";
-      document.getElementById("refAlto").value = item.alto ?? "";
-      document.getElementById("refUnidadDimensiones").value = item.unidadDimensiones || "";
+    if(item.metodoTamano==="volumen"){
+      document.getElementById("refVolumen").value=item.volumenIngresado??item.capacidad??"";
+      const uv=document.getElementById("refUnidadVolumen");
+      if(uv){
+        const unidad=item.unidadVolumen||item.unidadCapacidad||"";
+        if([...uv.options].some(o=>o.value===unidad))uv.value=unidad;
+      }
     }
-
-    ponerRadioCD("refEtiquetaConsumo", item.etiquetaConsumo || "");
-    actualizarEtiquetaRefrigeracion();
-    if (item.etiquetaConsumo === "si") {
-      document.getElementById("refConsumoEtiqueta").value = item.consumoEtiqueta ?? "";
-    }
+    ponerRadioCD("refEtiquetaConsumo",item.etiquetaConsumo||"");
+    actualizarRefrigeranteOtro();
     actualizarCalculosTamanoRefrigeracion();
   }
-
-  const modal = document.getElementById("modalRefrigeracion");
-  modal?.classList.remove("hidden");
-  modal?.setAttribute("aria-hidden", "false");
+  document.getElementById("modalRefrigeracion")?.classList.remove("hidden");
+  document.getElementById("modalRefrigeracion")?.setAttribute("aria-hidden","false");
 }
 
-function cerrarModalRefrigeracionFn() {
-  const modal = document.getElementById("modalRefrigeracion");
-  modal?.classList.add("hidden");
-  modal?.setAttribute("aria-hidden", "true");
-  indiceRefrigeracionEdicion = null;
+function cerrarModalRefrigeracionFn(){
+  document.getElementById("modalRefrigeracion")?.classList.add("hidden");
+  document.getElementById("modalRefrigeracion")?.setAttribute("aria-hidden","true");
+  indiceRefrigeracionEdicion=null;
 }
 
-function contarOtrosRefrigeracionExcepto(indiceExcluir) {
-  const nombres = new Set();
-  equiposRefrigeracion.forEach((item, i) => {
-    if (i === indiceExcluir || item.tipo !== "otro") return;
-    const nombre = String(item.tipoOtro || "").trim().toLocaleLowerCase("es-MX");
-    if (nombre) nombres.add(nombre);
-  });
+function contarOtrosRefrigeracionExcepto(indiceExcluir){
+  const nombres=new Set();
+  equiposRefrigeracion.forEach((item,i)=>{if(i===indiceExcluir||item.tipo!=="otro")return;const n=String(item.tipoOtro||"").trim().toLocaleLowerCase("es-MX");if(n)nombres.add(n);});
   return nombres;
 }
 
-function guardarEquipoRefrigeracionFn() {
-  const tipo = document.getElementById("refTipo")?.value || "";
-  const tipoOtro = (document.getElementById("refTipoOtro")?.value || "").trim();
-  const cantidad = Number(document.getElementById("refCantidad")?.value);
-  const antiguedad = Number(document.getElementById("refAntiguedad")?.value);
-  const metodoTamano = valorRadioCD("refMetodoTamano");
-  const etiquetaConsumo = valorRadioCD("refEtiquetaConsumo");
+function numeroOpcionalRefrigeracion(id){
+  const raw=document.getElementById(id)?.value;
+  if(raw===""||raw==null)return null;
+  const n=Number(raw); return Number.isFinite(n)&&n>=0?n:null;
+}
 
-  if (!tipo) return alert("Seleccione el tipo de equipo.");
-  if (tipo === "otro" && !tipoOtro) return alert("Especifique el tipo de equipo.");
-  if (!Number.isInteger(cantidad) || cantidad < 1) return alert("Ingrese una cantidad válida de equipos.");
-  if (!Number.isFinite(antiguedad) || antiguedad < 0) return alert("Ingrese una antigüedad válida.");
-  if (!metodoTamano) return alert("Indique cómo desea reportar el tamaño del equipo.");
-  if (!etiquetaConsumo) return alert("Indique si el equipo muestra un consumo de energía en su etiqueta o placa.");
+function consumoAnualDeclaradoRefrigeracion(valor,unidad,volumenLitros){
+  const v=Number(valor); if(!Number.isFinite(v)||v<=0)return null;
+  if(unidad==="kWh_anio")return v;
+  if(unidad==="kWh_24h")return v*365;
+  if(unidad==="Wh_L_24h"&&Number.isFinite(volumenLitros))return (v/1000)*volumenLitros*365;
+  if(unidad==="kWh_L_24h"&&Number.isFinite(volumenLitros))return v*volumenLitros*365;
+  return null;
+}
 
-  if (tipo === "otro") {
-    const otros = contarOtrosRefrigeracionExcepto(indiceRefrigeracionEdicion);
-    const clave = tipoOtro.toLocaleLowerCase("es-MX");
-    if (!otros.has(clave) && otros.size >= 5) {
-      return alert("Ya se registraron 5 tipos personalizados en la opción Otro.");
-    }
+function guardarEquipoRefrigeracionFn(){
+  const tipo=document.getElementById("refTipo")?.value||"";
+  const tipoOtro=(document.getElementById("refTipoOtro")?.value||"").trim();
+  const cantidad=Number(document.getElementById("refCantidad")?.value);
+  const antiguedad=Number(document.getElementById("refAntiguedad")?.value);
+  const metodoTamano=valorRadioCD("refMetodoTamano");
+  const etiquetaConsumo=valorRadioCD("refEtiquetaConsumo");
+
+  if(!tipo)return alert("Seleccione el tipo de equipo.");
+  if(tipo==="otro"&&!tipoOtro)return alert("Especifique el tipo de equipo.");
+  if(!Number.isInteger(cantidad)||cantidad<1)return alert("Ingrese una cantidad válida de equipos.");
+  if(!Number.isFinite(antiguedad)||antiguedad<0||antiguedad>100)return alert("Ingrese una antigüedad válida.");
+  if(!metodoTamano)return alert("Indique cómo desea reportar la capacidad o tamaño del equipo.");
+  if(tipo==="otro"){const otros=contarOtrosRefrigeracionExcepto(indiceRefrigeracionEdicion);const clave=tipoOtro.toLocaleLowerCase("es-MX");if(!otros.has(clave)&&otros.size>=5)return alert("Ya se registraron 5 tipos personalizados en la opción Otro.");}
+
+  let volumenLitros=null,volumenIngresado=null,unidadVolumen="",largo=null,ancho=null,alto=null,unidadDimensiones="";
+  if(metodoTamano==="volumen"){
+    volumenIngresado=Number(document.getElementById("refVolumen")?.value);
+    unidadVolumen=document.getElementById("refUnidadVolumen")?.value||"";
+    if(!Number.isFinite(volumenIngresado)||volumenIngresado<=0||!unidadVolumen)return alert("Ingrese la capacidad del equipo y seleccione su unidad.");
+    if(!["kg_dia","lb_dia"].includes(unidadVolumen))volumenLitros=convertirVolumenALitros(volumenIngresado,unidadVolumen);
+  }else{
+    if(tipo==="maquina_hielo")return alert("Para una máquina de hielo reporte la capacidad de producción.");
+    largo=Number(document.getElementById("refLargo")?.value);ancho=Number(document.getElementById("refAncho")?.value);alto=Number(document.getElementById("refAlto")?.value);
+    unidadDimensiones=document.getElementById("refUnidadDimensiones")?.value||"";
+    volumenLitros=volumenDimensionesLitros(largo,ancho,alto,unidadDimensiones);
+    if(volumenLitros===null||!unidadDimensiones)return alert("Capture las tres dimensiones del equipo y seleccione la unidad utilizada.");
   }
 
-  let volumenLitros = null;
-  let volumenIngresado = null;
-  let unidadVolumen = "";
-  let largo = null, ancho = null, alto = null, unidadDimensiones = "";
+  const potenciaNominal=numeroOpcionalRefrigeracion("refPotencia");
+  const unidadPotencia=document.getElementById("refUnidadPotencia")?.value||"";
+  if(potenciaNominal!==null&&!unidadPotencia)return alert("Seleccione la unidad de la potencia nominal.");
 
-  if (metodoTamano === "volumen") {
-    volumenIngresado = Number(document.getElementById("refVolumen")?.value);
-    unidadVolumen = document.getElementById("refUnidadVolumen")?.value || "";
-    volumenLitros = convertirVolumenALitros(volumenIngresado, unidadVolumen);
-    if (volumenLitros === null || !unidadVolumen) {
-      return alert("Ingrese el tamaño del equipo y seleccione su unidad.");
-    }
-  } else {
-    largo = Number(document.getElementById("refLargo")?.value);
-    ancho = Number(document.getElementById("refAncho")?.value);
-    alto = Number(document.getElementById("refAlto")?.value);
-    unidadDimensiones = document.getElementById("refUnidadDimensiones")?.value || "";
-    volumenLitros = volumenDimensionesLitros(largo, ancho, alto, unidadDimensiones);
-    if (volumenLitros === null || !unidadDimensiones) {
-      return alert("Capture las tres dimensiones del equipo y seleccione la unidad utilizada.");
-    }
-  }
+  const voltaje=numeroOpcionalRefrigeracion("refVoltaje");
+  const corrienteNominal=numeroOpcionalRefrigeracion("refCorriente");
+  const consumoDeclarado=numeroOpcionalRefrigeracion("refConsumoDeclarado");
+  const unidadConsumo=document.getElementById("refUnidadConsumo")?.value||"";
+  if(consumoDeclarado!==null&&!unidadConsumo)return alert("Seleccione la unidad del consumo energético declarado.");
 
-  let consumoEtiqueta = null;
-  if (etiquetaConsumo === "si") {
-    consumoEtiqueta = Number(document.getElementById("refConsumoEtiqueta")?.value);
-    if (!Number.isFinite(consumoEtiqueta) || consumoEtiqueta <= 0) {
-      return alert("Ingrese el consumo anual indicado en la etiqueta o placa.");
-    }
-  }
+  const refrigerante=document.getElementById("refRefrigerante")?.value||"";
+  const refrigeranteOtro=(document.getElementById("refRefrigeranteOtro")?.value||"").trim();
+  if(refrigerante==="otro"&&!refrigeranteOtro)return alert("Especifique el refrigerante.");
 
-  const item = {
-    id: indiceRefrigeracionEdicion !== null && equiposRefrigeracion[indiceRefrigeracionEdicion]?.id ? equiposRefrigeracion[indiceRefrigeracionEdicion].id : generarIdUsoFinal("ref"),
-    tipo,
-    tipoOtro: tipo === "otro" ? tipoOtro : "",
-    cantidad,
-    antiguedad,
-    metodoTamano,
-    volumenIngresado,
-    unidadVolumen,
-    largo,
-    ancho,
-    alto,
-    unidadDimensiones,
-    volumenLitros,
-    etiquetaConsumo,
-    consumoEtiqueta,
-    consumoGrupo: consumoEtiqueta !== null ? consumoEtiqueta * cantidad : null
+  const consumoAnualPorEquipo=consumoAnualDeclaradoRefrigeracion(consumoDeclarado,unidadConsumo,volumenLitros);
+  const clasif=clasificacionTecnicaRefrigeracion(tipo);
+  const previo=indiceRefrigeracionEdicion!==null?equiposRefrigeracion[indiceRefrigeracionEdicion]:null;
+
+  const item={
+    ...(previo||{}),
+    id:previo?.id||generarIdUsoFinal("ref"),
+    tipo,tipoOtro:tipo==="otro"?tipoOtro:"",cantidad,antiguedad,
+    clasificacionTecnica:clasif.familia,referenciaNormativa:clasif.referencia,aplicabilidadNormativa:clasif.aplica,
+    deshielo:document.getElementById("refDeshielo")?.value||"",
+    tipoPuerta:document.getElementById("refPuerta")?.value||"",
+    sistemaEnfriamiento:document.getElementById("refSistemaEnfriamiento")?.value||"",
+    nivelTemperatura:document.getElementById("refNivelTemperatura")?.value||"",
+    metodoTamano,volumenIngresado,unidadVolumen,largo,ancho,alto,unidadDimensiones,volumenLitros,
+    capacidad:volumenIngresado,unidadCapacidad:unidadVolumen,
+    potenciaNominal,unidadPotencia,voltaje,corrienteNominal,
+    consumoDeclarado,unidadConsumo,
+    refrigerante,refrigeranteOtro:refrigerante==="otro"?refrigeranteOtro:"",
+    etiquetaConsumo:etiquetaConsumo||"",
+    consumoEtiqueta:consumoAnualPorEquipo,
+    consumoGrupo:consumoAnualPorEquipo!==null?consumoAnualPorEquipo*cantidad:null,
+    metodoEstimacion:consumoAnualPorEquipo!==null?"etiqueta_declarada":"pendiente_clasificacion"
   };
 
-  if (indiceRefrigeracionEdicion === null) equiposRefrigeracion.push(item);
-  else equiposRefrigeracion[indiceRefrigeracionEdicion] = item;
-
+  if(indiceRefrigeracionEdicion===null)equiposRefrigeracion.push(item);else equiposRefrigeracion[indiceRefrigeracionEdicion]=item;
   guardarUsosCDLocal();
+  try{guardarUsosFinalesCanonico();}catch(e){console.warn(e);}
   renderizarTablaRefrigeracion();
   cerrarModalRefrigeracionFn();
 }
 
-function textoTamanoRefrigeracion(item) {
-  if (item.metodoTamano === "volumen") {
-    const unidad = item.unidadVolumen === "ft3" ? "pies³" : (item.unidadVolumen === "m3" ? "m³" : "L");
-    const original = Number(item.volumenIngresado).toLocaleString("es-MX", {maximumFractionDigits:3});
-    return `${original} ${unidad} (≈ ${formatearLitros(Number(item.volumenLitros))} L)`;
+function textoTamanoRefrigeracion(item){
+  const valor=item.volumenIngresado??item.capacidad;
+  const unidad=item.unidadVolumen||item.unidadCapacidad||"";
+  if(item.metodoTamano==="volumen"||valor!=null){
+    const etiquetas={ft3:"pies³",m3:"m³",litros:"L",kg_dia:"kg/día",lb_dia:"lb/día"};
+    const original=Number(valor);
+    if(!Number.isFinite(original))return "—";
+    const base=`${original.toLocaleString("es-MX",{maximumFractionDigits:3})} ${etiquetas[unidad]||unidad}`;
+    return Number.isFinite(Number(item.volumenLitros))&&unidad!=="litros"?`${base} (≈ ${formatearLitros(Number(item.volumenLitros))} L)`:base;
   }
-
-  const unidad = item.unidadDimensiones || "";
-  return `${item.largo} × ${item.ancho} × ${item.alto} ${unidad} (≈ ${formatearLitros(Number(item.volumenLitros))} L)`;
+  if(item.metodoTamano==="dimensiones"){
+    return `${item.largo} × ${item.ancho} × ${item.alto} ${item.unidadDimensiones||""} (≈ ${formatearLitros(Number(item.volumenLitros))} L)`;
+  }
+  return "—";
 }
 
-function textoConsumoRefrigeracion(item) {
-  if (item.etiquetaConsumo === "si" && item.consumoEtiqueta !== null) {
-    const porEquipo = Number(item.consumoEtiqueta).toLocaleString("es-MX", {maximumFractionDigits:1});
-    const grupo = Number(item.consumoGrupo).toLocaleString("es-MX", {maximumFractionDigits:1});
-    return `${porEquipo} kWh/año por equipo · ${grupo} kWh/año grupo`;
+function textoConsumoRefrigeracion(item){
+  if(item.consumoDeclarado!=null&&item.unidadConsumo){
+    const u={kWh_anio:"kWh/año",kWh_24h:"kWh/24 h",Wh_L_24h:"Wh/L·24 h",kWh_L_24h:"kWh/L·24 h"}[item.unidadConsumo]||item.unidadConsumo;
+    let t=`${Number(item.consumoDeclarado).toLocaleString("es-MX",{maximumFractionDigits:4})} ${u}`;
+    if(item.consumoGrupo!==null&&item.consumoGrupo!==undefined)t+=` · ≈ ${Number(item.consumoGrupo).toLocaleString("es-MX",{maximumFractionDigits:1})} kWh/año grupo`;
+    return t;
   }
-  if (item.etiquetaConsumo === "no_verificar") return "No se pudo verificar";
+  if(item.etiquetaConsumo==="si"&&item.consumoEtiqueta!==null&&item.consumoEtiqueta!==undefined){
+    return `${Number(item.consumoEtiqueta).toLocaleString("es-MX",{maximumFractionDigits:1})} kWh/año por equipo`;
+  }
+  if(item.etiquetaConsumo==="no_verificar")return "No se pudo verificar";
   return "No indicado";
 }
 
-function renderizarTablaRefrigeracion() {
-  const tbody = document.getElementById("tablaRefrigeracionBody");
-  const cont = document.getElementById("tablaRefrigeracionContenedor");
-  const vacio = document.getElementById("sinRefrigeracion");
-  const resumen = document.getElementById("resumenRefrigeracion");
-  if (!tbody || !cont || !vacio) return;
-
-  tbody.innerHTML = "";
-
-  if (equiposRefrigeracion.length === 0) {
-    cont.style.display = "none";
-    vacio.style.display = "block";
-    if (resumen) resumen.textContent = "";
-    return;
-  }
-
-  cont.style.display = "block";
-  vacio.style.display = "none";
-
-  equiposRefrigeracion.forEach((item, index) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${escaparHTMLCD(nombreRefrigeracion(item))}</td>
-      <td class="num">${Number(item.cantidad).toLocaleString("es-MX")}</td>
-      <td class="num">${Number(item.antiguedad).toLocaleString("es-MX")} años</td>
-      <td>${escaparHTMLCD(textoTamanoRefrigeracion(item))}</td>
-      <td>${escaparHTMLCD(textoConsumoRefrigeracion(item))}</td>
-      <td class="acciones">
-        <button type="button" class="cd-action-btn" onclick="editarRefrigeracion(${index})">Editar</button>
-        <button type="button" class="cd-action-btn danger" onclick="eliminarRefrigeracion(${index})">Eliminar</button>
-      </td>`;
+function renderizarTablaRefrigeracion(){
+  const tbody=document.getElementById("tablaRefrigeracionBody"),cont=document.getElementById("tablaRefrigeracionContenedor"),vacio=document.getElementById("sinRefrigeracion"),resumen=document.getElementById("resumenRefrigeracion");
+  if(!tbody||!cont||!vacio)return; tbody.innerHTML="";
+  if(!equiposRefrigeracion.length){cont.style.display="none";vacio.style.display="block";if(resumen)resumen.textContent="";return;}
+  cont.style.display="block";vacio.style.display="none";
+  equiposRefrigeracion.forEach((item,index)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${escaparHTMLCD(nombreRefrigeracion(item))}</td><td class="num">${Number(item.cantidad||0).toLocaleString("es-MX")}</td><td class="num">${Number(item.antiguedad||0).toLocaleString("es-MX")} años</td><td>${escaparHTMLCD(textoTamanoRefrigeracion(item))}</td><td>${escaparHTMLCD(textoConsumoRefrigeracion(item))}</td><td class="acciones"><button type="button" class="cd-action-btn" onclick="editarRefrigeracion(${index})">Editar</button><button type="button" class="cd-action-btn danger" onclick="eliminarRefrigeracion(${index})">Eliminar</button></td>`;
     tbody.appendChild(tr);
   });
-
-  if (resumen) {
-    const cantidadTotal = equiposRefrigeracion.reduce((s, x) => s + Number(x.cantidad || 0), 0);
-    const consumoConocido = equiposRefrigeracion.reduce((s, x) => s + Number(x.consumoGrupo || 0), 0);
-    const gruposConEtiqueta = equiposRefrigeracion.filter(x => x.consumoGrupo !== null).length;
-    let texto = `${cantidadTotal} equipo${cantidadTotal === 1 ? "" : "s"} registrado${cantidadTotal === 1 ? "" : "s"}`;
-    if (gruposConEtiqueta > 0) {
-      texto += ` · Consumo informado en etiqueta: ${consumoConocido.toLocaleString("es-MX", {maximumFractionDigits:1})} kWh/año`;
-    }
-    resumen.textContent = texto;
+  if(resumen){
+    const cantidadTotal=equiposRefrigeracion.reduce((s,x)=>s+Number(x.cantidad||0),0);
+    const consumoConocido=equiposRefrigeracion.reduce((s,x)=>s+(Number.isFinite(Number(x.consumoGrupo))?Number(x.consumoGrupo):0),0);
+    const gruposConConsumo=equiposRefrigeracion.filter(x=>x.consumoGrupo!==null&&x.consumoGrupo!==undefined).length;
+    let t=`${cantidadTotal} equipo${cantidadTotal===1?"":"s"} registrado${cantidadTotal===1?"":"s"}`;
+    if(gruposConConsumo)t+=` · Consumo declarado convertido: ${consumoConocido.toLocaleString("es-MX",{maximumFractionDigits:1})} kWh/año`;
+    resumen.textContent=t;
   }
 }
-
-window.editarRefrigeracion = function(index) {
-  abrirModalRefrigeracion(index);
-};
-
-window.eliminarRefrigeracion = function(index) {
-  const item = equiposRefrigeracion[index];
-  if (!item) return;
-  if (!confirm(`¿Desea eliminar ${nombreRefrigeracion(item)}?`)) return;
-  equiposRefrigeracion.splice(index, 1);
-  guardarUsosCDLocal();
-  renderizarTablaRefrigeracion();
+window.editarRefrigeracion=index=>abrirModalRefrigeracion(index);
+window.eliminarRefrigeracion=function(index){
+  const item=equiposRefrigeracion[index];if(!item)return;
+  if(!confirm(`¿Desea eliminar ${nombreRefrigeracion(item)}?`))return;
+  equiposRefrigeracion.splice(index,1);guardarUsosCDLocal();try{guardarUsosFinalesCanonico();}catch(e){console.warn(e);}renderizarTablaRefrigeracion();
 };
 
 // -----------------------------------------------------
@@ -22042,6 +22196,7 @@ document.getElementById("guardarRefrigeracion")?.addEventListener("click", guard
 document.getElementById("refTipo")?.addEventListener("change", actualizarTipoOtroRefrigeracion);
 document.querySelectorAll('input[name="refMetodoTamano"]').forEach(r => r.addEventListener("change", actualizarMetodoTamanoRefrigeracion));
 document.querySelectorAll('input[name="refEtiquetaConsumo"]').forEach(r => r.addEventListener("change", actualizarEtiquetaRefrigeracion));
+document.getElementById("refRefrigerante")?.addEventListener("change", actualizarRefrigeranteOtro);
 ["refVolumen", "refUnidadVolumen", "refLargo", "refAncho", "refAlto", "refUnidadDimensiones"].forEach(id => {
   document.getElementById(id)?.addEventListener("input", actualizarCalculosTamanoRefrigeracion);
   document.getElementById(id)?.addEventListener("change", actualizarCalculosTamanoRefrigeracion);
