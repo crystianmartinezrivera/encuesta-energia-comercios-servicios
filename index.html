@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Encuesta de Consumo y Usos de Energía</title>
-<!-- Ajuste 2026-10-06: refrigeración NOM-015/NOM-022, equipos especiales y datos de placa; conserva ajuste de semanas -->
+<!-- Ajuste 2026-10-07: cierre de encuesta con envío a Supabase, estatus_encuesta, fecha_envio, cargo y contacto; conserva refrigeración y semanas -->
 
 <!-- =====================================================
    inicio de CSS
@@ -4878,21 +4878,48 @@
     </div>
   </section>
 
+  <section id="datosCierreEncuesta" class="prac-card" style="margin-top:22px">
+    <h3>Datos para finalizar la encuesta</h3>
+    <p class="field-help">
+      Registre el cargo de la persona que llenó o proporcionó la información de la encuesta.
+      El dato de contacto es opcional y se utilizará únicamente para seguimiento.
+    </p>
+
+    <div class="cd-form-grid" style="margin-top:14px">
+      <div class="cd-form-group">
+        <label for="cargoContacto">Cargo <span class="req">*</span></label>
+        <input id="cargoContacto" type="text" maxlength="120"
+               placeholder="Ej. Gerente de mantenimiento, administrador, propietario">
+      </div>
+
+      <div class="cd-form-group">
+        <label for="contactoEncuesta">Contacto <span style="font-weight:400">(opcional)</span></label>
+        <input id="contactoEncuesta" type="text" maxlength="160"
+               placeholder="Teléfono y/o correo electrónico">
+      </div>
+    </div>
+
+    <div class="cd-info-note" style="margin-top:14px">
+      Al seleccionar <strong>Enviar encuesta</strong>, se realizará una última sincronización con la base de datos
+      y la encuesta quedará registrada como enviada.
+    </div>
+  </section>
+
   <div class="prac-actions">
     <button type="button" class="secondary" id="btnPracticasAnterior">← Anterior</button>
     <span class="prac-status hidden" id="pracGuardadoEstado">Información guardada</span>
     <div class="prac-actions-right">
       <button type="button" class="secondary" id="btnGuardarPracticas">Guardar avance</button>
-      <button type="button" class="primary" id="btnPracticasContinuar">Finalizar encuesta</button>
+      <button type="button" class="primary" id="btnPracticasContinuar">Enviar encuesta</button>
     </div>
   </div>
 
   <section id="confirmacionFinalPublica" class="final-confirmation hidden" style="margin-top:22px">
     <div class="final-confirmation-icon">✓</div>
-    <h2>Encuesta finalizada</h2>
+    <h2>Encuesta enviada correctamente</h2>
     <p>
       Gracias por participar en la Encuesta de Consumo y Usos de Energía del sector comercial y de servicios.
-      La información registrada ha quedado cerrada correctamente. Para capturar otro establecimiento, vuelva al inicio e inicie una nueva encuesta.
+      La información registrada quedó guardada en la base de datos y marcada como enviada. Para capturar otro establecimiento, vuelva al inicio e inicie una nueva encuesta.
     </p>
     <div class="final-meta" id="fechaFinalizacionPublica"></div>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px">
@@ -12392,7 +12419,21 @@ async function guardarEncuestaSupabase(estatusEncuesta="en_progreso"){
   // 4. Prepara los datos.
   const datos = {
 
+    // "estatus" se conserva por compatibilidad con la estructura anterior.
     estatus: estatusEncuesta,
+
+    // Nuevo flujo administrativo: borrador -> enviada -> revisada.
+    estatus_encuesta:
+      estatusEncuesta === "finalizada" ? "enviada" : "borrador",
+
+    fecha_envio:
+      estatusEncuesta === "finalizada" ? new Date().toISOString() : null,
+
+    cargo_contacto:
+      (document.getElementById("cargoContacto")?.value || "").trim() || null,
+
+    contacto:
+      (document.getElementById("contactoEncuesta")?.value || "").trim() || null,
 
     ultima_actualizacion:
       new Date().toISOString(),
@@ -23898,6 +23939,15 @@ document.getElementById("btnPracticasAnterior")?.addEventListener("click",async 
 
   mostrarVista("usos");
 });
+["cargoContacto","contactoEncuesta"].forEach(id=>{
+  const el=document.getElementById(id);
+  if(!el) return;
+  const clave=`encuesta_cys_${id}_v1`;
+  const previo=localStorage.getItem(clave);
+  if(previo!==null) el.value=previo;
+  el.addEventListener("input",()=>localStorage.setItem(clave,el.value));
+});
+
 document.getElementById("btnPracticasContinuar")?.addEventListener("click",async ()=>{
   if(!validarPracticasAntesDeContinuar()) return;
   await finalizarEncuestaPublica();
@@ -23968,7 +24018,9 @@ function clavesLocalesDeEncuesta(){
     "encuesta_cys_practicas_eficiencia_v1",
     "encuesta_cys_final_publica_v1",
     "encuesta_cys_evaluacion_piloto_v1",
-    "encuesta_cys_finalizacion_v1"
+    "encuesta_cys_finalizacion_v1",
+    "encuesta_cys_cargoContacto_v1",
+    "encuesta_cys_contactoEncuesta_v1"
   ];
 
   const claves = new Set(["encuesta_id"]);
@@ -24034,10 +24086,25 @@ function guardarTodoAntesDeFinalizar(){
 }
 
 async function finalizarEncuestaPublica(){
+  const cargo = (document.getElementById("cargoContacto")?.value || "").trim();
+  const contacto = (document.getElementById("contactoEncuesta")?.value || "").trim();
+
+  if(!cargo){
+    alert("Ingrese el cargo de la persona que llenó o proporcionó la información antes de enviar la encuesta.");
+    document.getElementById("cargoContacto")?.focus();
+    return;
+  }
+
+  const confirmar = confirm(
+    "¿Desea enviar la encuesta?\n\n" +
+    "Se realizará una última sincronización con la base de datos y quedará registrada como enviada."
+  );
+  if(!confirmar) return;
+
   const btn = document.getElementById("btnPracticasContinuar");
   if(btn){
     btn.disabled = true;
-    btn.textContent = "Finalizando...";
+    btn.textContent = "Enviando...";
   }
 
   guardarTodoAntesDeFinalizar();
@@ -24088,7 +24155,7 @@ async function finalizarEncuestaPublica(){
 
     if(btn){
       btn.disabled = false;
-      btn.textContent = "Finalizar encuesta";
+      btn.textContent = "Enviar encuesta";
     }
   }
 }
