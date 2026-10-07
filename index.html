@@ -24703,128 +24703,39 @@ function finalizarEncuestaPiloto(){
   }
 
 </script>
- 
+ <!-- Vista de revisión integrada (sin escritura, etapa de validación) -->
 <style>
-#correctionWorkspace{position:fixed;inset:0;z-index:20000;background:#f5f8fb;overflow:auto;padding:24px;color:#203348;font-family:Arial,sans-serif}
-#correctionWorkspace[hidden]{display:none!important}
-.corr-wrap{max-width:1100px;margin:0 auto}.corr-head{background:#fff;border-top:6px solid #1e5b4f;border-radius:12px;padding:22px;margin-bottom:16px}
-.corr-panel{background:white;border:1px solid #dce5ed;border-radius:10px;margin:12px 0;padding:20px}
-.corr-panel h3{color:#1e5b4f;margin-bottom:12px}.corr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.corr-field{display:flex;flex-direction:column;gap:6px}.corr-field label{font-weight:700;font-size:12px}
-.corr-field input,.corr-field select,.corr-field textarea{width:100%;font-size:14px;padding:10px;border:1px solid #c7d5df;border-radius:6px}
-.corr-row{border:1px solid #e2e7ed;padding:14px;border-radius:8px;margin:12px 0}.corr-actions{display:flex;flex-wrap:wrap;gap:10px;margin:15px 0}
-.corr-actions button{border:0;border-radius:7px;background:#1e5b4f;color:white;padding:12px 16px;cursor:pointer;font-weight:700}
-.corr-actions button:disabled{opacity:.5;cursor:not-allowed}.corr-actions .corr-secondary{background:#465a6c}
-.corr-note{padding:14px;background:#fff8e8;border-left:4px solid #a57f2c;margin:12px 0;white-space:pre-wrap}
-.corr-status{padding:12px 0;font-weight:700;white-space:pre-wrap}.corr-json{font-family:monospace!important;min-height:230px;resize:vertical}
-.corr-hidden{display:none!important}.corr-sub{font-size:13px;color:#5e6e7e;line-height:1.5}
+#revisionOriginal{display:none;position:sticky;top:0;z-index:9998;background:#fff8e8;border-bottom:3px solid #a57f2c;padding:16px 24px;color:#2d3640;box-shadow:0 2px 8px #0001}
+#revisionOriginal strong{color:#611232}#revisionOriginal p{margin:8px 0;white-space:pre-wrap}body.revision-pendiente #revisionOriginal{display:block}
+body.revision-pendiente #btnPracticasContinuar,body.revision-pendiente #btnGuardarHeader{display:none!important}
 </style>
-<div id="correctionWorkspace" hidden><div class="corr-wrap"><div class="corr-head"><h2>Corrección de encuesta energética</h2><p id="corrFolio">Validando enlace...</p><div class="corr-note" id="corrObservaciones"></div><p class="corr-sub">Los campos que no modifiques se conservarán. Los registros existentes no se eliminan desde esta pantalla.</p></div><div id="corrContent"></div><div class="corr-panel"><h3>Reenvío de encuesta corregida</h3><div class="corr-grid"><div class="corr-field"><label for="corrCargo">Cargo de quien proporciona la información *</label><input id="corrCargo" maxlength="200"></div><div class="corr-field"><label for="corrContacto">Contacto (opcional)</label><input id="corrContacto" maxlength="300"></div></div><div class="corr-actions"><button id="corrGuardar" type="button">Guardar modificaciones</button><button id="corrReenviar" type="button" class="corr-secondary">Reenviar encuesta corregida</button></div><div class="corr-status" id="corrEstado" role="status"></div></div></div></div>
-
+<div id="revisionOriginal" role="status"><strong id="revisionFolio">Consultando enlace...</strong><p id="revisionObservaciones"></p><p id="revisionAviso">Vista de comprobación: todavía no está habilitado el guardado mediante token desde los formularios originales. No introduzcas cambios en esta prueba.</p></div>
 <script>
-/* Modo de corrección aislado: no altera los manejadores de la encuesta pública. */
 (function(){
-'use strict';
 const token=new URLSearchParams(location.search).get('correccion');
 if(!token)return;
-const overlay=document.getElementById('correctionWorkspace');overlay.hidden=false;
-const el=id=>document.getElementById(id);
-const status=(s)=>{el('corrEstado').textContent=s;};
+document.body.classList.add('revision-pendiente');
+const folio=document.getElementById('revisionFolio'), obs=document.getElementById('revisionObservaciones');
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const keys={
- encuestas:['nombre_establecimiento','giro_codigo','giro_otro','anio_inicio','anio_construccion','estado','municipio','codigo_postal','horas_operacion','empleados_total','opera_turnos','varia_empleados','empleados_min','empleados_max','tiene_tiempo_parcial','empleados_completo','empleados_parcial','comensales_promedio_mes','habitaciones_disponibles','noches_habitacion_mes','camas_disponibles','ocupacion_camas_pct','pacientes_promedio_mes','alumnos_matricula','huespedes_promedio_mes'],
- energia_caracteristicas:['tipo_edificacion','tipo_edificacion_otro','superficie_total_m2','numero_niveles','material_muros','material_muros_otro','aislamiento_respuesta','tipo_aislamiento','tipo_aislamiento_otro','tipo_ventanas','tipo_ventanas_otro','generacion_propia_respuesta','planta_emergencia_respuesta','periodicidad_electrica','periodicidad_otra','numero_medidores','superficie_climatizada_m2'],
- areas_establecimiento:['tipo','nombre','cantidad','superficie_valor','unidad','superficie_m2'],
- energeticos_establecimiento:['codigo','nombre'],
- facturas_energia:['codigo','nombre','fecha_inicio','fecha_fin','consumo','unidad','costo','tarifa','potencia_contratada','demanda','factor_potencia','cargo_demanda'],
- plantas_emergencia:['energetico','nombre','energetico_otro','capacidad','unidad','horas_anuales']
-};
-const titles={encuestas:'1. Datos generales',energia_caracteristicas:'2. Características energéticas',areas_establecimiento:'2. Áreas del establecimiento',energeticos_establecimiento:'3. Energéticos',facturas_energia:'3. Facturación de energía',plantas_emergencia:'2. Plantas de emergencia'};
-const labels={nombre_establecimiento:'Nombre del establecimiento',giro_codigo:'Código de giro',giro_otro:'Otro giro',anio_inicio:'Año de inicio',anio_construccion:'Año de construcción',estado:'Entidad federativa',municipio:'Municipio',codigo_postal:'Código postal',horas_operacion:'Horas de operación',empleados_total:'Total de trabajadores',tipo_edificacion:'Tipo de edificación',superficie_total_m2:'Superficie total (m²)',superficie_climatizada_m2:'Superficie climatizada (m²)',numero_niveles:'Número de niveles',codigo:'Código energético',nombre:'Nombre',fecha_inicio:'Fecha inicial',fecha_fin:'Fecha final',consumo:'Consumo',costo:'Costo',unidad:'Unidad',tarifa:'Tarifa',cargo_contacto:'Cargo',contacto:'Contacto'};
-const numeric=new Set(['giro_codigo','anio_inicio','anio_construccion','horas_operacion','empleados_total','empleados_min','empleados_max','empleados_completo','empleados_parcial','comensales_promedio_mes','habitaciones_disponibles','noches_habitacion_mes','camas_disponibles','ocupacion_camas_pct','pacientes_promedio_mes','alumnos_matricula','huespedes_promedio_mes','superficie_total_m2','superficie_climatizada_m2','numero_niveles','numero_medidores','cantidad','superficie_valor','superficie_m2','consumo','costo','potencia_contratada','demanda','factor_potencia','cargo_demanda','capacidad','horas_anuales']);
-const boolean=new Set(['opera_turnos','varia_empleados','tiene_tiempo_parcial']);
-const dates=new Set(['fecha_inicio','fecha_fin']);
-let original=null;let busy=false;
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function field(tab,key,val,rowIndex){
- const attr=`data-tab="${tab}" data-key="${key}" data-row="${rowIndex}"`;
- let ctrl;
- if(boolean.has(key))ctrl=`<select ${attr}><option value="">Sin respuesta</option><option value="true" ${val===true?'selected':''}>Sí</option><option value="false" ${val===false?'selected':''}>No</option></select>`;
- else ctrl=`<input ${attr} type="${numeric.has(key)?'number':dates.has(key)?'date':'text'}" ${numeric.has(key)?'step="any"':''} value="${esc(val)}">`;
- return `<div class="corr-field"><label>${esc(labels[key]||key.replaceAll('_',' '))}</label>${ctrl}</div>`;
-}
-function render(){
- const root=el('corrContent');root.innerHTML='';
- for(const [tab,columns] of Object.entries(keys)){
-  const source=tab==='encuestas'?original.encuesta:original[tab];const records=Array.isArray(source)?source:(source?[source]:[{}]);
-  const panel=document.createElement('section');panel.className='corr-panel';
-  let html=`<h3>${titles[tab]}</h3>`;
-  records.forEach((record,i)=>{html+=`<div class="corr-row"><p class="corr-sub">${Array.isArray(original[tab])?'Registro '+(i+1)+(record.id?' · ID '+esc(record.id):''):'Datos registrados'}</p><div class="corr-grid">`+columns.map(c=>field(tab,c,record[c],i)).join('')+'</div></div>';});
-  if(Array.isArray(original[tab]))html+=`<div class="corr-actions"><button type="button" class="corr-secondary" data-add="${tab}">Agregar registro</button></div>`;
-  panel.innerHTML=html;root.appendChild(panel);
+if(!uuid.test(token)){folio.textContent='Enlace de corrección inválido';return;}
+if(!supabaseClient){folio.textContent='No se pudo conectar a Supabase';return;}
+supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token}).then(({data,error})=>{
+ if(error)throw error;
+ if(!data?.encuesta)throw Error('El enlace venció o ya no está disponible.');
+ folio.textContent='Revisión del folio '+data.encuesta.id;
+ obs.textContent='Observaciones del administrador: '+(data.encuesta.observaciones_correccion||'Sin observaciones registradas.');
+ // No inyectar datos de otros folios en el almacenamiento local del navegador.
+ // El siguiente paso implementará hidratación y escritura transaccional de cada sección.
+}).catch(e=>{folio.textContent='No se pudo abrir el enlace';obs.textContent=e.message;});
+// Evita envíos y guardados accidentales desde esta vista de validación.
+document.addEventListener('click',function(e){
+ const target=e.target.closest('button');if(!target)return;
+ const t=(target.textContent||'').toLowerCase();
+ if(/guardar|enviar encuesta|reenviar|finalizar/.test(t)){
+  e.preventDefault();e.stopImmediatePropagation();alert('La edición mediante enlace de corrección aún no está habilitada en esta versión de comprobación.');
  }
- for(const [tab,title] of [['usos_finales','4. Usos finales y equipos'],['practicas_eficiencia','5. Prácticas de eficiencia energética']]){
-  const panel=document.createElement('section');panel.className='corr-panel';
-  panel.innerHTML=`<h3>${title}</h3><p class="corr-sub">Edición avanzada del registro estructurado. No cambies la estructura de las claves. Guarda una copia antes de modificar. La sección sólo se envía si su contenido cambia.</p><textarea class="corr-json" data-json="${tab}" spellcheck="false"></textarea>`;
-  root.appendChild(panel);panel.querySelector('textarea').value=JSON.stringify(original[tab]?.datos_json??{},null,2);
- }
- el('corrCargo').value=original.encuesta?.cargo_contacto??'';
- el('corrContacto').value=original.encuesta?.contacto??'';
- el('corrFolio').textContent=`Folio ${original.encuesta.id} · Enlace válido hasta ${new Date(original.encuesta.fecha_vencimiento_correccion).toLocaleString('es-MX')}`;
- el('corrObservaciones').textContent='Observaciones del administrador: '+(original.encuesta.observaciones_correccion||'Sin observaciones adicionales.');
-}
-function parse(key,val){if(val==='')return null;if(boolean.has(key))return val==='true';if(numeric.has(key)){const n=Number(val);if(!Number.isFinite(n))throw Error('Número inválido en '+key);return n;}return val;}
-function collect(){
- const changes={};
- for(const [tab,columns] of Object.entries(keys)){
-  const source=tab==='encuestas'?original.encuesta:original[tab];const isArray=Array.isArray(source);const rows=isArray?source:[source||{}];
-  const result=[];
-  const groups=new Map();
-  el('corrContent').querySelectorAll(`[data-tab="${tab}"]`).forEach(input=>{
-   const i=Number(input.dataset.row);if(!groups.has(i))groups.set(i,{});
-   const key=input.dataset.key,value=parse(key,input.value);const previous=rows[i]?.[key]??null;
-   if(JSON.stringify(value)!==JSON.stringify(previous))groups.get(i)[key]=value;
-  });
-  for(const [i,delta] of groups){if(Object.keys(delta).length){if(isArray){if(rows[i]?.id)delta.id=rows[i].id;result.push(delta);}else changes[tab]=delta;}}
-  if(isArray&&result.length)changes[tab]=result;
- }
- const cargo=el('corrCargo').value.trim(),contacto=el('corrContacto').value.trim();
- const main=changes.encuestas||{};
- if(cargo!==(original.encuesta.cargo_contacto||''))main.cargo_contacto=cargo||null;
- if(contacto!==(original.encuesta.contacto||''))main.contacto=contacto||null;
- if(Object.keys(main).length)changes.encuestas=main;
- const json={};
- for(const tab of ['usos_finales','practicas_eficiencia']){
-  const raw=el('corrContent').querySelector(`[data-json="${tab}"]`).value;
-  let value;try{value=JSON.parse(raw);}catch(e){throw Error('JSON inválido en '+tab+': '+e.message);}
-  if(!value||Array.isArray(value)||typeof value!=='object')throw Error('El contenido de '+tab+' debe ser un objeto JSON');
-  if(JSON.stringify(value)!==JSON.stringify(original[tab]?.datos_json??{}))json[tab]=value;
- }
- return {changes,json,cargo,contacto};
-}
-async function rpc(name,args){const {data,error}=await supabaseClient.rpc(name,args);if(error)throw Error(error.message);return data;}
-async function reload(){const data=await rpc('obtener_encuesta_correccion',{p_token:token});if(!data?.encuesta)throw Error('El enlace es inválido, venció o ya fue utilizado.');original=data;render();}
-async function save(){const {changes,json}=collect();let operations=0;
- if(Object.keys(changes).length){await rpc('guardar_correccion_secciones_1_3',{p_token:token,p_cambios:changes});operations++;}
- if(Object.keys(json).length){await rpc('guardar_correccion_secciones_4_5',{p_token:token,p_usos_finales:json.usos_finales??null,p_practicas_eficiencia:json.practicas_eficiencia??null});operations++;}
- await reload();return operations;
-}
-async function guarded(action){if(busy)return;busy=true;el('corrGuardar').disabled=true;el('corrReenviar').disabled=true;try{await action();}catch(e){console.error(e);status('Error: '+e.message);}finally{busy=false;el('corrGuardar').disabled=false;el('corrReenviar').disabled=false;}}
-el('corrContent').addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(!b)return;const tab=b.dataset.add;const parent=b.closest('.corr-panel');const index=parent.querySelectorAll('.corr-row').length;const row=document.createElement('div');row.className='corr-row';row.innerHTML=`<p class="corr-sub">Nuevo registro</p><div class="corr-grid">`+keys[tab].map(c=>field(tab,c,null,index)).join('')+'</div>';b.closest('.corr-actions').before(row);});
-el('corrGuardar').addEventListener('click',()=>guarded(async()=>{status('Guardando...');const n=await save();status(n?'Modificaciones guardadas y verificadas mediante nueva lectura.':'No había cambios pendientes.');}));
-el('corrReenviar').addEventListener('click',()=>guarded(async()=>{
- const {cargo}=collect();if(!cargo){status('Debes indicar el cargo de quien proporciona la información.');el('corrCargo').focus();return;}
- if(!confirm('Se guardarán los cambios y se reenviará la encuesta. El enlace dejará de funcionar. ¿Continuar?'))return;
- status('Guardando modificaciones antes del reenvío...');await save();
- const currentCargo=el('corrCargo').value.trim(),currentContacto=el('corrContacto').value.trim();
- status('Reenviando encuesta...');const response=await rpc('reenviar_encuesta_corregida',{p_token:token,p_cargo_contacto:currentCargo,p_contacto:currentContacto||null});
- el('corrContent').innerHTML='';el('corrGuardar').disabled=true;el('corrReenviar').disabled=true;
- el('corrFolio').textContent='Encuesta corregida reenviada';el('corrObservaciones').textContent='El enlace de corrección ha quedado invalidado.';
- status('Reenvío registrado. Folio '+(response?.folio??original.encuesta.id)+'.');
- }));
-(async()=>{try{if(!uuid.test(token))throw Error('Formato de enlace inválido.');if(!supabaseClient)throw Error('No se pudo conectar a Supabase.');await reload();status('Encuesta recuperada. Puedes editar y guardar las respuestas.');}catch(e){el('corrContent').innerHTML='';el('corrFolio').textContent='No se pudo abrir la corrección';el('corrObservaciones').textContent=e.message;el('corrGuardar').disabled=true;el('corrReenviar').disabled=true;}})();
+},true);
 })();
 </script>
-
 </body>
 </html>
