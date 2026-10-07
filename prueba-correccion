@@ -12400,7 +12400,6 @@ function limpiarFormularioAireAcondicionado() {
 // Siguientes veces: UPDATE del mismo ID.
 
 async function guardarEncuestaSupabase(estatusEncuesta="en_progreso"){
- if(new URLSearchParams(location.search).has("correccion"))throw new Error("Guardado bloqueado en vista de comprobación.");
 
   // 1. Obtiene o crea el usuario anónimo.
   const userId =
@@ -22578,7 +22577,6 @@ function cargarUsosFinalesCanonico() {
 // Persistencia definitiva de la sección 4 en Supabase
 // -----------------------------------------------------
 async function guardarUsosFinalesSupabase(mostrarEstado=false) {
- if(new URLSearchParams(location.search).has("correccion"))throw new Error("Guardado bloqueado en vista de comprobación.");
   const datos = guardarUsosFinalesCanonico();
   if (!supabaseClient) throw new Error("Supabase no está disponible.");
 
@@ -22642,7 +22640,7 @@ function aplicarDatosUsosFinales(datos) {
   try { actualizarVisibilidadEspecializados(); } catch(e) { console.warn(e); }
   try { renderizarDestinosEnergeticos(); } catch(e) { console.warn(e); }
 
-  localStorage.setItem(STORAGE_USOS_FINALES_V2, JSON.stringify(datos));
+  if (!new URLSearchParams(location.search).has("correccion")) localStorage.setItem(STORAGE_USOS_FINALES_V2, JSON.stringify(datos));
   return true;
 }
 
@@ -23634,7 +23632,6 @@ function guardarPracticasLocal(mostrarEstado=false){
 
 
 async function guardarPracticasSupabase(mostrarEstado=false){
- if(new URLSearchParams(location.search).has("correccion"))throw new Error("Guardado bloqueado en vista de comprobación.");
   guardarPracticasLocal(false);
 
   if(!supabaseClient){
@@ -24719,70 +24716,49 @@ function finalizarEncuestaPiloto(){
   }
 
 </script>
- <!-- Vista de revisión integrada (sin escritura, etapa de validación) -->
-<style>
-#revisionOriginal{display:none;position:sticky;top:0;z-index:9998;background:#fff8e8;border-bottom:3px solid #a57f2c;padding:16px 24px;color:#2d3640;box-shadow:0 2px 8px #0001}
-#revisionOriginal strong{color:#611232}#revisionOriginal p{margin:8px 0;white-space:pre-wrap}body.revision-pendiente #revisionOriginal{display:block}
-body.revision-pendiente #btnPracticasContinuar,body.revision-pendiente #btnGuardarHeader{display:none!important}
-</style>
-<div id="revisionOriginal" role="status"><strong id="revisionFolio">Consultando enlace...</strong><p id="revisionObservaciones"></p><p id="revisionAviso">Vista de comprobación: todavía no está habilitado el guardado mediante token desde los formularios originales. No introduzcas cambios en esta prueba.</p></div>
-<script>
-// Vista de precarga por RPC. No usa encuesta_id local ni escribe en Supabase.
-function awaitPrecargaCorreccion(data){
- const e=data.encuesta||{}, c=data.energia_caracteristicas||{};
- const poner=(id,v)=>{const el=document.getElementById(id);if(el&&v!==null&&v!==undefined){el.value=String(v);}};
- const radio=(name,v)=>{if(v===null||v===undefined)return;const val=v===true?'si':v===false?'no':String(v);document.querySelectorAll('input[type="radio"][name="'+name+'"]').forEach(x=>x.checked=x.value===val);};
- const campos={nombre_establecimiento:'nombreEstablecimiento',giro_otro:'otroGiro',anio_inicio:'anioInicio',anio_construccion:'anioConstruccion',estado:'estado',municipio:'municipio',codigo_postal:'cp',horas_operacion:'horasOperacion',empleados_total:'empleadosTotal',empleados_min:'empleadosMin',empleados_max:'empleadosMax',empleados_completo:'empleadosCompleto',empleados_parcial:'empleadosParcial',comensales_promedio_mes:'comensalesPromedioMes',habitaciones_disponibles:'habitacionesDisponibles',huespedes_promedio_mes:'huespedesMes',camas_disponibles:'camasDisponibles',ocupacion_camas_pct:'ocupacionCamasPct',pacientes_promedio_mes:'pacientesMes',alumnos_matricula:'alumnosMatricula',cargo_contacto:'cargoContacto',contacto:'contactoEncuesta'};
- Object.entries(campos).forEach(([k,id])=>poner(id,e[k]));
- if(e.giro_codigo!=null&&typeof establecerGiroDesdeCodigo==='function')establecerGiroDesdeCodigo(String(e.giro_codigo));
- radio('turnos',e.opera_turnos);radio('variaEmpleados',e.varia_empleados);radio('tiempoParcial',e.tiene_tiempo_parcial);
- const cf={tipo_edificacion:'tipoEdificacion',tipo_edificacion_otro:'tipoEdificacionOtro',superficie_total_m2:'superficieTotal',superficie_climatizada_m2:'superficieClimatizada',numero_niveles:'numeroNiveles',material_muros:'materialMuros',material_muros_otro:'materialMurosOtro',aislamiento_respuesta:'aislamientoRespuesta',tipo_aislamiento:'tipoAislamiento',tipo_aislamiento_otro:'tipoAislamientoOtro',tipo_ventanas:'tipoVentanas',tipo_ventanas_otro:'tipoVentanasOtro',generacion_propia_respuesta:'generacionPropia',planta_emergencia_respuesta:'plantaEmergencia',periodicidad_electrica:'periodicidadElectrica',periodicidad_otra:'periodicidadOtra',numero_medidores:'numeroMedidores'};
- Object.entries(cf).forEach(([k,id])=>poner(id,c[k]));
- try{if(typeof actualizarOtroGiro==='function')actualizarOtroGiro();if(typeof calcularEdad==='function')calcularEdad();}catch(err){console.warn('Actualización visual parcial',err);}
- // Utilizar los restauradores originales para preservar tablas, modales y respuestas.
- if(data.usos_finales?.datos_json&&typeof aplicarDatosUsosFinales==='function'){
-   try{aplicarDatosUsosFinales(data.usos_finales.datos_json);}catch(err){console.warn('No se pudo presentar toda la sección 4',err);}
- }
- if(data.practicas_eficiencia?.datos_json&&typeof aplicarDatosPracticas==='function'){
-   try{aplicarDatosPracticas(data.practicas_eficiencia.datos_json);}catch(err){console.warn('No se pudo presentar toda la sección 5',err);}
- }
- const aviso=document.getElementById('revisionAviso');
- if(aviso)aviso.textContent='Respuestas recuperadas para comprobación. Secciones 1, 4 y 5 precargadas; la visualización completa de listas y facturas de la sección 2 sigue en desarrollo. Guardar y reenviar están deshabilitados.';
- // Proteger la información recuperada: ningún cambio desde esta vista de comprobación.
- document.querySelectorAll('input,select,textarea').forEach(el=>{if(!el.closest('#revisionOriginal'))el.disabled=true;});
-}
-</script>
+ <!-- Precarga de revisión por token: comprobación SIN escritura -->
+<style>#revisionOriginal{position:sticky;top:0;z-index:9998;background:#fff8e8;border-bottom:3px solid #a57f2c;padding:12px 22px;color:#2d3640}#revisionOriginal p{margin:5px 0}#revisionOriginal strong{color:#611232}</style>
+<div id="revisionOriginal" hidden role="status"><strong id="revisionFolio">Recuperando encuesta...</strong><p id="revisionObservaciones"></p><p id="revisionEstado">No se permite guardar ni reenviar desde esta copia.</p></div>
 <script>
 (function(){
-const token=new URLSearchParams(location.search).get('correccion');
-if(!token)return;
-document.body.classList.add('revision-pendiente');
-const folio=document.getElementById('revisionFolio'), obs=document.getElementById('revisionObservaciones');
+const token=new URLSearchParams(location.search).get('correccion'); if(!token)return;
+const bar=document.getElementById('revisionOriginal'), titulo=document.getElementById('revisionFolio'),obs=document.getElementById('revisionObservaciones'),estado=document.getElementById('revisionEstado');bar.hidden=false;
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-if(!uuid.test(token)){folio.textContent='Enlace de corrección inválido';return;}
-if(!supabaseClient){folio.textContent='No se pudo conectar a Supabase';return;}
+if(!uuid.test(token)){titulo.textContent='Enlace de corrección inválido';return;}
+// Bloquear cualquier modificación o guardado desde esta copia de validación.
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=(b.textContent||'').toLowerCase();if(/guardar|enviar encuesta|reenviar|finalizar|eliminar|duplicar|agregar|añadir/.test(t)){e.preventDefault();e.stopImmediatePropagation();alert('Esta copia es exclusivamente de consulta; no guarda cambios.');}},true);
+function put(id,v){const el=document.getElementById(id);if(el&&v!==null&&v!==undefined){el.value=String(v);el.dispatchEvent(new Event('change',{bubbles:false}));}}
+function radio(name,v){if(v===null||v===undefined)return;const val=typeof v==='boolean'?(v?'si':'no'):String(v);const el=[...document.querySelectorAll('input[type=radio]')].find(x=>x.name===name&&x.value===val);if(el)el.checked=true;}
+function safe(fn){try{fn();}catch(e){console.warn('Precarga parcial:',e);}}
+function prefill(data){
+ const e=data.encuesta||{},c=data.energia_caracteristicas||{};
+ const campos={nombreEstablecimiento:'nombre_establecimiento',otroGiro:'giro_otro',anioInicio:'anio_inicio',anioConstruccion:'anio_construccion',estado:'estado',municipio:'municipio',cp:'codigo_postal',horasOperacion:'horas_operacion',empleadosTotal:'empleados_total',empleadosMin:'empleados_min',empleadosMax:'empleados_max',empleadosCompleto:'empleados_completo',empleadosParcial:'empleados_parcial',comensalesPromedioMes:'comensales_promedio_mes',habitacionesDisponibles:'habitaciones_disponibles',huespedesMes:'huespedes_promedio_mes',camasDisponibles:'camas_disponibles',ocupacionCamasPct:'ocupacion_camas_pct',pacientesMes:'pacientes_promedio_mes',alumnosMatricula:'alumnos_matricula'};
+ Object.entries(campos).forEach(([id,k])=>put(id,e[k]));
+ safe(()=>establecerGiroDesdeCodigo(e.giro_codigo));
+ radio('turnos',e.opera_turnos);radio('variaEmpleados',e.varia_empleados);radio('tiempoParcial',e.tiene_tiempo_parcial);
+ const cf={tipoEdificacion:'tipo_edificacion',tipoEdificacionOtro:'tipo_edificacion_otro',superficieTotal:'superficie_total_m2',superficieClimatizada:'superficie_climatizada_m2',numeroNiveles:'numero_niveles',materialMuros:'material_muros',materialMurosOtro:'material_muros_otro',tipoAislamiento:'tipo_aislamiento',tipoAislamientoOtro:'tipo_aislamiento_otro',tipoVentanas:'tipo_ventanas',tipoVentanasOtro:'tipo_ventanas_otro',periodicidadFactura:'periodicidad_electrica',periodicidadOtra:'periodicidad_otra',numeroMedidores:'numero_medidores'};
+ Object.entries(cf).forEach(([id,k])=>put(id,c[k]));
+ radio('aislamiento',c.aislamiento_respuesta);radio('generacionPropia',c.generacion_propia_respuesta);radio('plantaEmergencia',c.planta_emergencia_respuesta);
+ safe(()=>{areasEstablecimiento=Array.isArray(data.areas_establecimiento)?data.areas_establecimiento.map(a=>({...a,superficie:a.superficie_valor})):[];renderizarAreas();});
+ safe(()=>{energeticosEstablecimiento=Array.isArray(data.energeticos_establecimiento)?data.energeticos_establecimiento.map(x=>({...x})):[];renderizarEnergeticos();renderizarModulosFacturacion(energeticosEstablecimiento);});
+ safe(()=>{plantasEmergencia=Array.isArray(data.plantas_emergencia)?data.plantas_emergencia.map(x=>({...x})):[];renderizarPlantas();});
+ safe(()=>{facturasEnergia=Array.isArray(data.facturas_energia)?data.facturas_energia.map(x=>({...x})):[];renderizarFacturasEnergia();});
+ safe(()=>{const u=data.usos_finales; if(u){const json=u.datos_json||u;aplicarDatosUsosFinales(json);}});
+ safe(()=>{const p=data.practicas_eficiencia;if(p)aplicarDatosPracticas(p.datos_json||p);});
+ safe(()=>{actualizarOtroGiro();calcularEdad();actualizarCampoComensales();});
+ // Esta prueba no introduce datos de otro folio en el almacenamiento persistente.
+ const count=(x)=>Array.isArray(x)?x.length:0;
+ const usos=data.usos_finales?.datos_json?.usos||{};
+ const equipos=Object.values(usos).reduce((n,x)=>n+count(x),0);
+ estado.textContent=`Precarga ejecutada. Registros recibidos: ${count(data.areas_establecimiento)} áreas, ${count(data.facturas_energia)} facturas, ${equipos} equipos, ${count(data.plantas_emergencia)} plantas. Consulta solamente: guardado deshabilitado.`;
+}
+if(!supabaseClient){titulo.textContent='Sin conexión a Supabase';return;}
 supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token}).then(({data,error})=>{
- if(error)throw error;
- if(!data?.encuesta)throw Error('El enlace venció o ya no está disponible.');
- window.__revisionDatosVerificados = data;
- // Los energéticos proceden exclusivamente de la RPC autorizada por token.
- energeticosEstablecimiento = (data.energeticos_establecimiento || []).map(e=>({codigo:e.codigo,nombre:e.nombre}));
- sincronizarEnergeticosUsosFinales().catch(console.warn);
- awaitPrecargaCorreccion(data);
- folio.textContent='Revisión del folio '+data.encuesta.id;
- obs.textContent='Observaciones del administrador: '+(data.encuesta.observaciones_correccion||'Sin observaciones registradas.');
- // No inyectar datos de otros folios en el almacenamiento local del navegador.
- // El siguiente paso implementará hidratación y escritura transaccional de cada sección.
-}).catch(e=>{folio.textContent='No se pudo abrir el enlace';obs.textContent=e.message;});
-// Evita envíos y guardados accidentales desde esta vista de validación.
-document.addEventListener('click',function(e){
- const target=e.target.closest('button');if(!target)return;
- const t=(target.textContent||'').toLowerCase();
- if(/guardar|enviar encuesta|reenviar|finalizar/.test(t)){
-  e.preventDefault();e.stopImmediatePropagation();alert('La edición mediante enlace de corrección aún no está habilitada en esta versión de comprobación.');
- }
-},true);
+ if(error)throw error;if(!data?.encuesta)throw Error('El enlace no está disponible o ha vencido.');
+ titulo.textContent='Revisión del folio '+data.encuesta.id;
+ obs.textContent='Observaciones: '+(data.encuesta.observaciones_correccion||'Sin observaciones registradas.');
+ prefill(data);window.__revisionPrecargaLista=true;
+}).catch(err=>{titulo.textContent='No se pudo recuperar la encuesta';estado.textContent=err.message;console.error(err);});
 })();
 </script>
-</body>
-</html>
+</body></html>
