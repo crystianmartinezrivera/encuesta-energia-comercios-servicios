@@ -16106,6 +16106,12 @@ if(caracteristicas){
 // ======================================================
 
 async function cargarEnergeticosFacturacion(){
+  // En modo de revisión no consultar tablas directamente: RLS exige titular.
+  if (new URLSearchParams(location.search).has('correccion')) {
+    if (!window.__revisionDatosVerificados) return [];
+    return (window.__revisionDatosVerificados.energeticos_establecimiento || [])
+      .map(e => ({codigo:e.codigo, nombre:e.nombre}));
+  }
 
   const encuestaId =
     localStorage.getItem("encuesta_id");
@@ -24662,6 +24668,9 @@ function finalizarEncuestaPiloto(){
   // Carga las listas de años.
   cargarAnios();
 
+  // En revisión por token NO restaurar cachés de otra encuesta ni activar autoguardado.
+  const modoRevisionLectura = new URLSearchParams(location.search).has('correccion');
+  if (!modoRevisionLectura) {
   // Recupera un avance anterior, si existe.
   cargarLocal();
 
@@ -24697,6 +24706,10 @@ function finalizarEncuestaPiloto(){
   restaurarFinalizacionPublica();
   actualizarBotonInicio();
   procesarAutoinicioNuevaEncuesta();
+  } else {
+    // La precarga completa y escritura de formularios están pendientes.
+    // La consulta por token se ejecuta al final del documento.
+  }
 
   if(!supabaseClient){
     document.getElementById("avisoModoLocal")?.classList.remove("hidden");
@@ -24722,6 +24735,10 @@ if(!supabaseClient){folio.textContent='No se pudo conectar a Supabase';return;}
 supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token}).then(({data,error})=>{
  if(error)throw error;
  if(!data?.encuesta)throw Error('El enlace venció o ya no está disponible.');
+ window.__revisionDatosVerificados = data;
+ // Los energéticos proceden exclusivamente de la RPC autorizada por token.
+ energeticosEstablecimiento = (data.energeticos_establecimiento || []).map(e=>({codigo:e.codigo,nombre:e.nombre}));
+ sincronizarEnergeticosUsosFinales().catch(console.warn);
  folio.textContent='Revisión del folio '+data.encuesta.id;
  obs.textContent='Observaciones del administrador: '+(data.encuesta.observaciones_correccion||'Sin observaciones registradas.');
  // No inyectar datos de otros folios en el almacenamiento local del navegador.
