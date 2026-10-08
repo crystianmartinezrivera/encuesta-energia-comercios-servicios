@@ -22627,6 +22627,14 @@ function aplicarDatosUsosFinales(datos) {
     ponerRadioCD(nombre, resp[nombre] || "");
   });
 
+  // V6: el radio "Sí" se restauraba, pero el panel sólo se abría por el
+  // evento change del usuario. Sin disparar eventos ni modificar registros,
+  // sincronizar visibilidad con la respuesta ya precargada.
+  if (new URLSearchParams(location.search).has('correccion')) {
+    const panelIluminacion = document.getElementById('iluminacionContenido');
+    const usaIluminacion = valorRadioCD('usaIluminacion') === 'si';
+    if (panelIluminacion) panelIluminacion.classList.toggle('hidden', !usaIluminacion);
+  }
   try { renderTablaIluminacion(); } catch(e) { console.warn(e); }
   try { renderizarTablaAireAcondicionado(); } catch(e) { console.warn(e); }
   try { renderizarTablaVentilacion(); } catch(e) { console.warn(e); }
@@ -24813,7 +24821,7 @@ function prefill(data){
    const areaP=document.createElement('p');areaP.textContent=`Áreas: ${areas.length} recibidas, ${tablaAreas?.querySelectorAll('tr').length||0} filas visibles; ${faltantesAreas.length} nombres sin correspondencia.`;detalle.append(areaP);
    const eneP=document.createElement('p');eneP.textContent=`Energéticos: ${ener.length} recibidos, ${tablaEner?.querySelectorAll('tr').length||0} filas visibles; ${faltantesEner.length} nombres sin correspondencia.`;detalle.append(eneP);
    const nombres=document.createElement('p');nombres.textContent='Energéticos registrados: '+ener.map(x=>x.nombre||x.codigo).join(' · ');detalle.append(nombres);
-   const nota=document.createElement('p');nota.textContent='V5: navegación protegida e inicialización de módulos de equipos y prácticas. Recorre las secciones 2, 3, 4 y 5 y vuelve a la 2; comprueba los valores. No guardes.';detalle.append(nota);
+   const nota=document.createElement('p');nota.textContent='V6: iluminación visible al recuperar la respuesta Sí; navegación protegida y módulos de equipos y prácticas inicializados. Recorre las secciones 2, 3, 4 y 5 y vuelve a la 2; comprueba los valores. No guardes.';detalle.append(nota);
  }
  estado.textContent=`Precarga ejecutada. Recibidos: ${count(data.areas_establecimiento)} áreas, ${count(data.facturas_energia)} facturas, ${equipos} equipos, ${count(data.plantas_emergencia)} plantas. En pantalla: ${document.querySelectorAll('#tablaAreasBody tr').length} áreas, ${document.querySelectorAll('#contenedorFacturacionEnergeticos tbody tr').length} facturas. ${fallosPrecarga.length?'Errores: '+fallosPrecarga.join(' | '):'Sin excepciones de renderizado detectadas (verificar valores).'} Guardado deshabilitado.`;
 }
