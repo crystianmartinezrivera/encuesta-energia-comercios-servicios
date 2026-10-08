@@ -24718,17 +24718,29 @@ function finalizarEncuestaPiloto(){
 </script>
  <!-- Precarga de revisión por token: diagnóstico v2 SIN escritura -->
 <style>#revisionOriginal{position:sticky;top:0;z-index:9998;background:#fff8e8;border-bottom:3px solid #a57f2c;padding:12px 22px;color:#2d3640}#revisionOriginal p{margin:5px 0}#revisionOriginal strong{color:#611232}</style>
-<div id="revisionOriginal" hidden role="status"><strong id="revisionFolio">Recuperando encuesta...</strong><p id="revisionObservaciones"></p><p id="revisionEstado">No se permite guardar ni reenviar desde esta copia.</p></div>
+<div id="revisionOriginal" hidden role="status"><strong id="revisionFolio">Recuperando encuesta...</strong><p id="revisionObservaciones"></p><p id="revisionEstado">Recuperando información.</p><div id="revisionAcciones" hidden style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px"><button type="button" id="btnGuardarCorreccionPrueba" style="padding:10px 16px;background:#1e5b4f;color:white;border:0;border-radius:6px;cursor:pointer">Guardar avance de corrección</button><span id="revisionResultado" aria-live="polite"></span></div></div>
 <script>
 (function(){
 const token=new URLSearchParams(location.search).get('correccion'); if(!token)return;
 const bar=document.getElementById('revisionOriginal'), titulo=document.getElementById('revisionFolio'),obs=document.getElementById('revisionObservaciones'),estado=document.getElementById('revisionEstado');bar.hidden=false;
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 if(!uuid.test(token)){titulo.textContent='Enlace de corrección inválido';return;}
-// Bloquear cualquier modificación o guardado desde esta copia de validación.
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=(b.textContent||'').toLowerCase();if(/guardar|enviar encuesta|reenviar|finalizar|eliminar|duplicar|agregar|añadir|editar/.test(t)){e.preventDefault();e.stopImmediatePropagation();alert('Esta copia es exclusivamente de consulta; no guarda cambios.');}},true);
+// Edición habilitada en formularios. Se interceptan guardados ordinarios para no crear folios.
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;
+ const t=(b.textContent||'').toLowerCase();
+ if(/enviar encuesta|reenviar|finalizar/.test(t)){
+   e.preventDefault();e.stopImmediatePropagation();
+   alert('El reenvío definitivo aún no está habilitado en esta versión de prueba.');return;
+ }
+ if(/guardar avance|guardar cambios|guardar sección|guardar seccion/.test(t) && b.id!=='btnGuardarCorreccionPrueba' && !b.closest('[id^="modal"]')){
+   e.preventDefault();e.stopImmediatePropagation();
+   window.guardarCorreccionPrueba?.();
+ }
+},true);
 function put(id,v){const el=document.getElementById(id);if(el&&v!==null&&v!==undefined){el.value=String(v);el.dispatchEvent(new Event('change',{bubbles:false}));}}
 function radio(name,v){if(v===null||v===undefined)return;const val=typeof v==='boolean'?(v?'si':'no'):String(v);const el=[...document.querySelectorAll('input[type=radio]')].find(x=>x.name===name&&x.value===val);if(el)el.checked=true;}
+let revisionDatosOriginales=null;let revisionGuardando=false;
 const fallosPrecarga=[]; function safe(fn){try{fn();}catch(e){fallosPrecarga.push(e.message);console.warn('Precarga parcial:',e);}}
 function prefill(data){
  const e=data.encuesta||{},c=data.energia_caracteristicas||{};
@@ -24751,14 +24763,81 @@ function prefill(data){
  const count=(x)=>Array.isArray(x)?x.length:0;
  const usos=data.usos_finales?.datos_json?.usos||{};
  const equipos=Object.values(usos).reduce((n,x)=>n+count(x),0);
- estado.textContent=`Precarga ejecutada. Recibidos: ${count(data.areas_establecimiento)} áreas, ${count(data.facturas_energia)} facturas, ${equipos} equipos, ${count(data.plantas_emergencia)} plantas. En pantalla: ${document.querySelectorAll('#tablaAreasBody tr').length} áreas, ${document.querySelectorAll('#contenedorFacturacionEnergeticos tbody tr').length} facturas. ${fallosPrecarga.length?'Errores: '+fallosPrecarga.join(' | '):'Sin errores de renderizado detectados.'} Guardado deshabilitado.`;
+ estado.textContent=`Precarga ejecutada. Recibidos: ${count(data.areas_establecimiento)} áreas, ${count(data.facturas_energia)} facturas, ${equipos} equipos, ${count(data.plantas_emergencia)} plantas. En pantalla: ${document.querySelectorAll('#tablaAreasBody tr').length} áreas, ${document.querySelectorAll('#contenedorFacturacionEnergeticos tbody tr').length} facturas. ${fallosPrecarga.length?'Errores: '+fallosPrecarga.join(' | '):'Sin errores de renderizado detectados.'} Edición disponible. Guardado de prueba: no permite eliminar filas existentes; reenvío deshabilitado.`;
 }
+
+// Guardado controlado: los campos se envían sólo a las RPC por token.
+// No utiliza la ruta pública que crearía un folio o cambiaría el estatus a borrador.
+const CAMPO_ENCUESTA={nombreEstablecimiento:'nombre_establecimiento',otroGiro:'giro_otro',anioInicio:'anio_inicio',anioConstruccion:'anio_construccion',estado:'estado',municipio:'municipio',cp:'codigo_postal',horasOperacion:'horas_operacion',empleadosTotal:'empleados_total',empleadosMin:'empleados_min',empleadosMax:'empleados_max',empleadosCompleto:'empleados_completo',empleadosParcial:'empleados_parcial',comensalesPromedioMes:'comensales_promedio_mes',habitacionesDisponibles:'habitaciones_disponibles',huespedesMes:'huespedes_promedio_mes',camasDisponibles:'camas_disponibles',ocupacionCamasPct:'ocupacion_camas_pct',pacientesMes:'pacientes_promedio_mes',alumnosMatricula:'alumnos_matricula',cargoContacto:'cargo_contacto',contactoEncuesta:'contacto'};
+const CAMPO_CARACTERISTICAS={tipoEdificacion:'tipo_edificacion',tipoEdificacionOtro:'tipo_edificacion_otro',superficieTotal:'superficie_total_m2',superficieClimatizada:'superficie_climatizada_m2',numeroNiveles:'numero_niveles',materialMuros:'material_muros',materialMurosOtro:'material_muros_otro',tipoAislamiento:'tipo_aislamiento',tipoAislamientoOtro:'tipo_aislamiento_otro',tipoVentanas:'tipo_ventanas',tipoVentanasOtro:'tipo_ventanas_otro',periodicidadFactura:'periodicidad_electrica',periodicidadOtra:'periodicidad_otra',numeroMedidores:'numero_medidores'};
+const NUMERICOS=new Set(['anio_inicio','anio_construccion','horas_operacion','empleados_total','empleados_min','empleados_max','empleados_completo','empleados_parcial','comensales_promedio_mes','habitaciones_disponibles','huespedes_promedio_mes','camas_disponibles','ocupacion_camas_pct','pacientes_promedio_mes','alumnos_matricula','superficie_total_m2','superficie_climatizada_m2','numero_niveles','numero_medidores','giro_codigo']);
+function valorCampo(el,k){let v=el.value;if(v==='')return null;if(NUMERICOS.has(k)){const n=Number(v);if(!Number.isFinite(n))throw Error('Valor numérico inválido: '+k);return n;}return v;}
+function cambiosCampos(mapa,origen){const out={};for(const [id,k] of Object.entries(mapa)){const el=document.getElementById(id);if(!el)continue;const v=valorCampo(el,k);if(JSON.stringify(v)!==JSON.stringify(origen?.[k]??null))out[k]=v;}return out;}
+function valorRadioRevision(nombre){const x=document.querySelector('input[type=radio][name="'+nombre+'"]:checked');return x?x.value:null;}
+function radioBooleano(out,orig,k,nombre){const v=valorRadioRevision(nombre);if(v!==null && (v==='si')!==orig?.[k])out[k]=v==='si';}
+function compararFilas(nombre,actual,permitidas){
+ const prev=revisionDatosOriginales?.[nombre]||[];
+ if(!Array.isArray(actual))throw Error('No se puede leer '+nombre);
+ const prevIds=new Set(prev.map(x=>String(x.id)));
+ const actIds=new Set(actual.filter(x=>x.id!=null).map(x=>String(x.id)));
+ const eliminados=[...prevIds].filter(id=>!actIds.has(id));
+ if(eliminados.length)throw Error('Se detectaron '+eliminados.length+' eliminaciones en '+nombre+'. Por seguridad, esta prueba no guarda eliminaciones todavía.');
+ const rows=[];
+ for(const fila of actual){
+  const previo=prev.find(x=>String(x.id)===String(fila.id));
+  const cambio={};
+  for(const k of permitidas){if(!(k in fila))continue;let v=fila[k];if(v===undefined)continue;if(typeof v==='number' && !Number.isFinite(v))v=null;
+   if(!previo || JSON.stringify(v??null)!==JSON.stringify(previo[k]??null))cambio[k]=v??null;
+  }
+  if(Object.keys(cambio).length)rows.push(fila.id!=null?{id:fila.id,...cambio}:cambio);
+ }
+ return rows;
+}
+function datosUsosRevision(){
+ // Evitar guardar en el almacenamiento local de una encuesta distinta.
+ const d={version:4,respuestas:{},usos:{},energeticos:catalogoEnergeticosUsosFinales(),destinosEnergeticos:obtenerDestinosEnergeticos(),fechaGuardado:new Date().toISOString()};
+ d.respuestas={usaIluminacion:valorRadioCD('usaIluminacion'),usaRefrigeracion:valorRadioCD('usaRefrigeracion'),usaEquiposOficina:valorRadioCD('usaEquiposOficina'),usaElectromecanicos:valorRadioCD('usaElectromecanicos'),usaSistemasTermicos:valorRadioCD('usaSistemasTermicos'),usaCoccion:valorRadioCD('usaCoccion'),usaEspecializados:valorRadioCD('usaEspecializados')};
+ for(const id of ['acondAire','acondVentilacion','acondCalefaccion','acondNinguno'])d.respuestas[id]=!!document.getElementById(id)?.checked;
+ d.usos={iluminacion:gruposIluminacion,aireAcondicionado:equiposAireAcondicionado,ventilacion:equiposVentilacion,calefaccion:equiposCalefaccion,refrigeracion:equiposRefrigeracion,oficina:equiposOficina,electromecanicos:equiposElectromecanicos,sistemasTermicos,coccion:equiposCoccion,especializados:equiposEspecializados};
+ return JSON.parse(JSON.stringify(d));
+}
+window.guardarCorreccionPrueba=async function(){
+ const out=document.getElementById('revisionResultado'),btn=document.getElementById('btnGuardarCorreccionPrueba');
+ if(revisionGuardando||!revisionDatosOriginales)return;
+ revisionGuardando=true;btn.disabled=true;out.textContent='Verificando cambios...';
+ try{
+  const e=revisionDatosOriginales.encuesta||{},c=revisionDatosOriginales.energia_caracteristicas||{};
+  const enc=cambiosCampos(CAMPO_ENCUESTA,e),car=cambiosCampos(CAMPO_CARACTERISTICAS,c);
+  const giro=document.getElementById('giro');if(giro){const v=giro.value?Number(giro.value):null;if(v!==e.giro_codigo)enc.giro_codigo=v;}
+  radioBooleano(enc,e,'opera_turnos','turnos');radioBooleano(enc,e,'varia_empleados','variaEmpleados');radioBooleano(enc,e,'tiene_tiempo_parcial','tiempoParcial');
+  radioBooleano(car,c,'aislamiento_respuesta','aislamiento');radioBooleano(car,c,'generacion_propia_respuesta','generacionPropia');radioBooleano(car,c,'planta_emergencia_respuesta','plantaEmergencia');
+  // Las respuestas de características se almacenan como texto; no convertir a booleanos.
+  for(const [k,n] of [['aislamiento_respuesta','aislamiento'],['generacion_propia_respuesta','generacionPropia'],['planta_emergencia_respuesta','plantaEmergencia']]){delete car[k];const v=valorRadioRevision(n);if(v!==null&&v!==(c[k]??null))car[k]=v;}
+  const payload={};if(Object.keys(enc).length)payload.encuestas=enc;if(Object.keys(car).length)payload.energia_caracteristicas=car;
+  const listas=[['areas_establecimiento',areasEstablecimiento,['tipo','nombre','cantidad','superficie_valor','unidad','superficie_m2']],['energeticos_establecimiento',energeticosEstablecimiento,['codigo','nombre']],['facturas_energia',facturasEnergia,['codigo','nombre','fecha_inicio','fecha_fin','consumo','unidad','costo','tarifa','potencia_contratada','demanda','factor_potencia','cargo_demanda']],['plantas_emergencia',plantasEmergencia,['energetico','nombre','energetico_otro','capacidad','unidad','horas_anuales']]];
+  for(const [n,rows,cols] of listas){const normalized=n==='areas_establecimiento'?rows.map(a=>({...a,superficie_valor:a.superficieValor??a.superficie_valor,superficie_m2:a.superficieM2??a.superficie_m2})):rows;const cambios=compararFilas(n,normalized,cols);if(cambios.length)payload[n]=cambios;}
+  const nuevosUsos=datosUsosRevision(),nuevasPracticas=obtenerDatosPracticas();
+  // Primero validar los dos objetos completos antes de escribir nada.
+  if(!nuevosUsos.usos||!Array.isArray(nuevosUsos.usos.iluminacion))throw Error('Sección 4 incompleta');
+  if(!Array.isArray(nuevasPracticas.practicas))throw Error('Sección 5 incompleta');
+  if(Object.keys(payload).length){out.textContent='Guardando secciones 1 a 3...';const r=await supabaseClient.rpc('guardar_correccion_secciones_1_3',{p_token:token,p_cambios:payload});if(r.error)throw r.error;}
+  out.textContent='Guardando secciones 4 y 5...';
+  const r=await supabaseClient.rpc('guardar_correccion_secciones_4_5',{p_token:token,p_usos_finales:nuevosUsos,p_practicas_eficiencia:nuevasPracticas});if(r.error)throw r.error;
+  const check=await supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token});if(check.error||!check.data?.encuesta)throw Error('Guardado enviado, pero no fue posible verificarlo. No reintentes sin revisar la encuesta.');
+  revisionDatosOriginales=structuredClone(check.data);
+  out.textContent='Avance guardado y verificado. Folio '+check.data.encuesta.id+' · '+new Date().toLocaleTimeString('es-MX');
+ }catch(err){console.error('Error de guardado de corrección:',err);out.textContent='No se completó el guardado: '+err.message;}
+ finally{revisionGuardando=false;btn.disabled=false;}
+};
+document.getElementById('btnGuardarCorreccionPrueba').addEventListener('click',window.guardarCorreccionPrueba);
+
 if(!supabaseClient){titulo.textContent='Sin conexión a Supabase';return;}
 supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token}).then(({data,error})=>{
  if(error)throw error;if(typeof data==='string'){data=JSON.parse(data);}if(!data?.encuesta)throw Error('El enlace no está disponible o ha vencido.');
  titulo.textContent='Revisión del folio '+data.encuesta.id;
  obs.textContent='Observaciones: '+(data.encuesta.observaciones_correccion||'Sin observaciones registradas.');
- prefill(data);window.__revisionPrecargaLista=true;
+ revisionDatosOriginales=structuredClone(data);prefill(data);window.__revisionPrecargaLista=true;
+ document.getElementById('revisionAcciones').hidden=false;
 }).catch(err=>{titulo.textContent='No se pudo recuperar la encuesta';estado.textContent=err.message;console.error(err);});
 })();
 </script>
