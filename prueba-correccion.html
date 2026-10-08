@@ -24789,6 +24789,12 @@ function prefill(data){
  if(document.getElementById('vistaInicio') && document.getElementById('vistaEncuesta')){document.getElementById('vistaInicio').classList.add('hidden');document.getElementById('vistaEncuesta').classList.remove('hidden');safe(()=>mostrarVista('datos'));}
  const campos={nombreEstablecimiento:'nombre_establecimiento',otroGiro:'giro_otro',anioInicio:'anio_inicio',anioConstruccion:'anio_construccion',estado:'estado',municipio:'municipio',cp:'codigo_postal',horasOperacion:'horas_operacion',empleadosTotal:'empleados_total',empleadosMin:'empleados_min',empleadosMax:'empleados_max',empleadosCompleto:'empleados_completo',empleadosParcial:'empleados_parcial',comensalesPromedioMes:'comensales_promedio_mes',habitacionesDisponibles:'habitaciones_disponibles',huespedesMes:'huespedes_promedio_mes',camasDisponibles:'camas_disponibles',ocupacionCamasPct:'ocupacion_camas_pct',pacientesMes:'pacientes_promedio_mes',alumnosMatricula:'alumnos_matricula'};
  Object.entries(campos).forEach(([id,k])=>put(id,e[k]));
+ // V7: los datos de cierre pertenecen al folio recuperado, no al almacenamiento local.
+ // Mostrar también los valores vacíos reales para no heredar datos de otro folio.
+ for (const [id, campo] of [['cargoContacto','cargo_contacto'],['contactoEncuesta','contacto']]) {
+   const el=document.getElementById(id);
+   if(el) el.value=(e[campo]===null||e[campo]===undefined)?'':String(e[campo]);
+ }
  safe(()=>establecerGiroDesdeCodigo(e.giro_codigo));
  radio('turnos',e.opera_turnos);radio('variaEmpleados',e.varia_empleados);radio('tiempoParcial',e.tiene_tiempo_parcial);
  const cf={tipoEdificacion:'tipo_edificacion',tipoEdificacionOtro:'tipo_edificacion_otro',superficieTotal:'superficie_total_m2',superficieClimatizada:'superficie_climatizada_m2',numeroNiveles:'numero_niveles',materialMuros:'material_muros',materialMurosOtro:'material_muros_otro',tipoAislamiento:'tipo_aislamiento',tipoAislamientoOtro:'tipo_aislamiento_otro',tipoVentanas:'tipo_ventanas',tipoVentanasOtro:'tipo_ventanas_otro',periodicidadFactura:'periodicidad_electrica',periodicidadOtra:'periodicidad_otra',numeroMedidores:'numero_medidores'};
@@ -24821,7 +24827,7 @@ function prefill(data){
    const areaP=document.createElement('p');areaP.textContent=`Áreas: ${areas.length} recibidas, ${tablaAreas?.querySelectorAll('tr').length||0} filas visibles; ${faltantesAreas.length} nombres sin correspondencia.`;detalle.append(areaP);
    const eneP=document.createElement('p');eneP.textContent=`Energéticos: ${ener.length} recibidos, ${tablaEner?.querySelectorAll('tr').length||0} filas visibles; ${faltantesEner.length} nombres sin correspondencia.`;detalle.append(eneP);
    const nombres=document.createElement('p');nombres.textContent='Energéticos registrados: '+ener.map(x=>x.nombre||x.codigo).join(' · ');detalle.append(nombres);
-   const nota=document.createElement('p');nota.textContent='V6: iluminación visible al recuperar la respuesta Sí; navegación protegida y módulos de equipos y prácticas inicializados. Recorre las secciones 2, 3, 4 y 5 y vuelve a la 2; comprueba los valores. No guardes.';detalle.append(nota);
+   const nota=document.createElement('p');nota.textContent='V7: cargo y contacto recuperados del folio; iluminación visible al recuperar la respuesta Sí; navegación protegida y módulos de equipos y prácticas inicializados. Recorre las secciones 2, 3, 4 y 5 y vuelve a la 2; comprueba los valores. No guardes.';detalle.append(nota);
  }
  estado.textContent=`Precarga ejecutada. Recibidos: ${count(data.areas_establecimiento)} áreas, ${count(data.facturas_energia)} facturas, ${equipos} equipos, ${count(data.plantas_emergencia)} plantas. En pantalla: ${document.querySelectorAll('#tablaAreasBody tr').length} áreas, ${document.querySelectorAll('#contenedorFacturacionEnergeticos tbody tr').length} facturas. ${fallosPrecarga.length?'Errores: '+fallosPrecarga.join(' | '):'Sin excepciones de renderizado detectadas (verificar valores).'} Guardado deshabilitado.`;
 }
