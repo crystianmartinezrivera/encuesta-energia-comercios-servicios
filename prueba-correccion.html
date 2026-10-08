@@ -22641,6 +22641,50 @@ function aplicarDatosUsosFinales(datos) {
   try { actualizarVisibilidadEspecializados(); } catch(e) { console.warn(e); }
   try { renderizarDestinosEnergeticos(); } catch(e) { console.warn(e); }
 
+  // V5: restaurar visibilidad de los paneles dependientes DESPUÉS de hidratar
+  // listas y radios. No disparar eventos change: algunos guardan localmente.
+  if (new URLSearchParams(location.search).has('correccion')) {
+    const grupos = [
+      ['usaRefrigeracion', equiposRefrigeracion],
+      ['usaEquiposOficina', equiposOficina],
+      ['usaElectromecanicos', equiposElectromecanicos],
+      ['usaSistemasTermicos', sistemasTermicos],
+      ['usaCoccion', equiposCoccion],
+      ['usaEspecializados', equiposEspecializados]
+    ];
+    for (const [nombre, lista] of grupos) {
+      if (Array.isArray(lista) && lista.length && valorRadioCD(nombre) !== 'si') {
+        ponerRadioCD(nombre, 'si');
+      }
+    }
+    const acond = [
+      ['acondAire', equiposAireAcondicionado],
+      ['acondVentilacion', equiposVentilacion],
+      ['acondCalefaccion', equiposCalefaccion]
+    ];
+    for (const [id, lista] of acond) {
+      const el = document.getElementById(id);
+      if (el && Array.isArray(lista) && lista.length) el.checked = true;
+    }
+    if (acond.some(([,lista]) => Array.isArray(lista) && lista.length)) {
+      const ninguno = document.getElementById('acondNinguno');
+      if (ninguno) ninguno.checked = false;
+    }
+    const visibles = [
+      'actualizarVisibilidadRefrigeracion',
+      'actualizarVisibilidadEquiposOficina',
+      'actualizarVisibilidadElectromecanicos',
+      'actualizarVisibilidadSistemasTermicos',
+      'actualizarVisibilidadCoccion',
+      'actualizarVisibilidadEspecializados',
+      'actualizarAcondicionamiento'
+    ];
+    for (const nombre of visibles) {
+      try { if (typeof globalThis[nombre] === 'function') globalThis[nombre](); }
+      catch (err) { console.warn('V5: visibilidad ' + nombre, err); }
+    }
+  }
+
   if (!new URLSearchParams(location.search).has("correccion")) localStorage.setItem(STORAGE_USOS_FINALES_V2, JSON.stringify(datos));
   return true;
 }
@@ -24748,6 +24792,9 @@ function prefill(data){
  safe(()=>{facturasEnergia=Array.isArray(data.facturas_energia)?data.facturas_energia.map(x=>({...x})):[];renderizarFacturasEnergia();});
  safe(()=>{const u=data.usos_finales; if(u){const json=u.datos_json||u;aplicarDatosUsosFinales(json);}});
  safe(()=>{const p=data.practicas_eficiencia;if(p)aplicarDatosPracticas(p.datos_json||p);});
+ // V5: los módulos de prácticas dependen de las listas térmicas ya restauradas.
+ safe(()=>prepararSeccionPracticas());
+ safe(()=>{const p=data.practicas_eficiencia;if(p)aplicarDatosPracticas(p.datos_json||p);});
  safe(()=>{actualizarOtroGiro();calcularEdad();actualizarCampoComensales();});
  // Esta prueba no introduce datos de otro folio en el almacenamiento persistente.
  const count=(x)=>Array.isArray(x)?x.length:0;
@@ -24766,7 +24813,7 @@ function prefill(data){
    const areaP=document.createElement('p');areaP.textContent=`Áreas: ${areas.length} recibidas, ${tablaAreas?.querySelectorAll('tr').length||0} filas visibles; ${faltantesAreas.length} nombres sin correspondencia.`;detalle.append(areaP);
    const eneP=document.createElement('p');eneP.textContent=`Energéticos: ${ener.length} recibidos, ${tablaEner?.querySelectorAll('tr').length||0} filas visibles; ${faltantesEner.length} nombres sin correspondencia.`;detalle.append(eneP);
    const nombres=document.createElement('p');nombres.textContent='Energéticos registrados: '+ener.map(x=>x.nombre||x.codigo).join(' · ');detalle.append(nombres);
-   const nota=document.createElement('p');nota.textContent='V4: navegación protegida contra recargas por ID. Recorre las secciones 2, 3, 4 y 5 y vuelve a la 2; comprueba los valores. No guardes.';detalle.append(nota);
+   const nota=document.createElement('p');nota.textContent='V5: navegación protegida e inicialización de módulos de equipos y prácticas. Recorre las secciones 2, 3, 4 y 5 y vuelve a la 2; comprueba los valores. No guardes.';detalle.append(nota);
  }
  estado.textContent=`Precarga ejecutada. Recibidos: ${count(data.areas_establecimiento)} áreas, ${count(data.facturas_energia)} facturas, ${equipos} equipos, ${count(data.plantas_emergencia)} plantas. En pantalla: ${document.querySelectorAll('#tablaAreasBody tr').length} áreas, ${document.querySelectorAll('#contenedorFacturacionEnergeticos tbody tr').length} facturas. ${fallosPrecarga.length?'Errores: '+fallosPrecarga.join(' | '):'Sin excepciones de renderizado detectadas (verificar valores).'} Guardado deshabilitado.`;
 }
