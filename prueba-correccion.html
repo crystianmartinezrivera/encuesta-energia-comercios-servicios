@@ -24769,7 +24769,7 @@ function finalizarEncuestaPiloto(){
   }
 
 </script>
- <!-- V11: altas y modificaciones transaccionales de áreas -->
+ <!-- V12: altas seguras de energéticos y edición de áreas -->
 <style>#revisionOriginal{position:sticky;top:0;z-index:9998;background:#fff8e8;border-bottom:3px solid #a57f2c;padding:12px 22px;color:#2d3640}#revisionOriginal p{margin:5px 0}#revisionOriginal strong{color:#611232}</style>
 <div id="revisionOriginal" hidden role="status"><strong id="revisionFolio">Recuperando encuesta...</strong><p id="revisionObservaciones"></p><p id="revisionEstado">V11: edición y alta de áreas; reenvío deshabilitado.</p><div id="revisionDetallePrecarga" style="margin-top:10px;padding:10px;border:1px solid #d9c78b;background:#fff"></div></div>
 <script>
@@ -24780,7 +24780,7 @@ const bar=document.getElementById('revisionOriginal'), titulo=document.getElemen
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 if(!uuid.test(token)){titulo.textContent='Enlace de corrección inválido';return;}
 // Bloquear cualquier modificación o guardado desde esta copia de validación.
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=(b.textContent||'').toLowerCase();if(!['btnGuardarContactoV8','btnGuardarHorasV9','btnGuardarAreasV11','guardarArea','btnAgregarArea'].includes(b.id) && !b.classList.contains('btn-area-editar') && !b.closest('#modalArea') && /guardar|enviar encuesta|reenviar|finalizar|eliminar|duplicar|agregar|añadir|editar/.test(t)){e.preventDefault();e.stopImmediatePropagation();alert('Esta copia es exclusivamente de consulta; no guarda cambios.');}},true);
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=(b.textContent||'').toLowerCase();if(!['btnGuardarContactoV8','btnGuardarHorasV9','btnGuardarAreasV11','guardarArea','btnAgregarArea','btnAgregarEnergetico','guardarEnergetico','btnGuardarEnergeticosV12'].includes(b.id) && !b.classList.contains('btn-area-editar') && !b.closest('#modalArea') && /guardar|enviar encuesta|reenviar|finalizar|eliminar|duplicar|agregar|añadir|editar/.test(t)){e.preventDefault();e.stopImmediatePropagation();alert('Esta copia es exclusivamente de consulta; no guarda cambios.');}},true);
 function put(id,v){const el=document.getElementById(id);if(el&&v!==null&&v!==undefined){el.value=String(v);el.dispatchEvent(new Event('change',{bubbles:false}));}}
 function radio(name,v){if(v===null||v===undefined)return;const val=typeof v==='boolean'?(v?'si':'no'):String(v);const el=[...document.querySelectorAll('input[type=radio]')].find(x=>x.name===name&&x.value===val);if(el)el.checked=true;}
 const fallosPrecarga=[]; function safe(fn){try{fn();}catch(e){fallosPrecarga.push(e.message);console.warn('Precarga parcial:',e);}}
@@ -24827,9 +24827,9 @@ function prefill(data){
    const areaP=document.createElement('p');areaP.textContent=`Áreas: ${areas.length} recibidas, ${tablaAreas?.querySelectorAll('tr').length||0} filas visibles; ${faltantesAreas.length} nombres sin correspondencia.`;detalle.append(areaP);
    const eneP=document.createElement('p');eneP.textContent=`Energéticos: ${ener.length} recibidos, ${tablaEner?.querySelectorAll('tr').length||0} filas visibles; ${faltantesEner.length} nombres sin correspondencia.`;detalle.append(eneP);
    const nombres=document.createElement('p');nombres.textContent='Energéticos registrados: '+ener.map(x=>x.nombre||x.codigo).join(' · ');detalle.append(nombres);
-   const nota=document.createElement('p');nota.textContent='V11: puede agregar y modificar áreas; solo el botón Guardar áreas V11 las persiste. No se permite eliminar áreas ni reenviar.';detalle.append(nota);
+   const nota=document.createElement('p');nota.textContent='V12: permite guardar áreas y añadir energéticos nuevos. Los energéticos existentes y la facturación están protegidos.';detalle.append(nota);
  }
- estado.textContent=`Precarga ejecutada. Recibidos: ${count(data.areas_establecimiento)} áreas, ${count(data.facturas_energia)} facturas, ${equipos} equipos, ${count(data.plantas_emergencia)} plantas. En pantalla: ${document.querySelectorAll('#tablaAreasBody tr').length} áreas, ${document.querySelectorAll('#contenedorFacturacionEnergeticos tbody tr').length} facturas. ${fallosPrecarga.length?'Errores: '+fallosPrecarga.join(' | '):'Sin excepciones de renderizado detectadas (verificar valores).'} Guardado general deshabilitado; V11 permite guardar áreas con botón exclusivo.`;
+ estado.textContent=`Precarga ejecutada. Recibidos: ${count(data.areas_establecimiento)} áreas, ${count(data.facturas_energia)} facturas, ${equipos} equipos, ${count(data.plantas_emergencia)} plantas. En pantalla: ${document.querySelectorAll('#tablaAreasBody tr').length} áreas, ${document.querySelectorAll('#contenedorFacturacionEnergeticos tbody tr').length} facturas. ${fallosPrecarga.length?'Errores: '+fallosPrecarga.join(' | '):'Sin excepciones de renderizado detectadas (verificar valores).'} Guardado general deshabilitado; V12 permite guardar áreas y altas de energéticos mediante botones exclusivos.`;
 }
 if(!supabaseClient){titulo.textContent='Sin conexión a Supabase';return;}
 supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token}).then(({data,error})=>{
@@ -24889,6 +24889,7 @@ supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token}).then(({data,er
  }
  // V11: las áreas se editan en el modal original; persistencia transaccional exclusiva.
  iniciarAreasV11(data);
+ iniciarEnergeticosV12(data);
  prefill(data);window.__revisionPrecargaLista=true;
 }).catch(err=>{titulo.textContent='No se pudo recuperar la encuesta';estado.textContent=err.message;console.error(err);});
 })();
@@ -24967,6 +24968,48 @@ function iniciarAreasV11(data){
      areasEstablecimiento=rows.map(a=>({...a,superficieValor:Number(a.superficie_valor),superficieM2:Number(a.superficie_m2),cantidad:Number(a.cantidad)}));renderizarAreas();
      msg.textContent='Guardado y verificación correctos: '+rows.length+' áreas. Puede seguir editando y guardar de nuevo.';
    }catch(err){msg.textContent='No se confirmó el guardado: '+err.message+' Si hubo un problema de red, recargue y compruebe antes de volver a guardar.';console.error(err);}
+   finally{busy=false;this.disabled=false;}
+ });
+}
+</script>
+<script>
+function iniciarEnergeticosV12(data){
+ const token=new URLSearchParams(location.search).get('correccion');
+ const original=(data.energeticos_establecimiento||[]).map(x=>({id:Number(x.id),codigo:String(x.codigo),nombre:String(x.nombre)}));
+ let baseline=original.map(x=>({...x})),busy=false;
+ const box=document.createElement('div');
+ box.style.cssText='margin-top:14px;padding:14px;border:1px solid #9db8d3;background:#f4f9ff;border-radius:8px';
+ box.innerHTML='<strong>V12 — Incorporar energéticos nuevos</strong><p style="margin:8px 0">Utilice «Agregar energético» en la sección 2. Los cuatro energéticos existentes no se pueden eliminar ni modificar en esta prueba. La facturación permanece protegida.</p><button type="button" id="btnGuardarEnergeticosV12" style="background:#0b4f92;color:white;border:0;border-radius:7px;padding:11px 17px;cursor:pointer">Guardar energéticos nuevos (V12)</button><p id="estadoEnergeticosV12" role="status" style="margin-top:8px"></p>';
+ document.getElementById('revisionDetallePrecarga').after(box);
+ const msg=document.getElementById('estadoEnergeticosV12');
+ document.addEventListener('click',e=>{
+   if(e.target.closest('.btn-energetico-eliminar')){e.preventDefault();e.stopImmediatePropagation();msg.textContent='La eliminación de energéticos está bloqueada para proteger facturas y equipos.';}
+ },true);
+ document.getElementById('btnGuardarEnergeticosV12').addEventListener('click',async function(){
+   if(busy)return;
+   const current=energeticosEstablecimiento.map(x=>({id:x.id==null?null:Number(x.id),codigo:String(x.codigo||''),nombre:String(x.nombre||'')}));
+   const saved=current.filter(x=>x.id!==null);
+   if(saved.length!==baseline.length||!baseline.every(x=>saved.some(y=>y.id===x.id&&y.codigo===x.codigo&&y.nombre===x.nombre))){msg.textContent='Se modificó o eliminó un energético existente. Recargue antes de guardar.';return;}
+   const nuevos=current.filter(x=>x.id===null);
+   if(!nuevos.length){msg.textContent='No hay energéticos nuevos pendientes.';return;}
+   const codes=current.map(x=>x.codigo.trim().toLowerCase());
+   const names=current.map(x=>x.nombre.trim().toLowerCase());
+   if(current.some(x=>!x.codigo.trim()||!x.nombre.trim()||x.codigo.length>120||x.nombre.length>200)||new Set(codes).size!==codes.length||new Set(names).size!==names.length){msg.textContent='Hay energéticos vacíos, duplicados o demasiado largos.';return;}
+   if(!confirm('¿Guardar '+nuevos.length+' energético(s) nuevo(s) en el folio '+data.encuesta.id+' sin modificar los '+baseline.length+' existentes?'))return;
+   busy=true;this.disabled=true;msg.textContent='Guardando y verificando...';
+   try{
+     const r=await supabaseClient.rpc('guardar_correccion_energeticos_v12',{p_token:token,p_original:baseline,p_nuevos:nuevos.map(x=>({codigo:x.codigo,nombre:x.nombre}))});
+     if(r.error)throw r.error;
+     const check=await supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token});if(check.error)throw check.error;
+     const fresh=typeof check.data==='string'?JSON.parse(check.data):check.data;
+     const rows=fresh?.energeticos_establecimiento;
+     if(!Array.isArray(rows)||rows.length!==current.length)throw Error('La cantidad de energéticos no coincide. Consulte Supabase antes de reintentar.');
+     const canon=x=>String(x.codigo)+'|'+String(x.nombre);
+     if(JSON.stringify(rows.map(canon).sort())!==JSON.stringify(current.map(canon).sort()))throw Error('Los valores recuperados no coinciden. Consulte Supabase antes de reintentar.');
+     baseline=rows.map(x=>({id:Number(x.id),codigo:String(x.codigo),nombre:String(x.nombre)}));
+     energeticosEstablecimiento=rows.map(x=>({...x}));renderizarEnergeticos();actualizarOpcionesEnergeticos();
+     msg.textContent='Guardado y verificación correctos: '+rows.length+' energéticos. Cierre y reabra para comprobar persistencia.';
+   }catch(err){msg.textContent='No se confirmó el guardado: '+err.message+' Si hubo un error de red, recargue y compruebe antes de reintentar.';console.error(err);}
    finally{busy=false;this.disabled=false;}
  });
 }
