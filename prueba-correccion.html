@@ -24898,7 +24898,7 @@ supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token}).then(({data,er
  // V11: las áreas se editan en el modal original; persistencia transaccional exclusiva.
  iniciarAreasV11(data);
  iniciarEnergeticosV12(data);
- prefill(data);iniciarUsosV15(data);window.__revisionPrecargaLista=true;
+ prefill(data);iniciarUsosV15(data);iniciarPracticasV16(data);window.__revisionPrecargaLista=true;
 }).catch(err=>{titulo.textContent='No se pudo recuperar la encuesta';estado.textContent=err.message;console.error(err);});
 })();
 </script>
@@ -25140,6 +25140,60 @@ function iniciarUsosV15(data){
    msg.textContent='Guardado y verificación correctos: '+cuenta(saved)+' equipos. Cierre y reabra el enlace para confirmar persistencia.';
   }catch(e){msg.textContent='No se confirmó el guardado: '+e.message;console.error(e);}
   finally{busy=false;btn.disabled=!currentBaseline;}
+ });
+}
+</script>
+
+<script>
+/* V16 — Guardado aislado de prácticas de eficiencia energética. */
+function iniciarPracticasV16(data){
+ const token=new URLSearchParams(location.search).get('correccion');
+ if(!token||document.getElementById('btnGuardarPracticasV16'))return;
+ const box=document.createElement('div');
+ box.style.cssText='margin-top:14px;padding:14px;border:1px solid #b7d9c1;background:#f2faf5;border-radius:8px';
+ box.innerHTML='<strong>V16 — Prácticas de eficiencia energética (sección 5)</strong><p style="margin:8px 0">Modifique las respuestas en la sección 5 y utilice este botón para guardarlas en el folio original. El reenvío definitivo sigue deshabilitado.</p><button type="button" id="btnGuardarPracticasV16" disabled style="background:#13824b;color:white;border:0;border-radius:7px;padding:11px 17px;cursor:pointer">Guardar prácticas de eficiencia (V16)</button><p id="estadoPracticasV16" role="status" style="margin-top:8px"></p>';
+ document.getElementById('revisionDetallePrecarga').after(box);
+ const btn=box.querySelector('button'),msg=box.querySelector('[role=status]');
+ const clone=x=>JSON.parse(JSON.stringify(x));
+ const canonical=x=>Array.isArray(x)?x.map(canonical):(x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canonical(x[k])])):x);
+ const equal=(a,b)=>JSON.stringify(canonical(a))===JSON.stringify(canonical(b));
+ let baseline=null,busy=false;
+ async function leer(){
+  const r=await supabaseClient.rpc('obtener_practicas_correccion_v16',{p_token:token});
+  if(r.error)throw r.error;
+  const d=typeof r.data==='string'?JSON.parse(r.data):r.data;
+  if(!d||typeof d!=='object'||Array.isArray(d)||!d.datos_json||typeof d.datos_json!=='object')throw Error('No se recuperó el registro completo de prácticas.');
+  return clone(d);
+ }
+ // El botón normal está diseñado para encuestas en progreso; nunca debe usar
+ // el upsert ordinario mientras se corrige un folio ya enviado.
+ const normal=document.getElementById('btnGuardarPracticas');
+ if(normal){normal.disabled=true;normal.title='En modo corrección utilice el botón V16';}
+ msg.textContent='Leyendo prácticas originales de Supabase…';
+ leer().then(d=>{baseline=d;btn.disabled=false;msg.textContent='Datos originales recuperados. Puede modificar las respuestas y guardar.';})
+ .catch(e=>{msg.textContent='No se habilitó el guardado: '+e.message+'. Instale primero la función SQL V16.';console.error(e);});
+ btn.addEventListener('click',async()=>{
+  if(busy||!baseline)return;
+  try{
+   if(typeof validarPracticas==='function'&&!validarPracticas())return;
+   const nuevos=obtenerDatosPracticas();
+   if(!nuevos||!Array.isArray(nuevos.practicas)||!Array.isArray(nuevos.gestion)||!Array.isArray(nuevos.barreras))throw Error('Respuestas incompletas');
+   // Conservar cualquier propiedad que no esté representada en el formulario.
+   const json={...clone(baseline.datos_json),...clone(nuevos)};
+   const propuesto={...clone(baseline),datos_json:json,version:Number(json.version||1),practicas:json.practicas,gestion:json.gestion,barreras:json.barreras,barrera_principal:json.barreraPrincipal||null};
+   if(!confirm('¿Guardar las prácticas de eficiencia energética del folio '+data.encuesta.id+'? Esta acción modifica exclusivamente la sección 5.'))return;
+   busy=true;btn.disabled=true;msg.textContent='Verificando y guardando prácticas…';
+   const remoto=await leer();
+   if(!equal(remoto,baseline))throw Error('Las prácticas cambiaron desde la última lectura. Recargue antes de guardar.');
+   const r=await supabaseClient.rpc('guardar_correccion_practicas_v16',{p_token:token,p_original:baseline,p_datos:propuesto});
+   if(r.error)throw r.error;
+   const guardado=await leer();
+   const expected={...propuesto,updated_at:guardado.updated_at};
+   if(!equal(guardado,expected))throw Error('La comprobación posterior no coincide. Revise Supabase antes de reintentar.');
+   baseline=clone(guardado);
+   msg.textContent='Guardado y verificación correctos. Cierre y reabra la encuesta para comprobar la persistencia.';
+  }catch(e){msg.textContent='No se confirmó el guardado: '+e.message;console.error(e);}
+  finally{busy=false;btn.disabled=!baseline;}
  });
 }
 </script>
