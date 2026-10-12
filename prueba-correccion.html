@@ -24787,7 +24787,7 @@ const bar=document.getElementById('revisionOriginal'), titulo=document.getElemen
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 if(!uuid.test(token)){titulo.textContent='Enlace de corrección inválido';return;}
 // Bloquear cualquier modificación o guardado desde esta copia de validación.
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=(b.textContent||'').trim().toLowerCase();const envio=b.id==='btnPracticasContinuar'||b.id==='btnEnviarEncuesta'||/^(enviar encuesta|reenviar encuesta|finalizar encuesta)$/.test(t);const guardadoGeneral=b.id==='btnGuardarHeader'||b.id==='btnGuardarPracticas';if(envio||guardadoGeneral){e.preventDefault();e.stopImmediatePropagation();alert('El envío definitivo y el guardado general permanecen deshabilitados en esta copia de corrección. Use «Guardar cambios» de la página.');}},true);
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=(b.textContent||'').toLowerCase();if(!(b.closest('#view-usos') || b.closest('#modalIluminacion,#modalAireAcondicionado,#modalVentilacion,#modalCalefaccion,#modalRefrigeracion,#modalEquipoOficina,#modalElectromecanico,#modalSistemaTermico,#modalCoccion,#modalEspecializado')) && !['btnGuardarPracticasV16','btnGuardarUsosV15','btnGuardarContactoV8','btnGuardarHorasV9','btnGuardarAreasV11','guardarArea','btnAgregarArea','btnAgregarEnergetico','guardarEnergetico','btnGuardarEnergeticosV12','btnGuardarFacturasV13'].includes(b.id) && !b.classList.contains('btn-area-editar') && !b.classList.contains('btn-agregar-factura') && !b.classList.contains('btn-editar-factura') && !b.classList.contains('btn-eliminar-factura') && !b.closest('#modalFacturaEnergia') && !b.closest('#modalArea') && /guardar|enviar encuesta|reenviar|finalizar|eliminar|duplicar|agregar|añadir|editar/.test(t)){e.preventDefault();e.stopImmediatePropagation();alert('Esta copia es exclusivamente de consulta; no guarda cambios.');}},true);
 function put(id,v){const el=document.getElementById(id);if(el&&v!==null&&v!==undefined){el.value=String(v);el.dispatchEvent(new Event('change',{bubbles:false}));}}
 function radio(name,v){if(v===null||v===undefined)return;const val=typeof v==='boolean'?(v?'si':'no'):String(v);const el=[...document.querySelectorAll('input[type=radio]')].find(x=>x.name===name&&x.value===val);if(el)el.checked=true;}
 const fallosPrecarga=[]; function safe(fn){try{fn();}catch(e){fallosPrecarga.push(e.message);console.warn('Precarga parcial:',e);}}
@@ -25199,99 +25199,16 @@ function iniciarPracticasV16(data){
 </script>
 
 
-<!-- V17: interfaz unificada del modo corrección. Los RPC V8-V16 se conservan. -->
-<style>
-body.modo-correccion-v17 #revisionDetallePrecarga{display:none!important}
-body.modo-correccion-v17 .v17-legacy-save{display:none!important}
-body.modo-correccion-v17 #btnGuardarHeader{display:none!important}
-body.modo-correccion-v17 #btnGuardarPracticas{display:none!important}
-body.modo-correccion-v17 #btnPracticasContinuar{display:none!important}
-body.modo-correccion-v17 #view-datos .buttons button[type=submit]{display:none!important}
-body.modo-correccion-v17 #btnEnergiaContinuar,
-body.modo-correccion-v17 #btnFacturacionContinuar,
-body.modo-correccion-v17 #btnUsosContinuar{display:none!important}
-.v17-save{background:#13824b!important;color:white!important;border:0!important;border-radius:8px;padding:13px 22px;font-weight:700;cursor:pointer}
-.v17-save:disabled{opacity:.6;cursor:wait}
-.v17-status{font-size:13px;margin-top:9px;line-height:1.5;color:#285b40;flex-basis:100%;white-space:normal}
-.v17-status.error{color:#a12828}
-body.modo-correccion-v17 #revisionOriginal{position:relative;top:auto;z-index:auto;padding:10px 22px}
-body.modo-correccion-v17 #revisionEstado{display:none}
-</style>
+<!-- V17.2 recuperación controlada: se retira la capa de guardado unificado V17 que provocaba esperas y bloqueos. -->
+<style>body.modo-correccion-v172 #avisoV172{padding:12px 16px;background:#fff8e8;border:1px solid #a57f2c;border-radius:8px;margin:12px 0;font-size:13px;line-height:1.5}</style>
 <script>
 (function(){
- const token=new URLSearchParams(location.search).get('correccion');
- if(!token)return;
- document.body.classList.add('modo-correccion-v17');
- const ids=['btnGuardarContactoV8','btnGuardarHorasV9','btnGuardarAreasV11','btnGuardarEnergeticosV12','btnGuardarFacturasV13','btnGuardarUsosV15','btnGuardarPracticasV16'];
- const legacy=new Set(ids);
- function ocultarPruebas(){
-  for(const id of ids){const b=document.getElementById(id);if(b){const parent=b.parentElement;if(parent)parent.classList.add('v17-legacy-save');}}
- }
- const config=[
-  ['datos',['btnGuardarHorasV9']],
-  ['energia',['btnGuardarAreasV11','btnGuardarEnergeticosV12']],
-  ['facturacion',['btnGuardarFacturasV13']],
-  ['usos',['btnGuardarUsosV15']],
-  ['practicas',['btnGuardarContactoV8','btnGuardarPracticasV16']]
- ];
- function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
- async function ejecutar(id){
-  const btn=document.getElementById(id);
-  if(!btn)throw Error('No se encontró la función de guardado '+id);
-  for(let n=0;n<80&&btn.disabled;n++)await sleep(100);
-  if(btn.disabled)throw Error('El guardado '+id+' aún no está disponible');
-  const statusId={btnGuardarHorasV9:'estadoHorasV9',btnGuardarAreasV11:'estadoAreasV11',btnGuardarEnergeticosV12:'estadoEnergeticosV12',btnGuardarFacturasV13:'estadoFacturasV13',btnGuardarUsosV15:'estadoUsosV15',btnGuardarContactoV8:'estadoContactoV8',btnGuardarPracticasV16:'estadoPracticasV16'}[id];
-  const status=document.getElementById(statusId);
-  const antes=status?.textContent||'';
-  btn.click();
-  // Las funciones anteriores muestran confirmaciones individuales. Si se cancela,
-  // no se puede afirmar que hubo guardado: detener la secuencia.
-  let started=false;
-  for(let n=0;n<240;n++){
-   await sleep(100);
-   const t=(status?.textContent||'').trim();
-   if(/guardando|verificando y guardando|verificando cambios/i.test(t))started=true;
-   if(/no se confirmó|no se habilitó|error|inválid|obligatori|cambiaron desde/i.test(t))throw Error(t);
-   if(/guardado y verificaci[oó]n correctos|guardado confirmado|guardadas y verificadas|guardado y verificado/i.test(t)&& (t!==antes||started))return t;
-   if(!started&&n>6&&t===antes)throw Error('Se canceló la confirmación o no se inició el guardado.');
-  }
-  throw Error('No se recibió confirmación de guardado de '+id+'. Revise el mensaje de la sección.');
- }
- async function guardarPagina(nombre,btn,status){
-  if(btn.disabled)return;
-  btn.disabled=true;status.classList.remove('error');status.textContent='Guardando cambios de esta página…';
-  try{
-   const item=config.find(x=>x[0]===nombre);
-   if(!item)throw Error('Página no reconocida');
-   for(const id of item[1]){
-    status.textContent='Guardando: '+({'btnGuardarHorasV9':'horas de operación','btnGuardarAreasV11':'áreas','btnGuardarEnergeticosV12':'energéticos','btnGuardarFacturasV13':'facturación','btnGuardarUsosV15':'equipos','btnGuardarContactoV8':'cargo y contacto','btnGuardarPracticasV16':'prácticas de eficiencia'}[id]||id)+'…';
-    await ejecutar(id);
-   }
-   status.textContent=nombre==='energia'?'Áreas y energéticos guardados y verificados. Los demás campos físicos de esta página aún no están incluidos en este guardado.':'Cambios guardados y verificados en Supabase.';
-  }catch(e){status.classList.add('error');status.textContent='No se completó el guardado de la página: '+e.message;console.error('V17:',e);}
-  finally{btn.disabled=false;}
- }
- function crear(){
-  ocultarPruebas();
-  for(const [nombre] of config){
-   const view=document.getElementById('view-'+nombre);if(!view||view.querySelector('.v17-save'))continue;
-   let actions=view.querySelector('.page-actions');
-   if(nombre==='datos')actions=view.querySelector('.buttons');
-   if(nombre==='practicas')actions=view.querySelector('.prac-actions-right');
-   if(!actions){actions=document.createElement('div');actions.className='page-actions';view.append(actions);}
-   const btn=document.createElement('button');btn.type='button';btn.className='v17-save';btn.textContent='💾 Guardar cambios';
-   const status=document.createElement('p');status.className='v17-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
-   actions.append(btn,status);
-   if(nombre==='practicas'){actions.style.flexWrap='wrap';}
-   else{actions.style.flexWrap='wrap';}
-   btn.addEventListener('click',()=>guardarPagina(nombre,btn,status));
-  }
- }
- // Los controles de prueba son generados tras la consulta asíncrona del folio.
- const observer=new MutationObserver(()=>{if(ids.every(id=>document.getElementById(id))){crear();observer.disconnect();}});
- observer.observe(document.body,{childList:true,subtree:true});
- crear();
+ if(!new URLSearchParams(location.search).has('correccion'))return;
+ document.body.classList.add('modo-correccion-v172');
+ const aviso=document.createElement('div');aviso.id='avisoV172';
+ aviso.textContent='Versión de recuperación V17.2: guardados individuales V8–V16 restaurados. La eliminación de áreas y energéticos existentes sigue restringida; no intente borrar esos registros hasta revisar las funciones SQL. El envío definitivo permanece deshabilitado.';
+ const destino=document.getElementById('revisionOriginal')||document.querySelector('.app-shell');
+ if(destino)destino.prepend(aviso);
 })();
 </script>
-
 </body></html>
