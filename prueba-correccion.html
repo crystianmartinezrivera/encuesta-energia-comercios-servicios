@@ -25219,5 +25219,51 @@ function iniciarPracticasV16(data){
  if(destino)destino.prepend(aviso);
 })();
 </script>
-<div id="marcaDiagnosticoV1722" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;background:#002f2a;color:white;padding:10px 15px;border-radius:8px;font:700 13px Arial;box-shadow:0 3px 12px #555">DIAGNÓSTICO V17.2.2 — SIN BLOQUEO GENERAL</div>
+<div id="marcaDiagnosticoV1722" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;background:#002f2a;color:white;padding:10px 15px;border-radius:8px;font:700 13px Arial;box-shadow:0 3px 12px #555">PRUEBA V17.2.3 — GUARDADO PROTEGIDO</div>
+
+<!-- V17.2.3: navegación protegida en corrección. No ejecuta el guardado ordinario. -->
+<script>
+(function(){
+ if(!new URLSearchParams(location.search).get('correccion'))return;
+ const btn=document.getElementById('btnEnergiaContinuar');
+ if(!btn)return;
+ const msg=document.createElement('p');msg.id='estadoNavegacionCorreccionV1723';msg.setAttribute('role','status');msg.style.cssText='padding:10px;color:#003b70;font-weight:600';btn.insertAdjacentElement('afterend',msg);
+ let busy=false;
+ const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ async function esperar(btnId,statusId,emptyPattern,successPattern){
+   const b=document.getElementById(btnId),status=document.getElementById(statusId);
+   if(!b||!status)throw Error('No se ha inicializado el guardado '+btnId+'. Espere la precarga y vuelva a intentar.');
+   if(b.disabled)throw Error('El guardado '+btnId+' no está disponible.');
+   const before=status.textContent.trim();
+   b.click();
+   let changed=false;
+   for(let i=0;i<150;i++){
+     await sleep(100);
+     const t=status.textContent.trim();
+     if(t!==before)changed=true;
+     if(changed&&emptyPattern.test(t))return 'sin cambios';
+     if(changed&&successPattern.test(t))return 'verificado';
+     if(changed&&/no se confirm[oó]|no se permite|se detect[oó]|inv[aá]lid|incomplet|duplicad|recargue|fuera de rango|supera 100|cancelad|error/i.test(t))throw Error(t);
+     if(i===15&&!changed)throw Error('No se inició el guardado; posiblemente se canceló la confirmación.');
+   }
+   throw Error('Tiempo de espera agotado. Verifique el estado en Supabase antes de reintentar.');
+ }
+ // Se intercepta antes del listener original para evitar el guardado normal y su navegación.
+ document.addEventListener('click',async function(e){
+   if(!e.target.closest('#btnEnergiaContinuar'))return;
+   e.preventDefault();e.stopImmediatePropagation();
+   if(busy)return;
+   busy=true;btn.disabled=true;btn.textContent='Verificando guardado…';
+   try{
+     msg.textContent='Comprobando áreas en Supabase…';
+     await esperar('btnGuardarAreasV11','estadoAreasV11',/no hay cambios pendientes/i,/guardado y verificaci[oó]n correctos/i);
+     msg.textContent='Comprobando energéticos en Supabase…';
+     await esperar('btnGuardarEnergeticosV12','estadoEnergeticosV12',/no hay energ[eé]ticos nuevos pendientes/i,/guardado y verificaci[oó]n correctos/i);
+     msg.textContent='Áreas y energéticos verificados. Puede continuar a la sección 3. Los demás campos físicos de la sección 2 aún no tienen guardado de corrección verificado.';
+     if(typeof mostrarVista==='function')mostrarVista('facturacion');
+   }catch(err){msg.textContent='No se avanzó: '+err.message;console.error('Corrección sección 2:',err);}
+   finally{busy=false;btn.disabled=false;btn.textContent='Guardar y continuar →';}
+ },true);
+})();
+</script>
 </body></html>
