@@ -24787,7 +24787,7 @@ const bar=document.getElementById('revisionOriginal'), titulo=document.getElemen
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 if(!uuid.test(token)){titulo.textContent='Enlace de corrección inválido';return;}
 // Bloquear cualquier modificación o guardado desde esta copia de validación.
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=(b.textContent||'').toLowerCase();if(!(b.closest('#view-usos') || b.closest('#modalIluminacion,#modalAireAcondicionado,#modalVentilacion,#modalCalefaccion,#modalRefrigeracion,#modalEquipoOficina,#modalElectromecanico,#modalSistemaTermico,#modalCoccion,#modalEspecializado')) && !b.classList.contains('v17-save') && !['btnGuardarPracticasV16','btnGuardarUsosV15','btnGuardarContactoV8','btnGuardarHorasV9','btnGuardarAreasV11','guardarArea','btnAgregarArea','btnAgregarEnergetico','guardarEnergetico','btnGuardarEnergeticosV12','btnGuardarFacturasV13'].includes(b.id) && !b.classList.contains('btn-area-editar') && !b.classList.contains('btn-agregar-factura') && !b.classList.contains('btn-editar-factura') && !b.classList.contains('btn-eliminar-factura') && !b.closest('#modalFacturaEnergia') && !b.closest('#modalArea') && /guardar|enviar encuesta|reenviar|finalizar|eliminar|duplicar|agregar|añadir|editar/.test(t)){e.preventDefault();e.stopImmediatePropagation();alert('Esta copia es exclusivamente de consulta; no guarda cambios.');}},true);
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=(b.textContent||'').trim().toLowerCase();const envio=b.id==='btnPracticasContinuar'||b.id==='btnEnviarEncuesta'||/^(enviar encuesta|reenviar encuesta|finalizar encuesta)$/.test(t);const guardadoGeneral=b.id==='btnGuardarHeader'||b.id==='btnGuardarPracticas';if(envio||guardadoGeneral){e.preventDefault();e.stopImmediatePropagation();alert('El envío definitivo y el guardado general permanecen deshabilitados en esta copia de corrección. Use «Guardar cambios» de la página.');}},true);
 function put(id,v){const el=document.getElementById(id);if(el&&v!==null&&v!==undefined){el.value=String(v);el.dispatchEvent(new Event('change',{bubbles:false}));}}
 function radio(name,v){if(v===null||v===undefined)return;const val=typeof v==='boolean'?(v?'si':'no'):String(v);const el=[...document.querySelectorAll('input[type=radio]')].find(x=>x.name===name&&x.value===val);if(el)el.checked=true;}
 const fallosPrecarga=[]; function safe(fn){try{fn();}catch(e){fallosPrecarga.push(e.message);console.warn('Precarga parcial:',e);}}
@@ -25267,7 +25267,7 @@ body.modo-correccion-v17 #revisionEstado{display:none}
     status.textContent='Guardando: '+({'btnGuardarHorasV9':'horas de operación','btnGuardarAreasV11':'áreas','btnGuardarEnergeticosV12':'energéticos','btnGuardarFacturasV13':'facturación','btnGuardarUsosV15':'equipos','btnGuardarContactoV8':'cargo y contacto','btnGuardarPracticasV16':'prácticas de eficiencia'}[id]||id)+'…';
     await ejecutar(id);
    }
-   status.textContent='Cambios guardados y verificados en Supabase.';
+   status.textContent=nombre==='energia'?'Áreas y energéticos guardados y verificados. Los demás campos físicos de esta página aún no están incluidos en este guardado.':'Cambios guardados y verificados en Supabase.';
   }catch(e){status.classList.add('error');status.textContent='No se completó el guardado de la página: '+e.message;console.error('V17:',e);}
   finally{btn.disabled=false;}
  }
