@@ -25219,7 +25219,7 @@ function iniciarPracticasV16(data){
  if(destino)destino.prepend(aviso);
 })();
 </script>
-<div id="marcaDiagnosticoV1722" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;background:#002f2a;color:white;padding:10px 15px;border-radius:8px;font:700 13px Arial;box-shadow:0 3px 12px #555">PRUEBA V17.2.3 — GUARDADO PROTEGIDO</div>
+<div id="marcaDiagnosticoV1722" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;background:#002f2a;color:white;padding:10px 15px;border-radius:8px;font:700 13px Arial;box-shadow:0 3px 12px #555">PRUEBA V18 — ELIMINACIÓN CONTROLADA</div>
 
 <!-- V17.2.3: navegación protegida en corrección. No ejecuta el guardado ordinario. -->
 <script>
@@ -25263,6 +25263,51 @@ function iniciarPracticasV16(data){
      if(typeof mostrarVista==='function')mostrarVista('facturacion');
    }catch(err){msg.textContent='No se avanzó: '+err.message;console.error('Corrección sección 2:',err);}
    finally{busy=false;btn.disabled=false;btn.textContent='Guardar y continuar →';}
+ },true);
+})();
+</script>
+<!-- V18: eliminación individual verificada; mantiene intactos los guardados V11/V12. -->
+<script>
+(function(){
+ const token=new URLSearchParams(location.search).get('correccion');
+ if(!token)return;
+ let ocupado=false;
+ window.addEventListener('click',async function(e){
+   const area=e.target.closest('.btn-area-eliminar');
+   const energia=e.target.closest('.btn-energetico-eliminar');
+   if(!area&&!energia)return;
+   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+   if(ocupado)return;
+   const esArea=!!area;
+   const idx=Number((area||energia).dataset.index);
+   const lista=esArea?areasEstablecimiento:energeticosEstablecimiento;
+   const item=Number.isInteger(idx)&&idx>=0?lista[idx]:null;
+   if(!item){alert('No se encontró el registro. Recargue la página.');return;}
+   const id=item.id==null?null:Number(item.id);
+   const nombre=String(item.nombre||item.tipo||'registro');
+   if(id!==null&&(!Number.isSafeInteger(id)||id<=0)){alert('Identificador inválido. Recargue.');return;}
+   const mensaje=id===null
+     ?'¿Quitar «'+nombre+'» de la pantalla? Todavía no se ha guardado en Supabase.'
+     :'¿ELIMINAR DEFINITIVAMENTE «'+nombre+'» de Supabase? Esta operación no se puede deshacer. Los demás cambios sin guardar se perderán al recargar.';
+   if(!confirm(mensaje))return;
+   if(id===null){lista.splice(idx,1);if(esArea)renderizarAreas();else{renderizarEnergeticos();actualizarOpcionesEnergeticos();}return;}
+   ocupado=true;
+   const b=area||energia;b.disabled=true;
+   const rpc=esArea?'eliminar_area_correccion_v18':'eliminar_energetico_correccion_v18';
+   const args=esArea?{p_token:token,p_area_id:id}:{p_token:token,p_energetico_id:id};
+   try{
+     const r=await supabaseClient.rpc(rpc,args);
+     if(r.error)throw r.error;
+     if(!r.data||r.data.ok!==true||Number(r.data.id_eliminado)!==id)throw Error('Supabase no confirmó la eliminación.');
+     const check=await supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token});
+     if(check.error)throw check.error;
+     const fresh=typeof check.data==='string'?JSON.parse(check.data):check.data;
+     const rows=esArea?fresh?.areas_establecimiento:fresh?.energeticos_establecimiento;
+     if(!Array.isArray(rows)||rows.some(x=>Number(x.id)===id))throw Error('La verificación posterior no confirmó la eliminación. Consulte Supabase.');
+     alert('Eliminación confirmada en Supabase. Se recargará la sección para actualizar las referencias de guardado.');
+     location.reload();
+   }catch(err){console.error('Eliminación V18',err);alert('No se confirmó la eliminación: '+err.message+'\nNo continúe guardando hasta comprobar el estado.');}
+   finally{ocupado=false;b.disabled=false;}
  },true);
 })();
 </script>
