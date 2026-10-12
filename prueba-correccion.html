@@ -25087,43 +25087,59 @@ function iniciarEnergeticosV12(data){
 function iniciarUsosV15(data){
  const token=new URLSearchParams(location.search).get('correccion');
  if(!token)return;
- const inicial=data.usos_finales?.datos_json||null;
- const baseline=inicial===null?null:JSON.parse(JSON.stringify(inicial));
- let currentBaseline=baseline, busy=false;
  const box=document.createElement('div');
  box.style.cssText='margin-top:14px;padding:14px;border:1px solid #9db8d3;background:#f4f9ff;border-radius:8px';
- box.innerHTML='<strong>V15 — Equipos y usos finales (sección 4)</strong><p style="margin:8px 0">Edite, agregue o elimine equipos mediante los formularios originales de la sección 4. Guarde toda la sección con este botón. El reenvío definitivo permanece bloqueado.</p><button type="button" id="btnGuardarUsosV15" style="background:#0b4f92;color:#fff;border:0;border-radius:7px;padding:11px 17px;cursor:pointer">Guardar equipos y usos finales (V15)</button><p id="estadoUsosV15" role="status" style="margin-top:8px"></p>';
+ box.innerHTML='<strong>V15.2 — Equipos y usos finales (sección 4)</strong><p style="margin:8px 0">Edite, agregue o elimine equipos mediante los formularios de la sección 4. Esta prueba guarda únicamente los usos finales; el reenvío definitivo permanece bloqueado.</p><button type="button" id="btnGuardarUsosV15" disabled style="background:#0b4f92;color:#fff;border:0;border-radius:7px;padding:11px 17px;cursor:pointer">Guardar equipos y usos finales (V15.2)</button><p id="estadoUsosV15" role="status" style="margin-top:8px"></p>';
  document.getElementById('revisionDetallePrecarga').after(box);
  const msg=box.querySelector('#estadoUsosV15');
  const btn=box.querySelector('#btnGuardarUsosV15');
+ const clone=x=>JSON.parse(JSON.stringify(x));
+ const canonical=x=>Array.isArray(x)?x.map(canonical):(x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canonical(x[k])])):x);
+ const equals=(a,b)=>JSON.stringify(canonical(a))===JSON.stringify(canonical(b));
  const cuenta=x=>Object.values(x?.usos||{}).reduce((n,v)=>n+(Array.isArray(v)?v.length:0),0);
- msg.textContent='Equipos recuperados: '+cuenta(baseline)+'. Puede editar y después guardar.';
+ let currentBaseline=null,busy=false;
+ // Leer la fila JSONB exacta por una RPC de solo lectura. La RPC general
+ // puede transformar el documento para la precarga y no es un snapshot fiable.
+ async function leerOriginal(){
+   const r=await supabaseClient.rpc('obtener_usos_correccion_v152',{p_token:token});
+   if(r.error)throw r.error;
+   const doc=typeof r.data==='string'?JSON.parse(r.data):r.data;
+   if(!doc||typeof doc!=='object'||Array.isArray(doc)||!doc.usos||!doc.respuestas)throw Error('La lectura de usos finales no devolvió el documento esperado.');
+   return clone(doc);
+ }
+ msg.textContent='Leyendo instantánea exacta de Supabase…';
+ leerOriginal().then(original=>{
+   currentBaseline=original;
+   btn.disabled=false;
+   msg.textContent='Instantánea verificada: '+cuenta(original)+' equipos. Puede editar y guardar.';
+ }).catch(e=>{msg.textContent='No se habilitó el guardado: '+e.message+'. Instale primero la función SQL V15.2.';console.error(e);});
  btn.addEventListener('click',async()=>{
-  if(busy)return;
-  if(!currentBaseline){msg.textContent='No se encontró una instantánea de usos finales. No se guardará para evitar pérdida de información.';return;}
+  if(busy||!currentBaseline)return;
   let actual;
-  try{actual=guardarUsosFinalesCanonico();}catch(e){msg.textContent='No se pudo recopilar la sección 4: '+e.message;return;}
-  if(!actual||!actual.usos||!actual.respuestas){msg.textContent='Estructura de la sección 4 incompleta; no se guardó.';return;}
+  try{
+   const formulario=guardarUsosFinalesCanonico();
+   if(!formulario||!formulario.usos||!formulario.respuestas)throw Error('Estructura incompleta');
+   // Preservar claves adicionales del documento remoto; solo reemplazar las
+   // claves que el formulario realmente genera.
+   actual={...clone(currentBaseline),...clone(formulario)};
+  }catch(e){msg.textContent='No se pudo recopilar la sección 4: '+e.message;return;}
   const n=cuenta(actual);
   if(n>2000){msg.textContent='Demasiados equipos; no se guardó.';return;}
   if(!confirm('¿Guardar los '+n+' registros de equipos y usos finales del folio '+data.encuesta.id+'? Esto incluye las eliminaciones realizadas en la sección 4.'))return;
-  busy=true;btn.disabled=true;msg.textContent='Guardando y verificando en Supabase...';
+  busy=true;btn.disabled=true;msg.textContent='Comprobando versión y guardando en Supabase…';
   try{
+   // Revalidar el snapshot justo antes de escribir. Si cambió en otra sesión,
+   // no sobrescribir cambios de terceros.
+   const remoto=await leerOriginal();
+   if(!equals(remoto,currentBaseline))throw Error('La sección 4 cambió en Supabase desde que abrió esta página. No se guardó. Recargue y revise los cambios.');
    const r=await supabaseClient.rpc('guardar_correccion_usos_v15',{p_token:token,p_original:currentBaseline,p_datos:actual});
    if(r.error)throw r.error;
-   const check=await supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token});
-   if(check.error)throw check.error;
-   const fresh=typeof check.data==='string'?JSON.parse(check.data):check.data;
-   const saved=fresh?.usos_finales?.datos_json;
-   if(JSON.stringify(saved)!==JSON.stringify(actual)){
-     // JSONB object key ordering is not guaranteed, so compare canonical deep objects.
-     const canonical=x=>{if(Array.isArray(x))return x.map(canonical);if(x&&typeof x==='object')return Object.fromEntries(Object.keys(x).sort().map(k=>[k,canonical(x[k])]));return x;};
-     if(JSON.stringify(canonical(saved))!==JSON.stringify(canonical(actual)))throw Error('La lectura posterior no coincide. Revise Supabase antes de repetir.');
-   }
-   currentBaseline=JSON.parse(JSON.stringify(saved));
+   const saved=await leerOriginal();
+   if(!equals(saved,actual))throw Error('La lectura posterior no coincide con lo enviado. Compruebe Supabase antes de repetir.');
+   currentBaseline=clone(saved);
    msg.textContent='Guardado y verificación correctos: '+cuenta(saved)+' equipos. Cierre y reabra el enlace para confirmar persistencia.';
-  }catch(e){msg.textContent='No se confirmó el guardado: '+e.message+' Si falló la red, recargue y compruebe antes de reintentar.';console.error(e);}
-  finally{busy=false;btn.disabled=false;}
+  }catch(e){msg.textContent='No se confirmó el guardado: '+e.message;console.error(e);}
+  finally{busy=false;btn.disabled=!currentBaseline;}
  });
 }
 </script>
