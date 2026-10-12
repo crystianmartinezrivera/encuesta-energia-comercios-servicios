@@ -24786,8 +24786,16 @@ window.__modoCorreccionSoloLectura=true; // Solo la función RPC específica de 
 const bar=document.getElementById('revisionOriginal'), titulo=document.getElementById('revisionFolio'),obs=document.getElementById('revisionObservaciones'),estado=document.getElementById('revisionEstado');bar.hidden=false;
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 if(!uuid.test(token)){titulo.textContent='Enlace de corrección inválido';return;}
-// Bloquear cualquier modificación o guardado desde esta copia de validación.
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=(b.textContent||'').toLowerCase();if(!(b.closest('#view-usos') || b.closest('#modalIluminacion,#modalAireAcondicionado,#modalVentilacion,#modalCalefaccion,#modalRefrigeracion,#modalEquipoOficina,#modalElectromecanico,#modalSistemaTermico,#modalCoccion,#modalEspecializado')) && !['btnGuardarPracticasV16','btnGuardarUsosV15','btnGuardarContactoV8','btnGuardarHorasV9','btnGuardarAreasV11','guardarArea','btnAgregarArea','btnAgregarEnergetico','guardarEnergetico','btnGuardarEnergeticosV12','btnGuardarFacturasV13'].includes(b.id) && !b.classList.contains('btn-area-editar') && !b.classList.contains('btn-agregar-factura') && !b.classList.contains('btn-editar-factura') && !b.classList.contains('btn-eliminar-factura') && !b.closest('#modalFacturaEnergia') && !b.closest('#modalArea') && /guardar|enviar encuesta|reenviar|finalizar|eliminar|duplicar|agregar|añadir|editar/.test(t)){e.preventDefault();e.stopImmediatePropagation();alert('Esta copia es exclusivamente de consulta; no guarda cambios.');}},true);
+// Corrección: no interceptar operaciones de edición, altas ni eliminaciones.
+// Únicamente se bloquea el envío definitivo en modo corrección.
+document.addEventListener('click',function(e){
+ const b=e.target.closest('button'); if(!b)return;
+ const t=(b.textContent||'').trim().toLowerCase();
+ if(b.id==='btnPracticasContinuar'||b.id==='btnEnviarEncuesta'||/^(enviar encuesta|reenviar encuesta|finalizar encuesta)$/.test(t)){
+  e.preventDefault();e.stopImmediatePropagation();
+  alert('El envío definitivo permanece deshabilitado durante la corrección.');
+ }
+},true);
 function put(id,v){const el=document.getElementById(id);if(el&&v!==null&&v!==undefined){el.value=String(v);el.dispatchEvent(new Event('change',{bubbles:false}));}}
 function radio(name,v){if(v===null||v===undefined)return;const val=typeof v==='boolean'?(v?'si':'no'):String(v);const el=[...document.querySelectorAll('input[type=radio]')].find(x=>x.name===name&&x.value===val);if(el)el.checked=true;}
 const fallosPrecarga=[]; function safe(fn){try{fn();}catch(e){fallosPrecarga.push(e.message);console.warn('Precarga parcial:',e);}}
@@ -25211,4 +25219,5 @@ function iniciarPracticasV16(data){
  if(destino)destino.prepend(aviso);
 })();
 </script>
+<div id="marcaDiagnosticoV1722" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;background:#002f2a;color:white;padding:10px 15px;border-radius:8px;font:700 13px Arial;box-shadow:0 3px 12px #555">DIAGNÓSTICO V17.2.2 — SIN BLOQUEO GENERAL</div>
 </body></html>
