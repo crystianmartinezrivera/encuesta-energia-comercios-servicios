@@ -9715,6 +9715,34 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" onerror="console.warn('No se pudo cargar la librería XLSX.')"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2'"></script>
 <script>
+// Aislamiento de datos locales de la sección 4. Los datos heredados sin
+// identificador de encuesta se archivan (no se destruyen) antes de restaurar.
+(function protegerSeccion4PorEncuesta(){
+  try {
+    const claves = ["encuesta_cys_usos_cd_v1", "encuesta_cys_usos_efg_v1", "encuesta_cys_usos_finales_v2"];
+    const marca = "encuesta_cys_seccion4_propietario_v1";
+    const folio = localStorage.getItem("encuesta_id");
+    const identidad = localStorage.getItem("encuesta_cys_usuario_local");
+    const propietarioActual = folio ? "folio:" + folio : (identidad ? "usuario:" + identidad : "sin-identidad");
+    const propietarioAnterior = localStorage.getItem(marca);
+    if (propietarioAnterior !== propietarioActual) {
+      const datos = {};
+      for (const clave of claves) {
+        const valor = localStorage.getItem(clave);
+        if (valor !== null) datos[clave] = valor;
+      }
+      if (Object.keys(datos).length) {
+        const archivo = "encuesta_cys_respaldo_seccion4_" + Date.now();
+        localStorage.setItem(archivo, JSON.stringify({propietarioAnterior, propietarioActual, fecha: new Date().toISOString(), datos}));
+        for (const clave of claves) localStorage.removeItem(clave);
+        console.info("Sección 4 heredada resguardada localmente en", archivo);
+      }
+      localStorage.setItem(marca, propietarioActual);
+    }
+  } catch (error) {
+    console.error("No se pudo aislar la sección 4; revisar almacenamiento local.", error);
+  }
+})();
   const STORAGE_KEY = "encuestaEnergiaComerciosServicios_v1";
 
   // ======================================================
