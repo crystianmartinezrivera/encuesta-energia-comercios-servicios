@@ -25219,7 +25219,7 @@ function iniciarPracticasV16(data){
  if(destino)destino.prepend(aviso);
 })();
 </script>
-<div id="marcaDiagnosticoV1722" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;background:#002f2a;color:white;padding:10px 15px;border-radius:8px;font:700 13px Arial;box-shadow:0 3px 12px #555">PRUEBA V18.1 — GUARDADO VERIFICADO</div>
+<div id="marcaDiagnosticoV1722" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;background:#002f2a;color:white;padding:10px 15px;border-radius:8px;font:700 13px Arial;box-shadow:0 3px 12px #555">PRUEBA V18.2 — NAVEGACIÓN Y AVISO</div>
 
 <!-- V17.2.3: navegación protegida en corrección. No ejecuta el guardado ordinario. -->
 <script>
@@ -25275,6 +25275,7 @@ function iniciarPracticasV16(data){
      const pantallaEner=ordenar(energeticosEstablecimiento.map(normEner));
      const servidorEner=ordenar(fresh.energeticos_establecimiento.map(normEner));
      if(pantallaEner!==servidorEner)throw Error('Los energéticos de pantalla no coinciden con Supabase. Se mantiene en la sección 2.');
+     window.__v182CambiosPendientes=false;
      msg.textContent='Áreas y energéticos verificados. Puede continuar a la sección 3. Los demás campos físicos de la sección 2 aún no tienen guardado de corrección verificado.';
      if(typeof mostrarVista==='function')mostrarVista('facturacion');
    }catch(err){msg.textContent='No se avanzó: '+err.message;console.error('Corrección sección 2:',err);}
@@ -25320,11 +25321,60 @@ function iniciarPracticasV16(data){
      const fresh=typeof check.data==='string'?JSON.parse(check.data):check.data;
      const rows=esArea?fresh?.areas_establecimiento:fresh?.energeticos_establecimiento;
      if(!Array.isArray(rows)||rows.some(x=>Number(x.id)===id))throw Error('La verificación posterior no confirmó la eliminación. Consulte Supabase.');
-     alert('Eliminación confirmada en Supabase. Se recargará la sección para actualizar las referencias de guardado.');
+     alert('Eliminación confirmada en Supabase. Se actualizarán los datos y permanecerá en la sección 2.');
+     window.__v182PermitirRecarga=true;
+     sessionStorage.setItem('v182VolverEnergia', token);
      location.reload();
    }catch(err){console.error('Eliminación V18',err);alert('No se confirmó la eliminación: '+err.message+'\nNo continúe guardando hasta comprobar el estado.');}
    finally{ocupado=false;b.disabled=false;}
  },true);
+})();
+</script>
+
+<!-- V18.2: aviso de edición sin guardar y restauración de la sección 2 después de eliminar. -->
+<script>
+(function(){
+ const token=new URLSearchParams(location.search).get('correccion');
+ if(!token)return;
+ window.__v182CambiosPendientes=false;
+ window.__v182PermitirRecarga=false;
+ const view=document.getElementById('view-energia');
+ if(view){
+   const marcar=e=>{
+     if(e.isTrusted && !e.target.closest('[data-no-dirty]'))window.__v182CambiosPendientes=true;
+   };
+   view.addEventListener('input',marcar,true);
+   view.addEventListener('change',marcar,true);
+ }
+ // Las áreas y energéticos se confirman en ventanas modales fuera de la vista.
+ document.addEventListener('click',e=>{
+   const b=e.target.closest('button');
+   if(!b||!e.isTrusted)return;
+   if(['guardarArea','guardarEnergetico','btnAgregarArea','btnAgregarEnergetico'].includes(b.id)){
+     window.__v182CambiosPendientes=true;
+   }
+ },false);
+ window.addEventListener('beforeunload',e=>{
+   if(!window.__v182CambiosPendientes||window.__v182PermitirRecarga)return;
+   e.preventDefault();
+   e.returnValue='';
+ });
+ if(sessionStorage.getItem('v182VolverEnergia')===token){
+   sessionStorage.removeItem('v182VolverEnergia');
+   let n=0;
+   const timer=setInterval(()=>{
+     n++;
+     const precarga=document.getElementById('estadoAreasV11');
+     const energeticos=document.getElementById('estadoEnergeticosV12');
+     if(precarga&&energeticos&&/instantánea|datos originales|sin cambios|guardad|áreas/i.test(precarga.textContent||'')&&/instantánea|energético|guardad/i.test(energeticos.textContent||'')){
+       clearInterval(timer);
+       if(typeof mostrarVista==='function')mostrarVista('energia');
+     }else if(n>=120){
+       clearInterval(timer);
+       if(typeof mostrarVista==='function')mostrarVista('energia');
+     }
+   },250);
+ }
 })();
 </script>
 </body></html>
