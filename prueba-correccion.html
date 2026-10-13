@@ -13003,7 +13003,15 @@ function renderizarAreas(){
 
   areasEstablecimiento.forEach((area, index) => {
 
-    superficieAcumulada += area.superficieM2;
+    // V18.4: en registros expresados en m², usar el valor editable
+    // como fuente del total y sincronizar el valor derivado.
+    const superficieCalculada = area.unidad === "m2"
+      ? Number(area.superficieValor)
+      : calcularSuperficieAreaM2(Number(area.superficieValor), area.unidad);
+    if (Number.isFinite(superficieCalculada) && superficieCalculada >= 0) {
+      area.superficieM2 = superficieCalculada;
+      superficieAcumulada += superficieCalculada;
+    }
 
 
     const tr =
