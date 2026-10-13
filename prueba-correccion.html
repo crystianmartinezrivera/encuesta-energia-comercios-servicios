@@ -25219,7 +25219,7 @@ function iniciarPracticasV16(data){
  if(destino)destino.prepend(aviso);
 })();
 </script>
-<div id="marcaDiagnosticoV1722" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;background:#002f2a;color:white;padding:10px 15px;border-radius:8px;font:700 13px Arial;box-shadow:0 3px 12px #555">PRUEBA V18.2 — NAVEGACIÓN Y AVISO</div>
+<div id="marcaDiagnosticoV1722" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;background:#002f2a;color:white;padding:10px 15px;border-radius:8px;font:700 13px Arial;box-shadow:0 3px 12px #555">PRUEBA V18.3 — NAVEGACIÓN CORREGIDA</div>
 
 <!-- V17.2.3: navegación protegida en corrección. No ejecuta el guardado ordinario. -->
 <script>
@@ -25361,19 +25361,27 @@ function iniciarPracticasV16(data){
  });
  if(sessionStorage.getItem('v182VolverEnergia')===token){
    sessionStorage.removeItem('v182VolverEnergia');
-   let n=0;
-   const timer=setInterval(()=>{
-     n++;
-     const precarga=document.getElementById('estadoAreasV11');
-     const energeticos=document.getElementById('estadoEnergeticosV12');
-     if(precarga&&energeticos&&/instantánea|datos originales|sin cambios|guardad|áreas/i.test(precarga.textContent||'')&&/instantánea|energético|guardad/i.test(energeticos.textContent||'')){
-       clearInterval(timer);
-       if(typeof mostrarVista==='function')mostrarVista('energia');
-     }else if(n>=120){
-       clearInterval(timer);
-       if(typeof mostrarVista==='function')mostrarVista('energia');
-     }
-   },250);
+   // La precarga puede invocar mostrarVista('facturacion') después del primer cambio.
+   // Durante la restauración, forzar exclusivamente la sección 2; luego liberar.
+   const vistaOriginal=typeof mostrarVista==='function'?mostrarVista:null;
+   if(vistaOriginal){
+     let restaurando=true;
+     window.mostrarVista=function(nombre){
+       return vistaOriginal.call(this,restaurando?'energia':nombre);
+     };
+     let intentos=0;
+     const timer=setInterval(()=>{
+       intentos++;
+       window.mostrarVista('energia');
+       const cargadas=Array.isArray(areasEstablecimiento)&&Array.isArray(energeticosEstablecimiento);
+       if((cargadas&&intentos>=16)||intentos>=40){
+         clearInterval(timer);
+         window.mostrarVista('energia');
+         restaurando=false;
+         window.mostrarVista=vistaOriginal;
+       }
+     },250);
+   }
  }
 })();
 </script>
