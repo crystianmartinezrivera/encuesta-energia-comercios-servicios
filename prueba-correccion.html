@@ -25219,7 +25219,7 @@ function iniciarPracticasV16(data){
  if(destino)destino.prepend(aviso);
 })();
 </script>
-<div id="marcaDiagnosticoV1722" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;background:#002f2a;color:white;padding:10px 15px;border-radius:8px;font:700 13px Arial;box-shadow:0 3px 12px #555">PRUEBA V18 — ELIMINACIÓN CONTROLADA</div>
+<div id="marcaDiagnosticoV1722" style="position:fixed;bottom:12px;right:12px;z-index:2147483647;background:#002f2a;color:white;padding:10px 15px;border-radius:8px;font:700 13px Arial;box-shadow:0 3px 12px #555">PRUEBA V18.1 — GUARDADO VERIFICADO</div>
 
 <!-- V17.2.3: navegación protegida en corrección. No ejecuta el guardado ordinario. -->
 <script>
@@ -25259,6 +25259,22 @@ function iniciarPracticasV16(data){
      await esperar('btnGuardarAreasV11','estadoAreasV11',/no hay cambios pendientes/i,/guardado y verificaci[oó]n correctos/i);
      msg.textContent='Comprobando energéticos en Supabase…';
      await esperar('btnGuardarEnergeticosV12','estadoEnergeticosV12',/no hay energ[eé]ticos nuevos pendientes/i,/guardado y verificaci[oó]n correctos/i);
+     // V18.1: comparación directa de la pantalla con una nueva lectura del servidor.
+     // Un mensaje anterior de éxito nunca autoriza navegar con datos distintos.
+     msg.textContent='Verificando los valores editados contra Supabase…';
+     const comprobacion=await supabaseClient.rpc('obtener_encuesta_correccion',{p_token:new URLSearchParams(location.search).get('correccion')});
+     if(comprobacion.error)throw comprobacion.error;
+     const fresh=typeof comprobacion.data==='string'?JSON.parse(comprobacion.data):comprobacion.data;
+     if(!Array.isArray(fresh?.areas_establecimiento)||!Array.isArray(fresh?.energeticos_establecimiento))throw Error('Supabase no devolvió las listas necesarias para comprobar los cambios.');
+     const normArea=x=>({id:x.id==null?null:Number(x.id),tipo:String(x.tipo||''),nombre:String(x.nombre||''),cantidad:Number(x.cantidad),superficie_valor:Number(x.superficie_valor??x.superficieValor),unidad:String(x.unidad||''),superficie_m2:Number(x.superficie_m2??x.superficieM2)});
+     const normEner=x=>({id:x.id==null?null:Number(x.id),codigo:String(x.codigo||''),nombre:String(x.nombre||'')});
+     const ordenar=(xs)=>JSON.stringify(xs.sort((a,b)=>(a.id??Number.MAX_SAFE_INTEGER)-(b.id??Number.MAX_SAFE_INTEGER)));
+     const pantallaAreas=ordenar(areasEstablecimiento.map(normArea));
+     const servidorAreas=ordenar(fresh.areas_establecimiento.map(normArea));
+     if(pantallaAreas!==servidorAreas)throw Error('Las áreas editadas no coinciden con lo guardado en Supabase. Se mantiene en la sección 2; no actualice la página todavía.');
+     const pantallaEner=ordenar(energeticosEstablecimiento.map(normEner));
+     const servidorEner=ordenar(fresh.energeticos_establecimiento.map(normEner));
+     if(pantallaEner!==servidorEner)throw Error('Los energéticos de pantalla no coinciden con Supabase. Se mantiene en la sección 2.');
      msg.textContent='Áreas y energéticos verificados. Puede continuar a la sección 3. Los demás campos físicos de la sección 2 aún no tienen guardado de corrección verificado.';
      if(typeof mostrarVista==='function')mostrarVista('facturacion');
    }catch(err){msg.textContent='No se avanzó: '+err.message;console.error('Corrección sección 2:',err);}
