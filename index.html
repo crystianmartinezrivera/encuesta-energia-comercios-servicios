@@ -24041,7 +24041,11 @@ function actualizarBotonInicio(){
 
   const tieneAvance =
     !!localStorage.getItem("encuesta_id") ||
-    !!localStorage.getItem(STORAGE_KEY);
+    !!localStorage.getItem(STORAGE_KEY) ||
+    !!localStorage.getItem(STORAGE_USOS_FINALES_V2) ||
+    !!localStorage.getItem(STORAGE_USOS_CD) ||
+    !!localStorage.getItem(STORAGE_USOS_EFG) ||
+    !!localStorage.getItem(STORAGE_PRACTICAS_V1);
 
   btn.textContent = tieneAvance
     ? "CONTINUAR ENCUESTA →"
@@ -24100,23 +24104,63 @@ function limpiarDatosEncuestaActual(){
   clavesLocalesDeEncuesta().forEach(k => localStorage.removeItem(k));
 }
 
+// Los borradores se archivan antes de cambiar de encuesta. No se elimina ningún avance.
+const STORAGE_BORRADORES = "encuesta_cys_borradores_separados_v1";
+function listarBorradoresSeparados(){
+  try { const x=JSON.parse(localStorage.getItem(STORAGE_BORRADORES)||"[]");return Array.isArray(x)?x:[]; }
+  catch(e){return [];}
+}
+function archivarEncuestaActual(){
+  const claves=clavesLocalesDeEncuesta();
+  const datos={};
+  for(const k of claves){const v=localStorage.getItem(k);if(v!==null)datos[k]=v;}
+  if(!Object.keys(datos).length)return false;
+  const borradores=listarBorradoresSeparados();
+  borradores.push({fecha:new Date().toISOString(),folio:datos.encuesta_id||null,datos});
+  // Primero confirmar que se pudo almacenar el respaldo, luego liberar la encuesta activa.
+  localStorage.setItem(STORAGE_BORRADORES,JSON.stringify(borradores));
+  claves.forEach(k=>localStorage.removeItem(k));
+  return true;
+}
 function iniciarNuevaEncuesta(){
-  if(!encuestaEstaFinalizada()){
-    const hayAvance = !!localStorage.getItem("encuesta_id") || !!localStorage.getItem(STORAGE_KEY);
-    if(hayAvance){
-      const confirmar = confirm(
-        "Hay una encuesta en progreso. ¿Desea descartarla e iniciar una nueva? Esta acción eliminará el avance guardado en este navegador."
-      );
-      if(!confirmar) return;
-    }
-  }
-
-  limpiarDatosEncuestaActual();
-
-  // Recargar es intencional: reinicia también todos los arreglos,
-  // tablas, radios, modales y caches JavaScript de las secciones 1–5.
+  const hayAvance=clavesLocalesDeEncuesta().some(k=>localStorage.getItem(k)!==null);
+  if(hayAvance && !confirm("¿Comenzar otra encuesta? El avance actual se conservará como borrador recuperable en este navegador. No se borrará de Supabase."))return;
+  try { if(hayAvance)archivarEncuestaActual(); }
+  catch(e){alert("No se pudo respaldar el avance. No se iniciará otra encuesta para evitar pérdida de información.");return;}
   sessionStorage.setItem(SESSION_AUTOSTART_NUEVA,"1");
   window.location.reload();
+}
+function restaurarBorradorSeparado(indice){
+  const borradores=listarBorradoresSeparados();
+  const elegido=borradores[indice];if(!elegido)return;
+  if(!confirm("¿Retomar este borrador? El avance actual, si existe, también se conservará por separado."))return;
+  try{
+    archivarEncuestaActual();
+    const actuales=listarBorradoresSeparados();
+    const idx=actuales.findIndex(x=>x.fecha===elegido.fecha && x.folio===elegido.folio);
+    if(idx<0)throw Error("Borrador no encontrado");
+    actuales.splice(idx,1);
+    localStorage.setItem(STORAGE_BORRADORES,JSON.stringify(actuales));
+    for(const [k,v] of Object.entries(elegido.datos))localStorage.setItem(k,v);
+    window.location.reload();
+  }catch(e){alert("No se pudo restaurar el borrador: "+e.message);}
+}
+function prepararOpcionesBorradores(){
+  const inicio=document.getElementById("btnIniciar");if(!inicio)return;
+  const zona=document.createElement("div");zona.style.cssText="margin:14px auto;max-width:480px;display:grid;gap:9px;text-align:center";
+  const nuevo=document.createElement("button");nuevo.type="button";nuevo.textContent="COMENZAR OTRA ENCUESTA";
+  nuevo.style.cssText="padding:12px;border:1px solid #1e5b4f;border-radius:8px;background:#fff;color:#1e5b4f;cursor:pointer;font-weight:700";
+  nuevo.onclick=iniciarNuevaEncuesta;zona.appendChild(nuevo);
+  const borradores=listarBorradoresSeparados();
+  if(borradores.length){
+    const selector=document.createElement("select");selector.setAttribute("aria-label","Borradores disponibles");
+    selector.style.cssText="padding:10px;max-width:100%";
+    borradores.forEach((b,i)=>{const opt=document.createElement("option");opt.value=i;opt.textContent="Borrador "+(b.folio||"sin folio")+" · "+new Date(b.fecha).toLocaleString("es-MX");selector.appendChild(opt);});
+    const retomar=document.createElement("button");retomar.type="button";retomar.textContent="RETOMAR BORRADOR GUARDADO";
+    retomar.style.cssText=nuevo.style.cssText;retomar.onclick=()=>restaurarBorradorSeparado(Number(selector.value));
+    zona.append(selector,retomar);
+  }
+  inicio.insertAdjacentElement("afterend",zona);
 }
 
 function folioEncuestaActual(){
@@ -24754,6 +24798,7 @@ function finalizarEncuestaPiloto(){
 
   restaurarFinalizacionPublica();
   actualizarBotonInicio();
+  // No mostrar controles adicionales de borradores en el enlace público.
   procesarAutoinicioNuevaEncuesta();
   } else {
     // La precarga completa y escritura de formularios están pendientes.
