@@ -13003,15 +13003,7 @@ function renderizarAreas(){
 
   areasEstablecimiento.forEach((area, index) => {
 
-    // V18.4: en registros expresados en m², usar el valor editable
-    // como fuente del total y sincronizar el valor derivado.
-    const superficieCalculada = area.unidad === "m2"
-      ? Number(area.superficieValor)
-      : calcularSuperficieAreaM2(Number(area.superficieValor), area.unidad);
-    if (Number.isFinite(superficieCalculada) && superficieCalculada >= 0) {
-      area.superficieM2 = superficieCalculada;
-      superficieAcumulada += superficieCalculada;
-    }
+    superficieAcumulada += area.superficieM2;
 
 
     const tr =
@@ -25391,6 +25383,42 @@ function iniciarPracticasV16(data){
      },250);
    }
  }
+})();
+</script>
+
+<!-- V18.5: total visible calculado a partir de las superficies mostradas en la tabla. -->
+<script>
+(function(){
+  const tabla=document.getElementById('tablaAreasBody');
+  const total=document.getElementById('totalSuperficieAreas');
+  if(!tabla||!total)return;
+  function calcular(){
+    let suma=0, n=0;
+    for(const fila of tabla.querySelectorAll('tr')){
+      const celda=fila.cells && fila.cells[2];
+      if(!celda)continue;
+      const texto=(celda.childNodes[0]?.textContent||celda.textContent||'').trim();
+      const m=texto.match(/(-?[\d.,]+)\s*m²/i);
+      if(!m)continue;
+      const crudo=m[1];
+      const numero=Number(crudo.includes(',') && crudo.includes('.') ? crudo.replace(/,/g,'') : crudo.includes(',') ? crudo.replace(',','.') : crudo);
+      if(Number.isFinite(numero)){suma+=numero;n++;}
+    }
+    if(!n && Array.isArray(window.areasEstablecimiento)){
+      for(const a of window.areasEstablecimiento){
+        if(a.unidad==='m2')suma+=Number(a.superficieValor)||0;
+        else suma+=Number(a.superficieM2)||0;
+      }
+    }
+    const valor=suma.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+' m²';
+    if(total.textContent.trim()!==valor)total.textContent=valor;
+  }
+  const observer=new MutationObserver(calcular);
+  observer.observe(tabla,{childList:true,subtree:true,characterData:true});
+  document.addEventListener('click',function(e){
+    if(e.target.closest('#guardarArea'))setTimeout(calcular,0);
+  });
+  calcular();
 })();
 </script>
 </body></html>
