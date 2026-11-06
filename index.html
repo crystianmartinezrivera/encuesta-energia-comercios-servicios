@@ -6268,6 +6268,15 @@
       </h4>
 
 
+      <div class="field" id="grupoServicioFactura" style="margin-bottom:14px;">
+        <label for="facturaServicio">Servicio eléctrico (identificado por su recibo, sin necesidad de conocer las áreas que abastece)</label>
+        <select id="facturaServicio"><option value="">Seleccione o registre un servicio</option></select>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+          <button type="button" class="action-btn" id="nuevoServicioFactura">+ Registrar otro servicio</button>
+          <button type="button" class="action-btn" id="cambiarTarifaServicio">Cambiar tarifa para facturas posteriores</button>
+        </div>
+        <small id="avisoServicioFactura" style="display:block;margin-top:7px;">Cada servicio conserva su tarifa para las siguientes facturas.</small>
+      </div>
       <div class="grid-2">
 
         <!-- TARIFA -->
@@ -16345,7 +16354,7 @@ function limpiarModalFactura(){
     document.getElementById("facturaTarifa");
 
   if(tarifa){
-    tarifa.value = localStorage.getItem("encuesta_tarifa_predeterminada") || "";
+    tarifa.value = "";
   }
 
 }
@@ -16382,12 +16391,15 @@ document.addEventListener(
     };
 
 
+    facturaEditandoIndex=null;
+    const botonGuardarNuevo=document.getElementById("guardarFacturaEnergia");
+    if(botonGuardarNuevo)botonGuardarNuevo.textContent="Agregar factura";
     limpiarModalFactura();
 
     cargarUnidadesFactura(codigo);
     if (codigo === "electricidad") {
       const selector = document.getElementById("facturaTarifa");
-      if (selector) selector.value = localStorage.getItem("encuesta_tarifa_predeterminada") || selector.value;
+      actualizarSelectorServiciosFactura();
     }
 
 
@@ -16444,6 +16456,48 @@ document.addEventListener(
 
 let facturasEnergia = [];
 let facturaEditandoIndex = null;
+// Servicios identificados por recibo; se guardan en cada factura y se reconstruyen al recuperar.
+let serviciosElectricosFactura = [];
+let servicioFacturaUltimo = "";
+function nuevoIdServicioFactura(){return "srv_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);}
+function reconstruirServiciosFactura(){
+  const actuales = new Map(serviciosElectricosFactura.map(s=>[s.id,s]));
+  facturasEnergia.filter(f=>f.codigo==="electricidad").forEach(f=>{
+    const id=f.servicio_electrico || "servicio_legacy";
+    if(!actuales.has(id)) actuales.set(id,{id,nombre:id==="servicio_legacy"?"Servicio sin identificar (registros anteriores)":id,tarifa:f.tarifa||""});
+  });
+  serviciosElectricosFactura=[...actuales.values()];
+}
+function actualizarSelectorServiciosFactura(idPreferido){
+  reconstruirServiciosFactura();
+  const select=document.getElementById("facturaServicio"),tarifa=document.getElementById("facturaTarifa");
+  if(!select||!tarifa)return;
+  const elegido=idPreferido || select.value || servicioFacturaUltimo || (serviciosElectricosFactura.length===1?serviciosElectricosFactura[0].id:"");
+  select.innerHTML='<option value="">Seleccione un servicio</option>';
+  serviciosElectricosFactura.forEach(s=>{const op=document.createElement("option");op.value=s.id;op.textContent=s.nombre+(s.tarifa?" — "+s.tarifa:"");select.appendChild(op);});
+  select.value=serviciosElectricosFactura.some(s=>s.id===elegido)?elegido:"";
+  const actual=serviciosElectricosFactura.find(s=>s.id===select.value);
+  tarifa.value=actual?.tarifa||"";
+  tarifa.disabled=!!actual?.tarifa;
+  const aviso=document.getElementById("avisoServicioFactura");
+  if(aviso)aviso.textContent=actual?.tarifa?"Tarifa guardada para este servicio: "+actual.tarifa+". Se aplicará automáticamente.":"Seleccione la tarifa una vez para este servicio.";
+}
+document.getElementById("facturaServicio")?.addEventListener("change",e=>actualizarSelectorServiciosFactura(e.target.value));
+document.getElementById("nuevoServicioFactura")?.addEventListener("click",()=>{
+  const nombre=prompt("Nombre o referencia para identificar el recibo (por ejemplo: Servicio 2 o terminación del número de servicio):", "Servicio "+(serviciosElectricosFactura.length+1));
+  if(nombre===null)return;
+  if(!nombre.trim()){alert("Escriba una referencia para el servicio.");return;}
+  const nuevo={id:nuevoIdServicioFactura(),nombre:nombre.trim(),tarifa:""};
+  serviciosElectricosFactura.push(nuevo);actualizarSelectorServiciosFactura(nuevo.id);
+});
+document.getElementById("cambiarTarifaServicio")?.addEventListener("click",()=>{
+  const id=document.getElementById("facturaServicio")?.value;
+  const actual=serviciosElectricosFactura.find(s=>s.id===id);
+  if(!actual){alert("Seleccione primero un servicio.");return;}
+  if(!confirm("¿Cambiar la tarifa de este servicio para las facturas nuevas? Las facturas anteriores conservarán su tarifa."))return;
+  actual.tarifa="";actualizarSelectorServiciosFactura(id);
+});
+
 
 
 // ======================================================
@@ -16512,8 +16566,18 @@ if(btnGuardarFacturaEnergia){
       }
 
 
+      let servicioSeleccionado=null;
+      if(energeticoFacturaActual.codigo==="electricidad"){
+        const id=document.getElementById("facturaServicio")?.value;
+        servicioSeleccionado=serviciosElectricosFactura.find(s=>s.id===id);
+        if(!servicioSeleccionado){alert("Seleccione o registre un servicio eléctrico.");return;}
+        const tarifaNueva=document.getElementById("facturaTarifa")?.value;
+        if(!tarifaNueva){alert("Seleccione la tarifa del servicio eléctrico.");return;}
+        if(!servicioSeleccionado.tarifa)servicioSeleccionado.tarifa=tarifaNueva;
+      }
       const factura = {
 
+        servicio_electrico: servicioSeleccionado?.id || null,
         codigo:
           energeticoFacturaActual.codigo,
 
@@ -16604,8 +16668,9 @@ if(btnGuardarFacturaEnergia){
 
 }
   
-      if (factura.codigo === "electricidad" && factura.tarifa) {
-        localStorage.setItem("encuesta_tarifa_predeterminada", factura.tarifa);
+      if(factura.codigo === "electricidad"){
+        servicioFacturaUltimo=factura.servicio_electrico;
+        actualizarSelectorServiciosFactura(servicioFacturaUltimo);
       }
 
       renderizarFacturasEnergia();
@@ -16686,6 +16751,8 @@ async function guardarFacturasEnergiaSupabase(){
 
           codigo:
             factura.codigo,
+
+          servicio_electrico: factura.servicio_electrico || null,
 
           nombre:
             factura.nombre || null,
@@ -16792,6 +16859,8 @@ async function cargarFacturasEnergiaDesdeSupabase(){
           codigo:
             factura.codigo,
 
+          servicio_electrico: factura.servicio_electrico || null,
+
           nombre:
             factura.nombre,
 
@@ -16843,6 +16912,9 @@ async function cargarFacturasEnergiaDesdeSupabase(){
     );
 
 
+  serviciosElectricosFactura=[];
+  reconstruirServiciosFactura();
+  actualizarSelectorServiciosFactura();
   renderizarFacturasEnergia();
 
 
@@ -16936,7 +17008,7 @@ function renderizarFacturasEnergia(){
             </td>
 
             <td>
-              ${factura.tarifa || "-"}
+              ${factura.tarifa || "-"}<small style="display:block;color:#607080;">${(serviciosElectricosFactura.find(s=>s.id===factura.servicio_electrico)?.nombre || (factura.servicio_electrico?"Servicio eléctrico":"Sin identificar")).replace(/</g,"&lt;").replace(/>/g,"&gt;")}</small>
             </td>
 
             <td>
@@ -17148,10 +17220,10 @@ document.addEventListener(
         camposElectricos.classList.remove("hidden");
       }
 
-      document.getElementById(
-        "facturaTarifa"
-      ).value =
-        factura.tarifa || "";
+      actualizarSelectorServiciosFactura(factura.servicio_electrico || "servicio_legacy");
+      const selectorTarifa=document.getElementById("facturaTarifa");
+      selectorTarifa.value=factura.tarifa || "";
+      selectorTarifa.disabled=true;
 
       document.getElementById(
         "facturaPotenciaContratada"
