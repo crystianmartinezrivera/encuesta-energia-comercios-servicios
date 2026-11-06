@@ -6272,7 +6272,7 @@
         <label for="facturaServicio">Servicio eléctrico (identificado por su recibo, sin necesidad de conocer las áreas que abastece)</label>
         <select id="facturaServicio"><option value="">Seleccione o registre un servicio</option></select>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-          <button type="button" class="action-btn" id="nuevoServicioFactura">+ Registrar otro servicio</button>
+          <small>Para agregar otro suministro, cierre esta ventana y utilice el Paso 1.</small>
           <button type="button" class="action-btn" id="cambiarTarifaServicio">Cambiar tarifa para facturas posteriores</button>
         </div>
         <small id="avisoServicioFactura" style="display:block;margin-top:7px;">Cada servicio conserva su tarifa para las siguientes facturas.</small>
@@ -15597,10 +15597,19 @@ function renderizarModulosFacturacion(listaEnergeticos){
 
           </div>
 
-          <p class="helper-text">
-            Registre los consumos, costos y datos eléctricos
-            disponibles para cada periodo de facturación.
-          </p>
+          <div class="energy-supply-setup" style="border:1px solid #c7d7e2;border-radius:10px;padding:16px;margin:14px 0;background:#f6fafc;">
+            <h4 style="margin:0 0 8px;color:#0b497c;">Paso 1. Registrar el suministro eléctrico</h4>
+            <p class="helper-text" style="margin:0 0 12px;">Identifique cada suministro por su recibo. No es necesario saber qué áreas o equipos alimenta.</p>
+            <div class="grid-2">
+              <div class="field"><label>Nombre o referencia del suministro</label><input type="text" class="nuevo-suministro-nombre" placeholder="Ej. Servicio 1 o terminación del recibo" maxlength="100"></div>
+              <div class="field"><label>Tarifa eléctrica</label><select class="nuevo-suministro-tarifa"><option value="">Seleccione una tarifa</option><option value="PDBT">PDBT</option><option value="GDBT">GDBT</option><option value="GDMTO">GDMTO</option><option value="GDMTH">GDMTH</option><option value="DIST">DIST</option><option value="DIT">DIT</option><option value="APBT">APBT</option><option value="APMT">APMT</option><option value="RABT">RABT</option><option value="RAMT">RAMT</option><option value="1">1</option><option value="1A">1A</option><option value="1B">1B</option><option value="1C">1C</option><option value="1D">1D</option><option value="1E">1E</option><option value="1F">1F</option><option value="DAC">DAC</option><option value="otro">Otra</option></select></div>
+            </div>
+            <button type="button" class="secondary btn-registrar-suministro">+ Guardar suministro</button>
+            <div class="lista-suministros-factura" style="margin-top:12px;"></div>
+            <small>La tarifa se conserva para las siguientes facturas. Puede registrar varios suministros.</small>
+          </div>
+          <div style="margin-top:18px;"><h4 style="color:#0b497c;margin:0 0 6px;">Paso 2. Agregar consumos facturados</h4>
+          <p class="helper-text">Seleccione un suministro registrado y capture los periodos, consumos y costos de sus recibos.</p></div>
 
           <div class="empty-message">
             Aún no se han agregado facturas.
@@ -16398,7 +16407,12 @@ document.addEventListener(
 
     cargarUnidadesFactura(codigo);
     if (codigo === "electricidad") {
-      const selector = document.getElementById("facturaTarifa");
+      reconstruirServiciosFactura();
+      if(!serviciosElectricosFactura.length){
+        alert("Primero registre el suministro eléctrico y su tarifa en el Paso 1.");
+        document.querySelector(".nuevo-suministro-nombre")?.focus();
+        return;
+      }
       actualizarSelectorServiciosFactura();
     }
 
@@ -16460,6 +16474,31 @@ let facturaEditandoIndex = null;
 let serviciosElectricosFactura = [];
 let servicioFacturaUltimo = "";
 function nuevoIdServicioFactura(){return "srv_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);}
+function escaparTextoSuministro(v){return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function mostrarSuministrosRegistrados(){
+  reconstruirServiciosFactura();
+  document.querySelectorAll(".energy-supply-setup").forEach(panel=>{
+    const lista=panel.querySelector(".lista-suministros-factura");
+    if(lista)lista.innerHTML=serviciosElectricosFactura.length
+      ? "<strong>Suministros registrados:</strong>"+serviciosElectricosFactura.map(s=>`<div style="padding:7px 0;border-bottom:1px solid #dbe5eb;">${escaparTextoSuministro(s.nombre)} — <strong>${escaparTextoSuministro(s.tarifa||"Sin tarifa")}</strong></div>`).join("")
+      : '<p style="color:#795548;">Aún no se han registrado suministros.</p>';
+    const btn=panel.closest(".energy-card")?.querySelector(".btn-agregar-factura");
+    if(btn){btn.disabled=!serviciosElectricosFactura.length;btn.title=btn.disabled?"Primero registre un suministro eléctrico":"";}
+  });
+}
+document.addEventListener("click",e=>{
+  const boton=e.target.closest(".btn-registrar-suministro");if(!boton)return;
+  const panel=boton.closest(".energy-supply-setup");
+  const nombre=panel.querySelector(".nuevo-suministro-nombre").value.trim();
+  const tarifa=panel.querySelector(".nuevo-suministro-tarifa").value;
+  if(!nombre||!tarifa){alert("Indique una referencia y una tarifa para el suministro.");return;}
+  if(serviciosElectricosFactura.some(s=>s.nombre.toLowerCase()===nombre.toLowerCase())){alert("Ya existe un suministro con esta referencia.");return;}
+  const nuevo={id:nuevoIdServicioFactura(),nombre,tarifa};
+  serviciosElectricosFactura.push(nuevo);servicioFacturaUltimo=nuevo.id;
+  panel.querySelector(".nuevo-suministro-nombre").value="";
+  panel.querySelector(".nuevo-suministro-tarifa").value="";
+  mostrarSuministrosRegistrados();actualizarSelectorServiciosFactura(nuevo.id);
+});
 function reconstruirServiciosFactura(){
   const actuales = new Map(serviciosElectricosFactura.map(s=>[s.id,s]));
   facturasEnergia.filter(f=>f.codigo==="electricidad").forEach(f=>{
@@ -16959,6 +16998,7 @@ function renderizarFacturasEnergia(){
       );
 
 
+    if(codigo==="electricidad")mostrarSuministrosRegistrados();
     if(!tbody){
       return;
     }
