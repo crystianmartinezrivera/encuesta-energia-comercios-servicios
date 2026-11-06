@@ -9302,6 +9302,8 @@
             <option value="">Seleccione...</option>
             <option value="t_h">toneladas de vapor/h</option>
             <option value="kg_h">kg de vapor/h</option>
+            <option value="lb_h">libras de vapor/h (lb/h)</option>
+            <option value="cv">Caballos de vapor (CV/BHP)</option>
           </select>
         </div>
       </div>
@@ -16343,7 +16345,7 @@ function limpiarModalFactura(){
     document.getElementById("facturaTarifa");
 
   if(tarifa){
-    tarifa.value = "";
+    tarifa.value = localStorage.getItem("encuesta_tarifa_predeterminada") || "";
   }
 
 }
@@ -16383,6 +16385,10 @@ document.addEventListener(
     limpiarModalFactura();
 
     cargarUnidadesFactura(codigo);
+    if (codigo === "electricidad") {
+      const selector = document.getElementById("facturaTarifa");
+      if (selector) selector.value = localStorage.getItem("encuesta_tarifa_predeterminada") || selector.value;
+    }
 
 
     // Título
@@ -16598,6 +16604,10 @@ if(btnGuardarFacturaEnergia){
 
 }
   
+      if (factura.codigo === "electricidad" && factura.tarifa) {
+        localStorage.setItem("encuesta_tarifa_predeterminada", factura.tarifa);
+      }
+
       renderizarFacturasEnergia();
 
 
@@ -21609,7 +21619,7 @@ function capacidadSistemaTermicoTexto(item) {
   }
 
   if (item.metodoCapacidad === "vapor") {
-    const unidad = item.unidadVapor === "t_h" ? "t vapor/h" : "kg vapor/h";
+    const unidad = ({t_h:"t vapor/h",kg_h:"kg vapor/h",lb_h:"lb vapor/h",cv:"CV/BHP"})[item.unidadVapor] || item.unidadVapor || "";
     return `${Number(item.capacidadVapor).toLocaleString("es-MX", {maximumFractionDigits:2})} ${unidad}`;
   }
 
@@ -24874,6 +24884,36 @@ document.addEventListener('click',function(e){
   e.preventDefault();e.stopImmediatePropagation();alert('La edición mediante enlace de corrección aún no está habilitada en esta versión de comprobación.');
  }
 },true);
+})();
+</script>
+
+<!-- PROTECCIÓN CORREGIDA DE VENTANAS: no intercepta Guardar ni Cancelar -->
+<script>
+(function () {
+  "use strict";
+  const selector = '.modal-backdrop, .cd-modal, #modalIluminacion, #modalAireAcondicionado, #modalVentilacion, [id^="modal"]';
+  function visibleModal(el) {
+    return el && !el.classList.contains('hidden') && getComputedStyle(el).display !== 'none';
+  }
+  document.addEventListener('click', function(event) {
+    const el = event.target;
+    if (!(el instanceof Element)) return;
+    const modal = el.closest(selector);
+    if (!visibleModal(modal)) return;
+    // Solo bloquear clic directamente sobre el fondo, no botones interiores.
+    if (el === modal) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
+  document.addEventListener('keydown', function(event) {
+    if (event.key !== 'Escape') return;
+    const abiertos = Array.from(document.querySelectorAll(selector)).some(visibleModal);
+    if (abiertos) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
 })();
 </script>
 </body>
