@@ -6269,6 +6269,9 @@
         <small id="avisoServicioFactura" style="display:block;margin-top:7px;">La tarifa se aplica automáticamente según el suministro registrado en el Paso 1.</small>
       </div>
       <div style="display:none" aria-hidden="true"><button type="button" id="cambiarTarifaServicio">Cambiar tarifa</button></div>
+      <label style="display:flex;align-items:center;gap:8px;margin:12px 0 16px;cursor:pointer;">
+        <input type="checkbox" id="reutilizarDatosFactura" style="width:auto;" /> Usar demanda máxima, factor de potencia y cargo por demanda del periodo anterior de este suministro
+      </label>
       <div class="grid-2">
 
         <!-- TARIFA -->
@@ -6313,31 +6316,6 @@
             </option>
 
           </select>
-        </div>
-
-
-        <!-- POTENCIA CONTRATADA -->
-
-        <div class="field">
-          <label>
-            Potencia contratada
-          </label>
-
-          <div class="input-unit">
-
-            <input
-              id="facturaPotenciaContratada"
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="Ej. 600"
-            >
-
-            <span class="unit">
-              kW
-            </span>
-
-          </div>
         </div>
 
 
@@ -6420,9 +6398,7 @@
 
 
       <p class="helper-text" style="margin-top:10px;">
-        La tarifa, potencia contratada, demanda máxima, factor de potencia
-        y cargo por demanda son opcionales. Regístrelos cuando aparezcan
-        en la factura eléctrica.
+        La demanda máxima, el factor de potencia y el cargo por demanda pueden cambiar entre periodos. Son opcionales; regístrelos cuando aparezcan en el recibo.
       </p>
 
     </div>
@@ -15589,6 +15565,7 @@ function renderizarModulosFacturacion(listaEnergeticos){
               <div class="field"><label>Nombre o referencia del suministro</label><input type="text" class="nuevo-suministro-nombre" placeholder="Ej. Servicio 1 o terminación del recibo" maxlength="100"></div>
               <div class="field"><label>Tarifa eléctrica</label><select class="nuevo-suministro-tarifa"><option value="">Seleccione una tarifa</option><option value="PDBT">PDBT</option><option value="GDBT">GDBT</option><option value="GDMTO">GDMTO</option><option value="GDMTH">GDMTH</option><option value="DIST">DIST</option><option value="DIT">DIT</option><option value="APBT">APBT</option><option value="APMT">APMT</option><option value="RABT">RABT</option><option value="RAMT">RAMT</option><option value="1">1</option><option value="1A">1A</option><option value="1B">1B</option><option value="1C">1C</option><option value="1D">1D</option><option value="1E">1E</option><option value="1F">1F</option><option value="DAC">DAC</option><option value="otro">Otra</option></select></div>
             </div>
+            <div class="field" style="margin:10px 0 12px;max-width:340px;"><label>Potencia contratada (kW) <small>— opcional</small></label><div class="input-unit"><input type="number" class="nuevo-suministro-potencia" min="0" step="0.01" placeholder="Ej. 600"><span class="unit">kW</span></div></div>
             <button type="button" class="secondary btn-registrar-suministro">+ Guardar suministro</button>
             <div class="lista-suministros-factura" style="margin-top:12px;"></div>
             <small>La tarifa se conserva para las siguientes facturas. Puede registrar varios suministros.</small>
@@ -16327,7 +16304,6 @@ function limpiarModalFactura(){
     "facturaFechaFin",
     "facturaConsumo",
     "facturaCosto",
-    "facturaPotenciaContratada",
     "facturaDemanda",
     "facturaFactorPotencia",
     "facturaCargoDemanda"
@@ -16345,6 +16321,8 @@ function limpiarModalFactura(){
   });
 
 
+  const reutilizar=document.getElementById("reutilizarDatosFactura");
+  if(reutilizar)reutilizar.checked=false;
   const tarifa =
     document.getElementById("facturaTarifa");
 
@@ -16466,30 +16444,45 @@ function mostrarSuministrosRegistrados(){
   document.querySelectorAll(".energy-supply-setup").forEach(panel=>{
     const lista=panel.querySelector(".lista-suministros-factura");
     if(lista)lista.innerHTML=serviciosElectricosFactura.length
-      ? "<strong>Suministros registrados:</strong>"+serviciosElectricosFactura.map(s=>`<div style="padding:7px 0;border-bottom:1px solid #dbe5eb;">${escaparTextoSuministro(s.nombre)} — <strong>${escaparTextoSuministro(s.tarifa||"Sin tarifa")}</strong></div>`).join("")
+      ? "<strong>Suministros registrados:</strong>"+serviciosElectricosFactura.map(s=>`<div style="padding:7px 0;border-bottom:1px solid #dbe5eb;">${escaparTextoSuministro(s.nombre)} — <strong>${escaparTextoSuministro(s.tarifa||"Sin tarifa")}</strong>${s.potencia!=null?" · Potencia contratada: "+s.potencia+" kW":""} <button type="button" class="secondary btn-editar-potencia-suministro" data-id="${escaparTextoSuministro(s.id)}" style="padding:4px 9px;margin-left:8px;">Editar potencia</button></div>`).join("")
       : '<p style="color:#795548;">Aún no se han registrado suministros.</p>';
     const btn=panel.closest(".energy-card")?.querySelector(".btn-agregar-factura");
     if(btn){btn.disabled=!serviciosElectricosFactura.length;btn.title=btn.disabled?"Primero registre un suministro eléctrico":"";}
   });
 }
 document.addEventListener("click",e=>{
+  const editar=e.target.closest(".btn-editar-potencia-suministro");
+  if(editar){
+    const suministro=serviciosElectricosFactura.find(s=>s.id===editar.dataset.id);
+    if(!suministro)return;
+    const entrada=prompt("Potencia contratada del suministro (kW). Deje vacío si se desconoce:",suministro.potencia??"");
+    if(entrada===null)return;
+    const valor=entrada.trim()===""?null:Number(entrada);
+    if(valor!==null&&(!Number.isFinite(valor)||valor<0)){alert("Introduzca una potencia válida.");return;}
+    suministro.potencia=valor;
+    mostrarSuministrosRegistrados();return;
+  }
   const boton=e.target.closest(".btn-registrar-suministro");if(!boton)return;
   const panel=boton.closest(".energy-supply-setup");
   const nombre=panel.querySelector(".nuevo-suministro-nombre").value.trim();
   const tarifa=panel.querySelector(".nuevo-suministro-tarifa").value;
   if(!nombre||!tarifa){alert("Indique una referencia y una tarifa para el suministro.");return;}
   if(serviciosElectricosFactura.some(s=>s.nombre.toLowerCase()===nombre.toLowerCase())){alert("Ya existe un suministro con esta referencia.");return;}
-  const nuevo={id:nuevoIdServicioFactura(),nombre,tarifa};
+  const potenciaTexto=panel.querySelector(".nuevo-suministro-potencia")?.value || "";
+  const potencia=potenciaTexto===""?null:Number(potenciaTexto);
+  if(potencia!==null&&(!Number.isFinite(potencia)||potencia<0)){alert("Revise la potencia contratada.");return;}
+  const nuevo={id:nuevoIdServicioFactura(),nombre,tarifa,potencia};
   serviciosElectricosFactura.push(nuevo);servicioFacturaUltimo=nuevo.id;
   panel.querySelector(".nuevo-suministro-nombre").value="";
   panel.querySelector(".nuevo-suministro-tarifa").value="";
+  panel.querySelector(".nuevo-suministro-potencia").value="";
   mostrarSuministrosRegistrados();actualizarSelectorServiciosFactura(nuevo.id);
 });
 function reconstruirServiciosFactura(){
   const actuales = new Map(serviciosElectricosFactura.map(s=>[s.id,s]));
   facturasEnergia.filter(f=>f.codigo==="electricidad").forEach(f=>{
     const id=f.servicio_electrico || "servicio_legacy";
-    if(!actuales.has(id)) actuales.set(id,{id,nombre:id==="servicio_legacy"?"Servicio sin identificar (registros anteriores)":id,tarifa:f.tarifa||""});
+    if(!actuales.has(id)) actuales.set(id,{id,nombre:id==="servicio_legacy"?"Servicio sin identificar (registros anteriores)":id,tarifa:f.tarifa||"",potencia:f.potencia_contratada??null});
   });
   serviciosElectricosFactura=[...actuales.values()];
 }
@@ -16507,7 +16500,21 @@ function actualizarSelectorServiciosFactura(idPreferido){
   const aviso=document.getElementById("avisoServicioFactura");
   if(aviso)aviso.textContent=actual?.tarifa?"Tarifa guardada para este servicio: "+actual.tarifa+". Se aplicará automáticamente.":"Seleccione la tarifa una vez para este servicio.";
 }
-document.getElementById("facturaServicio")?.addEventListener("change",e=>actualizarSelectorServiciosFactura(e.target.value));
+document.getElementById("facturaServicio")?.addEventListener("change",e=>{actualizarSelectorServiciosFactura(e.target.value);const c=document.getElementById("reutilizarDatosFactura");if(c)c.checked=false;});
+function reutilizarDatosPeriodoAnterior(){
+  const checkbox=document.getElementById("reutilizarDatosFactura");
+  if(!checkbox?.checked)return;
+  const id=document.getElementById("facturaServicio")?.value;
+  const previas=facturasEnergia.filter(f=>f.codigo==="electricidad"&&f.servicio_electrico===id&&f!==facturasEnergia[facturaEditandoIndex]);
+  previas.sort((a,b)=>String(b.fecha_fin||"").localeCompare(String(a.fecha_fin||"")));
+  const anterior=previas[0];
+  if(!anterior){checkbox.checked=false;alert("No hay una factura anterior para este suministro.");return;}
+  for(const [campo,clave] of [["facturaDemanda","demanda"],["facturaFactorPotencia","factor_potencia"],["facturaCargoDemanda","cargo_demanda"]]){
+    document.getElementById(campo).value=anterior[clave]??"";
+  }
+}
+document.getElementById("reutilizarDatosFactura")?.addEventListener("change",reutilizarDatosPeriodoAnterior);
+
 document.getElementById("nuevoServicioFactura")?.addEventListener("click",()=>{
   const nombre=prompt("Nombre o referencia para identificar el recibo (por ejemplo: Servicio 2 o terminación del número de servicio):", "Servicio "+(serviciosElectricosFactura.length+1));
   if(nombre===null)return;
@@ -16636,13 +16643,8 @@ if(btnGuardarFacturaEnergia){
             : null,
 
         potencia_contratada:
-          energeticoFacturaActual.codigo === "electricidad" &&
-          document.getElementById("facturaPotenciaContratada").value
-            ? Number(
-                document.getElementById(
-                  "facturaPotenciaContratada"
-                ).value
-              )
+          energeticoFacturaActual.codigo === "electricidad"
+            ? (servicioSeleccionado?.potencia ?? (facturaEditandoIndex!==null ? facturasEnergia[facturaEditandoIndex]?.potencia_contratada : null) ?? null)
             : null,
 
         demanda:
@@ -17249,11 +17251,6 @@ document.addEventListener(
       const selectorTarifa=document.getElementById("facturaTarifa");
       selectorTarifa.value=factura.tarifa || "";
       selectorTarifa.disabled=true;
-
-      document.getElementById(
-        "facturaPotenciaContratada"
-      ).value =
-        factura.potencia_contratada ?? "";
 
       document.getElementById(
         "facturaDemanda"
