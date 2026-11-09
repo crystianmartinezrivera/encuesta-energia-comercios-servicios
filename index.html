@@ -6263,25 +6263,17 @@
       style="margin-top:22px;"
     >
 
-      <h4 style="margin:0 0 14px 0; color:#0b497c;">
-        Datos del suministro eléctrico
-      </h4>
-
-
       <div class="field" id="grupoServicioFactura" style="margin-bottom:14px;">
-        <label for="facturaServicio">Servicio eléctrico (identificado por su recibo, sin necesidad de conocer las áreas que abastece)</label>
-        <select id="facturaServicio"><option value="">Seleccione o registre un servicio</option></select>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-          <small>Para agregar otro suministro, cierre esta ventana y utilice el Paso 1.</small>
-          <button type="button" class="action-btn" id="cambiarTarifaServicio">Cambiar tarifa para facturas posteriores</button>
-        </div>
-        <small id="avisoServicioFactura" style="display:block;margin-top:7px;">Cada servicio conserva su tarifa para las siguientes facturas.</small>
+        <label for="facturaServicio">Suministro eléctrico</label>
+        <select id="facturaServicio"><option value="">Seleccione un suministro registrado</option></select>
+        <small id="avisoServicioFactura" style="display:block;margin-top:7px;">La tarifa se aplica automáticamente según el suministro registrado en el Paso 1.</small>
       </div>
+      <div style="display:none" aria-hidden="true"><button type="button" id="cambiarTarifaServicio">Cambiar tarifa</button></div>
       <div class="grid-2">
 
         <!-- TARIFA -->
 
-        <div class="field">
+        <div class="field" style="display:none" aria-hidden="true">
           <label>
             Tarifa eléctrica
           </label>
@@ -15586,14 +15578,7 @@ function renderizarModulosFacturacion(listaEnergeticos){
               ${letra}. ${energetico.nombre}
             </h3>
 
-            <button
-              type="button"
-              class="secondary btn-agregar-factura"
-              data-codigo="${energetico.codigo}"
-              data-nombre="${energetico.nombre}"
-            >
-              + Agregar factura
-            </button>
+
 
           </div>
 
@@ -15609,7 +15594,8 @@ function renderizarModulosFacturacion(listaEnergeticos){
             <small>La tarifa se conserva para las siguientes facturas. Puede registrar varios suministros.</small>
           </div>
           <div style="margin-top:18px;"><h4 style="color:#0b497c;margin:0 0 6px;">Paso 2. Agregar consumos facturados</h4>
-          <p class="helper-text">Seleccione un suministro registrado y capture los periodos, consumos y costos de sus recibos.</p></div>
+          <p class="helper-text">Seleccione un suministro registrado y capture los periodos, consumos y costos de sus recibos.</p>
+          <button type="button" class="secondary btn-agregar-factura" data-codigo="${energetico.codigo}" data-nombre="${energetico.nombre}">+ Agregar factura</button></div>
 
           <div class="empty-message">
             Aún no se han agregado facturas.
@@ -16610,9 +16596,8 @@ if(btnGuardarFacturaEnergia){
         const id=document.getElementById("facturaServicio")?.value;
         servicioSeleccionado=serviciosElectricosFactura.find(s=>s.id===id);
         if(!servicioSeleccionado){alert("Seleccione o registre un servicio eléctrico.");return;}
-        const tarifaNueva=document.getElementById("facturaTarifa")?.value;
-        if(!tarifaNueva){alert("Seleccione la tarifa del servicio eléctrico.");return;}
-        if(!servicioSeleccionado.tarifa)servicioSeleccionado.tarifa=tarifaNueva;
+        if(!servicioSeleccionado.tarifa){alert("El suministro no tiene una tarifa registrada. Regístrela en el Paso 1.");return;}
+        document.getElementById("facturaTarifa").value=servicioSeleccionado.tarifa;
       }
       const factura = {
 
@@ -16647,7 +16632,7 @@ if(btnGuardarFacturaEnergia){
 
         tarifa:
           energeticoFacturaActual.codigo === "electricidad"
-            ? document.getElementById("facturaTarifa").value || null
+            ? servicioSeleccionado?.tarifa || null
             : null,
 
         potencia_contratada:
