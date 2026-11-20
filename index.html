@@ -15572,7 +15572,18 @@ function renderizarModulosFacturacion(listaEnergeticos){
           </div>
           <div style="margin-top:18px;"><h4 style="color:#0b497c;margin:0 0 6px;">Paso 2. Agregar consumos facturados</h4>
           <p class="helper-text">Seleccione un suministro registrado y capture los periodos, consumos y costos de sus recibos.</p>
-          <button type="button" class="secondary btn-agregar-factura" data-codigo="${energetico.codigo}" data-nombre="${energetico.nombre}">+ Agregar factura</button></div>
+          <button type="button" class="secondary btn-agregar-factura" data-codigo="${energetico.codigo}" data-nombre="${energetico.nombre}">+ Agregar factura</button>
+          <div class="energy-import-panel" style="margin-top:15px;padding:15px;border:1px solid #c7d7e2;border-radius:10px;background:#f6fafc;">
+            <h4 style="margin:0 0 8px;color:#0b497c;">Importar varios periodos desde Excel</h4>
+            <p class="helper-text">Seleccione el suministro, descargue la plantilla y súbala con sus consumos. Periodo (AAAA-MM) y consumo (kWh) son obligatorios; los demás datos son opcionales.</p>
+            <div class="field" style="max-width:430px;"><label for="importarSuministroElectrico">Suministro al que pertenecen los recibos</label><select id="importarSuministroElectrico"><option value="">Seleccione un suministro registrado</option></select></div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0;">
+              <a class="secondary" style="display:inline-block;padding:10px 13px;border:1px solid #a8c0d0;border-radius:7px;text-decoration:none;" href="Plantilla_simple_consumos_facturados.xlsx" download>↓ Descargar plantilla Excel</a>
+              <label class="secondary" for="archivoConsumosElectricos" style="cursor:pointer;display:inline-block;padding:10px 13px;border:1px solid #a8c0d0;border-radius:7px;">↑ Subir archivo completado</label>
+              <input id="archivoConsumosElectricos" type="file" accept=".xlsx,.xls" style="position:absolute;width:1px;height:1px;opacity:0;" aria-label="Seleccionar plantilla Excel de consumos">
+            </div>
+            <div id="resultadoImportacionConsumos" aria-live="polite"></div>
+          </div></div>
 
           <div class="empty-message">
             Aún no se han agregado facturas.
@@ -25010,5 +25021,104 @@ document.addEventListener('click',function(e){
   }, true);
 })();
 </script>
+<script>
+// Importación de consumos por suministro: solo modifica el estado local tras confirmar.
+(function(){
+  'use strict';
+  const $=id=>document.getElementById(id);
+  function textoSeguro(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function actualizarSuministrosImportacion(){
+    const select=$('importarSuministroElectrico');if(!select)return;
+    const actual=select.value;
+    const lista=typeof serviciosElectricosFactura!=='undefined'?serviciosElectricosFactura:[];
+    select.replaceChildren(new Option('Seleccione un suministro registrado',''));
+    lista.forEach(s=>select.add(new Option(s.nombre+' — '+(s.tarifa||'Sin tarifa'),s.id)));
+    if(lista.some(s=>s.id===actual))select.value=actual;
+    else if(lista.length===1)select.value=lista[0].id;
+    else if(lista.some(s=>s.id===servicioFacturaUltimo))select.value=servicioFacturaUltimo;
+  }
+  function periodoValido(valor){
+    if(typeof valor==='number')return null;
+    const s=String(valor??'').trim();
+    const m=/^(\d{4})-(0[1-9]|1[0-2])$/.exec(s);
+    return m?s:null;
+  }
+  function numero(valor,obligatorio,campo,fila,errores){
+    if(valor===null||valor===undefined||String(valor).trim()===''){
+      if(obligatorio)errores.push('Fila '+fila+': falta '+campo+'.');
+      return null;
+    }
+    const n=typeof valor==='number'?valor:Number(String(valor).trim());
+    if(!Number.isFinite(n)||n<0){errores.push('Fila '+fila+': '+campo+' debe ser un número no negativo.');return null;}
+    return n;
+  }
+  function mesFactura(f){return typeof f.fecha_inicio==='string'?f.fecha_inicio.slice(0,7):'';}
+  document.addEventListener('click',e=>{
+    if(e.target.closest('.btn-registrar-suministro,.btn-editar-potencia-suministro,.btn-agregar-factura'))setTimeout(actualizarSuministrosImportacion,0);
+  });
+  const observer=new MutationObserver(()=>{if($('importarSuministroElectrico'))actualizarSuministrosImportacion();});
+  const contenedor=$('contenedorFacturacionEnergeticos');
+  if(contenedor)observer.observe(contenedor,{childList:true});
+  document.addEventListener('change',async function(e){
+    if(e.target.id!=='archivoConsumosElectricos')return;
+    const input=e.target, archivo=input.files&&input.files[0], salida=$('resultadoImportacionConsumos');
+    if(!archivo||!salida)return;
+    input.value='';
+    actualizarSuministrosImportacion();
+    const id=$('importarSuministroElectrico')?.value;
+    const servicio=serviciosElectricosFactura.find(s=>s.id===id);
+    if(!servicio){salida.textContent='Primero seleccione el suministro al que pertenecen estas facturas.';return;}
+    if(!servicio.tarifa){salida.textContent='El suministro seleccionado no tiene tarifa registrada.';return;}
+    if(typeof XLSX==='undefined'){salida.textContent='No se pudo cargar el lector de Excel. Compruebe la conexión a Internet y vuelva a intentar.';return;}
+    if(!/\.xlsx?$/i.test(archivo.name)){salida.textContent='Seleccione un archivo Excel .xlsx o .xls.';return;}
+    let filas;
+    try{
+      const libro=XLSX.read(await archivo.arrayBuffer(),{type:'array',cellDates:false});
+      const hoja=libro.Sheets['Consumos facturados']||libro.Sheets[libro.SheetNames[0]];
+      const matriz=XLSX.utils.sheet_to_json(hoja,{header:1,defval:'',raw:true});
+      const encabezado=matriz.findIndex(r=>String(r[0]??'').includes('Periodo (AAAA-MM)')&&String(r[1]??'').includes('Consumo (kWh)'));
+      if(encabezado<0)throw Error('No se reconocen las columnas de la plantilla. Descargue y utilice la plantilla oficial.');
+      filas=matriz.slice(encabezado+1).map((r,i)=>({valores:r,fila:encabezado+i+2})).filter(({valores:r})=>r.slice(0,6).some(v=>v!==''&&v!==null&&v!==undefined));
+    }catch(err){salida.textContent='No se pudo leer el archivo: '+err.message;return;}
+    if(!filas.length){salida.textContent='La plantilla no contiene periodos de facturación.';return;}
+    if(filas.length>500){salida.textContent='El archivo contiene más de 500 periodos. Divida la carga en varios archivos.';return;}
+    const errores=[],nuevas=[],repetidos=new Set();
+    filas.forEach(({valores:r,fila})=>{
+      const periodo=periodoValido(r[0]);
+      if(!periodo)errores.push('Fila '+fila+': periodo inválido; utilice AAAA-MM (ej. 2026-01).');
+      const consumo=numero(r[1],true,'consumo (kWh)',fila,errores);
+      const costo=numero(r[2],false,'importe (MXN)',fila,errores);
+      const demanda=numero(r[3],false,'demanda máxima (kW)',fila,errores);
+      const fp=numero(r[4],false,'factor de potencia (%)',fila,errores);
+      const cargo=numero(r[5],false,'cargo por demanda (MXN)',fila,errores);
+      if(fp!==null&&fp>100)errores.push('Fila '+fila+': el factor de potencia no puede superar 100 %.');
+      if(periodo){
+        if(repetidos.has(periodo))errores.push('Fila '+fila+': periodo '+periodo+' duplicado dentro del archivo.');
+        repetidos.add(periodo);
+        if(facturasEnergia.some(f=>f.codigo==='electricidad'&&f.servicio_electrico===id&&mesFactura(f)===periodo))errores.push('Fila '+fila+': el periodo '+periodo+' ya está registrado para este suministro.');
+      }
+      if(periodo&&consumo!==null){
+        const [anio,mes]=periodo.split('-').map(Number);
+        const fin=new Date(Date.UTC(anio,mes,0)).toISOString().slice(0,10);
+        nuevas.push({codigo:'electricidad',nombre:'Electricidad',servicio_electrico:id,fecha_inicio:periodo+'-01',fecha_fin:fin,consumo,unidad:'kWh',costo,tarifa:servicio.tarifa,potencia_contratada:servicio.potencia??null,demanda,factor_potencia:fp,cargo_demanda:cargo});
+      }
+    });
+    if(errores.length){
+      salida.innerHTML='<p style="color:#9b2247;"><strong>Importación detenida: corrija el archivo.</strong></p><ul style="max-height:200px;overflow:auto;">'+errores.slice(0,40).map(x=>'<li>'+textoSeguro(x)+'</li>').join('')+'</ul>'+(errores.length>40?'<p>Hay más errores por corregir.</p>':'');return;
+    }
+    salida.innerHTML='<p><strong>Vista previa: '+nuevas.length+' periodo(s) para '+textoSeguro(servicio.nombre)+' ('+textoSeguro(servicio.tarifa)+').</strong></p><div style="max-height:250px;overflow:auto;"><table class="energy-table"><thead><tr><th>Periodo</th><th>Consumo (kWh)</th><th>Importe (MXN)</th></tr></thead><tbody>'+nuevas.map(f=>'<tr><td>'+f.fecha_inicio.slice(0,7)+'</td><td>'+f.consumo.toLocaleString('es-MX')+'</td><td>'+(f.costo===null?'—':f.costo.toLocaleString('es-MX'))+'</td></tr>').join('')+'</tbody></table></div><p>Revise los registros antes de incorporarlos. El guardado definitivo se realizará al guardar la página de facturación.</p><button type="button" class="secondary" id="confirmarImportacionConsumos">Confirmar e incorporar '+nuevas.length+' periodo(s)</button> <button type="button" class="secondary" id="cancelarImportacionConsumos">Cancelar</button>';
+    $('cancelarImportacionConsumos').addEventListener('click',()=>{salida.textContent='Importación cancelada. No se modificaron los registros.';},{once:true});
+    $('confirmarImportacionConsumos').addEventListener('click',()=>{
+      if(nuevas.some(f=>facturasEnergia.some(x=>x.codigo==='electricidad'&&x.servicio_electrico===id&&mesFactura(x)===mesFactura(f)))){salida.textContent='Se detectaron periodos duplicados desde la vista previa. Vuelva a cargar el archivo.';return;}
+      facturasEnergia.push(...nuevas);
+      servicioFacturaUltimo=id;
+      renderizarFacturasEnergia();
+      salida.textContent='Se incorporaron '+nuevas.length+' periodos a la encuesta. Guarde la página para enviarlos a Supabase.';
+    },{once:true});
+  });
+  actualizarSuministrosImportacion();
+})();
+</script>
+
 </body>
 </html>
