@@ -10345,15 +10345,10 @@ if(nombre === "energia"){
 // Página 3
 if(nombre === "facturacion"){
   mostrarAyudaPagina(3);
-   cargarFacturasEnergiaDesdeSupabase()
-    .catch(function(error){
-
-      console.error(
-        "No se pudieron recuperar las facturas:",
-        error
-      );
-
-    });
+  prepararFacturacionPagina3().catch(function(error){
+    console.error("No se pudo preparar la sección 3:", error);
+    alert("No fue posible recuperar los energéticos o las facturas. Revise la conexión y vuelva a ingresar a la sección.");
+  });
 
 }
 
@@ -15412,54 +15407,7 @@ if(btnEnergiaContinuar){
         alert(
           "La información de la Página 2 se guardó correctamente."
         );
-const encuestaIdFacturacion =
-  localStorage.getItem("encuesta_id");
-
-const {
-  data: energeticosFacturacion,
-  error: errorEnergeticosFacturacion
-} =
-  await supabaseClient
-    .from("energeticos_establecimiento")
-    .select("codigo,nombre")
-    .eq(
-      "encuesta_id",
-      Number(encuestaIdFacturacion)
-    )
-    .order(
-      "id",
-      {
-        ascending:true
-      }
-    );
-
-if(errorEnergeticosFacturacion){
-  throw errorEnergeticosFacturacion;
-}
-
-console.log(
-  "Energéticos para Página 3:",
-  energeticosFacturacion
-);
-
-
-// PRIMERO mostrar Página 3
 mostrarVista("facturacion");
-
-
-// DESPUÉS construir las tarjetas
-renderizarModulosFacturacion(
-  energeticosFacturacion || []
-);
-
-
-console.log(
-  "Tarjetas creadas:",
-  document.querySelectorAll(
-    "#contenedorFacturacionEnergeticos .energy-card"
-  ).length
-);
-
 
 } catch(error) {
 
@@ -16148,6 +16096,20 @@ if(caracteristicas){
 // ======================================================
 // PÁGINA 3 - CARGAR ENERGÉTICOS DESDE SUPABASE
 // ======================================================
+
+// Cargar primero el catálogo y después las facturas, desde cualquier acceso.
+let cargaFacturacionEnCurso = null;
+async function prepararFacturacionPagina3(){
+  if(cargaFacturacionEnCurso) return cargaFacturacionEnCurso;
+  cargaFacturacionEnCurso = (async()=>{
+    const lista = await cargarEnergeticosFacturacion();
+    renderizarModulosFacturacion(lista);
+    if(new URLSearchParams(location.search).has('correccion')) return;
+    await cargarFacturasEnergiaDesdeSupabase();
+  })();
+  try { await cargaFacturacionEnCurso; }
+  finally { cargaFacturacionEnCurso = null; }
+}
 
 async function cargarEnergeticosFacturacion(){
   // En modo de revisión no consultar tablas directamente: RLS exige titular.
@@ -16953,7 +16915,7 @@ async function cargarFacturasEnergiaDesdeSupabase(){
   reconstruirServiciosFactura();
   actualizarSelectorServiciosFactura();
   renderizarFacturasEnergia();
-
+  document.dispatchEvent(new Event("suministros-facturacion-actualizados"));
 
   console.log(
     "Facturas de Página 3 recuperadas desde Supabase:",
@@ -24973,6 +24935,7 @@ supabaseClient.rpc('obtener_encuesta_correccion',{p_token:token}).then(({data,er
  if(error)throw error;
  if(!data?.encuesta)throw Error('El enlace venció o ya no está disponible.');
  window.__revisionDatosVerificados = data;
+ if(state.vista === "facturacion") prepararFacturacionPagina3().catch(console.warn);
  // Los energéticos proceden exclusivamente de la RPC autorizada por token.
  energeticosEstablecimiento = (data.energeticos_establecimiento || []).map(e=>({codigo:e.codigo,nombre:e.nombre}));
  sincronizarEnergeticosUsosFinales().catch(console.warn);
@@ -25056,6 +25019,7 @@ document.addEventListener('click',function(e){
   document.addEventListener('click',e=>{
     if(e.target.closest('.btn-registrar-suministro,.btn-editar-potencia-suministro,.btn-agregar-factura'))setTimeout(actualizarSuministrosImportacion,0);
   });
+  document.addEventListener("suministros-facturacion-actualizados",actualizarSuministrosImportacion);
   const observer=new MutationObserver(()=>{if($('importarSuministroElectrico'))actualizarSuministrosImportacion();});
   const contenedor=$('contenedorFacturacionEnergeticos');
   if(contenedor)observer.observe(contenedor,{childList:true});
